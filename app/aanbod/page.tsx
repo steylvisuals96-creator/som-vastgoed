@@ -1,3 +1,5 @@
+export const revalidate = 60;
+
 import { draftMode } from "next/headers";
 import { getProperties } from "@/sanity/queries";
 import AanbodClient from "@/components/AanbodClient";

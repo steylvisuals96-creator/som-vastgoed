@@ -1,3 +1,5 @@
+export const revalidate = 60;
+
 import { draftMode } from "next/headers";
 import SOMClient from "@/components/SOMClient";
 import { getProperties, getTeamMembers, getSiteSettings } from "@/sanity/queries";

@@ -1,3 +1,6 @@
+export const revalidate = 60;
+export const dynamicParams = true;
+
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 import { getPropertyBySlug, getProperties } from "@/sanity/queries";
