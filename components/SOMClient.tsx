@@ -169,13 +169,15 @@ function Hero({ s, stats }: { s: SiteSettings["hero"] | typeof D.hero; stats: ty
 
 // ── PROPERTY CARD ─────────────────────────────────────────────────────────────
 export function PropertyCard({ p, i }: { p: Property; i: number }) {
+  const href = p.slug ? `/aanbod/${p.slug}` : "#";
   return (
     <motion.article key={p._id} layout
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}
       transition={{ duration: 0.5, delay: i * 0.06, ease: EASE }}
       className="group bg-white overflow-hidden cursor-pointer"
       style={{ borderRadius: "20px", boxShadow: "0 2px 20px rgba(0,0,0,0.06)" }}
-      whileHover={{ y: -6, boxShadow: "0 24px 60px rgba(0,0,0,0.13)" }}>
+      whileHover={{ y: -6, boxShadow: "0 24px 60px rgba(0,0,0,0.13)" }}
+      onClick={() => window.location.href = href}>
       <div className="relative overflow-hidden" style={{ aspectRatio: "16/10" }}>
         <motion.img src={p.imageUrl} alt={p.title}
           className="w-full h-full object-cover"
@@ -206,10 +208,11 @@ export function PropertyCard({ p, i }: { p: Property; i: number }) {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /></svg>
             {p.area} m²
           </span>
-          <motion.span className="ml-auto text-xs font-semibold flex items-center gap-1" style={{ color: B }} whileHover={{ color: "#b89000" }}>
+          <motion.a href={href} className="ml-auto text-xs font-semibold flex items-center gap-1" style={{ color: B }} whileHover={{ color: "#b89000" }}
+            onClick={e => e.stopPropagation()}>
             Meer info
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
-          </motion.span>
+          </motion.a>
         </div>
       </div>
     </motion.article>

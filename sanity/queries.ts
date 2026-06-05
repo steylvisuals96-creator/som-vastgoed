@@ -12,6 +12,9 @@ export type Property = {
   status: string;
   imageUrl: string;
   featured?: boolean;
+  slug?: string;
+  description?: string;
+  galleryUrls?: string[];
 };
 
 export type TeamMember = {
@@ -72,7 +75,7 @@ export async function getProperties(draft = false): Promise<Property[]> {
   const perspective = draft ? "previewDrafts" : "published";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = (await c.fetch(
-    `*[_type == "property"] | order(order asc) { _id, title, type, location, price, beds, area, status, featured, image }`,
+    `*[_type == "property"] | order(order asc) { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description }`,
     {},
     { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
   )) as unknown as any[];
@@ -80,8 +83,29 @@ export async function getProperties(draft = false): Promise<Property[]> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return raw.map((p: any) => ({
     ...p,
-    imageUrl: p.image ? urlFor(p.image).width(800).url() : "",
+    imageUrl: p.image ? urlFor(p.image).width(1200).url() : "",
+    galleryUrls: (p.gallery ?? []).map((g: any) => urlFor(g).width(1200).url()),
   }));
+}
+
+export async function getPropertyBySlug(slug: string, draft = false): Promise<Property | null> {
+  const c = getClient(draft);
+  if (!c) return null;
+
+  const perspective = draft ? "previewDrafts" : "published";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = (await c.fetch(
+    `*[_type == "property" && slug.current == $slug][0] { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description }`,
+    { slug },
+    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
+  )) as unknown as any;
+
+  if (!raw) return null;
+  return {
+    ...raw,
+    imageUrl: raw.image ? urlFor(raw.image).width(1200).url() : "",
+    galleryUrls: (raw.gallery ?? []).map((g: any) => urlFor(g).width(1200).url()),
+  };
 }
 
 export async function getTeamMembers(draft = false): Promise<TeamMember[]> {
