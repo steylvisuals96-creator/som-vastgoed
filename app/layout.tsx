@@ -3,6 +3,7 @@ import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -40,6 +41,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {children}
         {isDraft && <VisualEditing />}
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
