@@ -1,5 +1,6 @@
 import { client } from "./client";
 import { urlFor } from "./image";
+import { getZabunProperties } from "@/lib/zabun/properties";
 
 export type Property = {
   _id: string;
@@ -61,6 +62,12 @@ export type SiteSettings = {
 };
 
 export async function getProperties(): Promise<Property[]> {
+  // Zabun heeft voorrang als credentials aanwezig zijn
+  if (process.env.ZABUN_API_KEY) {
+    return getZabunProperties();
+  }
+
+  // Fallback: Sanity
   if (!client) return [];
   const raw = await client.fetch(
     `*[_type == "property"] | order(order asc) { _id, title, type, location, price, beds, area, status, image }`
