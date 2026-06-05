@@ -88,7 +88,8 @@ function Nav() {
       </div>
 
       <div className="hidden md:flex items-center gap-8">
-        {["Aanbod", "Over ons", "Team"].map(l => (
+        <a href="/aanbod" className="text-sm font-light text-white/70 hover:text-white transition-colors">Aanbod</a>
+        {["Over ons", "Team"].map(l => (
           <a key={l} href={`#${l.toLowerCase().replace(" ", "-")}`}
             className="text-sm font-light text-white/70 hover:text-white transition-colors">
             {l}
@@ -166,11 +167,59 @@ function Hero({ s, stats }: { s: SiteSettings["hero"] | typeof D.hero; stats: ty
   );
 }
 
-// ── LISTINGS ─────────────────────────────────────────────────────────────────
+// ── PROPERTY CARD ─────────────────────────────────────────────────────────────
+export function PropertyCard({ p, i }: { p: Property; i: number }) {
+  return (
+    <motion.article key={p._id} layout
+      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}
+      transition={{ duration: 0.5, delay: i * 0.06, ease: EASE }}
+      className="group bg-white overflow-hidden cursor-pointer"
+      style={{ borderRadius: "20px", boxShadow: "0 2px 20px rgba(0,0,0,0.06)" }}
+      whileHover={{ y: -6, boxShadow: "0 24px 60px rgba(0,0,0,0.13)" }}>
+      <div className="relative overflow-hidden" style={{ aspectRatio: "16/10" }}>
+        <motion.img src={p.imageUrl} alt={p.title}
+          className="w-full h-full object-cover"
+          transition={{ duration: 0.7 }}
+          whileHover={{ scale: 1.07 }} />
+        <div className="absolute top-4 left-4 text-xs font-semibold px-3 py-1.5 rounded-full"
+          style={{ backgroundColor: Y, color: B }}>{p.status}</div>
+        <div className="absolute top-4 right-4 text-xs font-medium px-3 py-1.5 rounded-full backdrop-blur-sm"
+          style={{ backgroundColor: "rgba(17,17,17,0.65)", color: W }}>{p.type}</div>
+      </div>
+      <div className="p-6">
+        <div className="flex items-start justify-between mb-2">
+          <div>
+            <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.35rem", fontWeight: 500, color: B, lineHeight: 1.2 }}>{p.title}</p>
+            <p className="text-xs mt-1 flex items-center gap-1" style={{ color: M }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+              {p.location}
+            </p>
+          </div>
+          <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.4rem", fontWeight: 500, color: B }}>{p.price}</p>
+        </div>
+        <div className="flex items-center gap-5 mt-4 pt-4 text-xs font-light" style={{ color: M, borderTop: "1px solid #f0f0f0" }}>
+          <span className="flex items-center gap-1.5">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 22v-9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9" /><path d="M2 11l10-9 10 9" /><path d="M9 22V12h6v10" /></svg>
+            {p.beds} slpk
+          </span>
+          <span className="flex items-center gap-1.5">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /></svg>
+            {p.area} m²
+          </span>
+          <motion.span className="ml-auto text-xs font-semibold flex items-center gap-1" style={{ color: B }} whileHover={{ color: "#b89000" }}>
+            Meer info
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          </motion.span>
+        </div>
+      </div>
+    </motion.article>
+  );
+}
+
+// ── LISTINGS (homepage — uitgelichte panden) ──────────────────────────────────
 function Listings({ properties }: { properties: Property[] }) {
-  const [active, setActive] = useState("Alles");
-  const filters = ["Alles", "Woning", "Appartement"];
-  const shown = active === "Alles" ? properties : properties.filter(p => p.type.toLowerCase().includes(active.toLowerCase()));
+  const featured = properties.filter(p => p.featured);
+  const shown = featured.length > 0 ? featured : properties.slice(0, 6);
 
   return (
     <section id="aanbod" style={{ backgroundColor: G, padding: "clamp(5rem,10vh,8rem) clamp(1.5rem,6vw,5rem)" }}>
@@ -178,76 +227,29 @@ function Listings({ properties }: { properties: Property[] }) {
         <div>
           <div className="flex items-center gap-3 mb-4">
             <div className="h-px w-8" style={{ backgroundColor: Y }} />
-            <span className="text-xs font-medium tracking-widest uppercase" style={{ color: "#b89000" }}>Actueel aanbod</span>
+            <span className="text-xs font-medium tracking-widest uppercase" style={{ color: "#b89000" }}>Uitgelicht aanbod</span>
           </div>
           <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2rem,4vw,3.2rem)", fontWeight: 400, color: B, lineHeight: 1.1 }}>
             Panden in Limburg<br /><em style={{ color: M, fontStyle: "italic" }}>& omgeving</em>
           </h2>
         </div>
-        <div className="flex gap-2 p-1 rounded-full" style={{ backgroundColor: "rgba(0,0,0,0.07)" }}>
-          {filters.map(f => (
-            <motion.button key={f} onClick={() => setActive(f)}
-              className="text-xs font-medium px-5 py-2 rounded-full transition-colors"
-              animate={{ backgroundColor: active === f ? B : "transparent", color: active === f ? W : M }}
-              whileTap={{ scale: 0.96 }}>
-              {f}
-            </motion.button>
-          ))}
-        </div>
+        <motion.a href="/aanbod"
+          className="text-xs font-medium flex items-center gap-2"
+          style={{ color: M }}
+          whileHover={{ color: B }}>
+          Alle {properties.length} panden bekijken
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+        </motion.a>
       </div>
 
       <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}>
         <AnimatePresence mode="popLayout">
-          {shown.map((p, i) => (
-            <motion.article key={p._id} layout
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.5, delay: i * 0.06, ease: EASE }}
-              className="group bg-white overflow-hidden cursor-pointer"
-              style={{ borderRadius: "20px", boxShadow: "0 2px 20px rgba(0,0,0,0.06)" }}
-              whileHover={{ y: -6, boxShadow: "0 24px 60px rgba(0,0,0,0.13)" }}>
-              <div className="relative overflow-hidden" style={{ aspectRatio: "16/10" }}>
-                <motion.img src={p.imageUrl} alt={p.title}
-                  className="w-full h-full object-cover"
-                  transition={{ duration: 0.7 }}
-                  whileHover={{ scale: 1.07 }} />
-                <div className="absolute top-4 left-4 text-xs font-semibold px-3 py-1.5 rounded-full"
-                  style={{ backgroundColor: Y, color: B }}>{p.status}</div>
-                <div className="absolute top-4 right-4 text-xs font-medium px-3 py-1.5 rounded-full backdrop-blur-sm"
-                  style={{ backgroundColor: "rgba(17,17,17,0.65)", color: W }}>{p.type}</div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.35rem", fontWeight: 500, color: B, lineHeight: 1.2 }}>{p.title}</p>
-                    <p className="text-xs mt-1 flex items-center gap-1" style={{ color: M }}>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                      {p.location}
-                    </p>
-                  </div>
-                  <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.4rem", fontWeight: 500, color: B }}>{p.price}</p>
-                </div>
-                <div className="flex items-center gap-5 mt-4 pt-4 text-xs font-light" style={{ color: M, borderTop: "1px solid #f0f0f0" }}>
-                  <span className="flex items-center gap-1.5">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 22v-9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9" /><path d="M2 11l10-9 10 9" /><path d="M9 22V12h6v10" /></svg>
-                    {p.beds} slpk
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /></svg>
-                    {p.area} m²
-                  </span>
-                  <motion.span className="ml-auto text-xs font-semibold flex items-center gap-1" style={{ color: B }} whileHover={{ color: "#b89000" }}>
-                    Meer info
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
-                  </motion.span>
-                </div>
-              </div>
-            </motion.article>
-          ))}
+          {shown.map((p, i) => <PropertyCard key={p._id} p={p} i={i} />)}
         </AnimatePresence>
       </div>
 
       <div className="text-center mt-14">
-        <motion.a href="https://somvastgoed.be/nl/te-koop" target="_blank"
+        <motion.a href="/aanbod"
           className="inline-flex items-center gap-2 text-sm font-semibold rounded-full px-8 py-4"
           style={{ backgroundColor: B, color: W }}
           whileHover={{ backgroundColor: Y, color: B }} whileTap={{ scale: 0.97 }}>
