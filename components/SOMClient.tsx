@@ -1,8 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { useState, useRef } from "react";
-import Image from "next/image";
+import { useState } from "react";
 
 const Y = "#facb04";      // yellow
 const B = "#111111";      // near-black
@@ -42,7 +41,9 @@ function Nav() {
       className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-20 border-b border-transparent"
       style={{ backgroundColor: bg, backdropFilter: blur, paddingLeft: "clamp(1.5rem,5vw,4rem)", paddingRight: "clamp(1.5rem,5vw,4rem)" }}
     >
-      <Image src="/som-logo.png" alt="SOM Vastgoed" width={120} height={84} className="h-10 w-auto" />
+      <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "1rem", fontWeight: 700, color: W, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+        SOM <span style={{ color: Y }}>Vastgoed</span>
+      </span>
 
       {/* Demo badge */}
       <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex">
@@ -262,6 +263,66 @@ function Listings() {
           Volledig aanbod bekijken
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </motion.a>
+      </div>
+    </section>
+  );
+}
+
+/* ─── BOLD CTA ─── */
+function BoldCta() {
+  return (
+    <section style={{ backgroundColor: B, padding: "clamp(5rem,10vh,8rem) clamp(1.5rem,6vw,5rem)" }}>
+      <div className="grid gap-16 items-center" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
+        <div>
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="text-xs font-semibold uppercase tracking-widest mb-6"
+            style={{ color: Y }}
+          >
+            Welkom bij SOM Vastgoed
+          </motion.p>
+          <motion.h2
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: EASE }}
+            className="text-white"
+            style={{ fontFamily: "var(--font-dm-sans)", fontSize: "clamp(2.2rem,5vw,4rem)", fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.02em", textTransform: "uppercase" }}
+          >
+            Onroerend goed kopen<br />
+            of <span style={{ color: Y }}>verkopen?</span><br />
+            Ons team staat klaar.
+          </motion.h2>
+        </div>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.15, ease: EASE }}
+          className="flex flex-col gap-8"
+        >
+          <p className="text-base font-light leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+            We begeleiden u van A tot Z met persoonlijk advies en expertise.
+          </p>
+          <div className="flex gap-4 flex-wrap">
+            <motion.a href="#aanbod"
+              className="text-sm font-semibold rounded-full px-7 py-3.5 inline-flex items-center gap-2"
+              style={{ backgroundColor: Y, color: B }}
+              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              Bekijk aanbod
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </motion.a>
+            <motion.a href="#contact"
+              className="text-sm font-light rounded-full px-7 py-3.5 border text-white"
+              style={{ borderColor: "rgba(255,255,255,0.2)" }}
+              whileHover={{ borderColor: Y, color: Y }} whileTap={{ scale: 0.97 }}>
+              Gratis waardebepaling
+            </motion.a>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -591,7 +652,9 @@ function Footer() {
   return (
     <footer style={{ backgroundColor: "#0a0a0a", padding: "2.5rem clamp(1.5rem,6vw,5rem)" }}>
       <div className="flex items-center justify-between flex-wrap gap-6">
-        <Image src="/som-logo.png" alt="SOM Vastgoed" width={100} height={70} className="h-9 w-auto opacity-90" />
+        <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.9rem", fontWeight: 700, color: W, letterSpacing: "0.12em", textTransform: "uppercase", opacity: 0.9 }}>
+          SOM <span style={{ color: Y }}>Vastgoed</span>
+        </span>
         <div className="flex gap-8 text-xs font-light" style={{ color: "rgba(255,255,255,0.3)" }}>
           <span>Het Dorlik 16 — Hasselt</span>
           <span>+32 11 36 34 32</span>
@@ -617,6 +680,7 @@ export default function SOMClient() {
       <Nav />
       <Hero />
       <Listings />
+      <BoldCta />
       <UspStrip />
       <About />
       <Team />
