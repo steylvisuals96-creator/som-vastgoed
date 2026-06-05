@@ -63,6 +63,7 @@ type Props = {
   properties: Property[];
   team: TeamMember[];
   settings: SiteSettings | null;
+  isDraft?: boolean;
 };
 
 // ── NAV ──────────────────────────────────────────────────────────────────────
@@ -545,7 +546,7 @@ function Footer({ contact }: { contact: typeof D.contact }) {
 }
 
 // ── ROOT ──────────────────────────────────────────────────────────────────────
-export default function SOMClient({ properties, team, settings }: Props) {
+export default function SOMClient({ properties, team, settings, isDraft }: Props) {
   const hero = settings?.hero ?? D.hero;
   const stats = settings?.stats ?? D.stats;
   const boldCta = settings?.boldCta ?? D.boldCta;
@@ -555,6 +556,14 @@ export default function SOMClient({ properties, team, settings }: Props) {
 
   return (
     <div style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}>
+      {/* Draft mode banner */}
+      {isDraft && (
+        <div className="fixed top-0 left-0 right-0 z-[9999] flex items-center justify-between px-6 py-2 text-xs font-semibold"
+          style={{ backgroundColor: "#0070f3", color: "#fff" }}>
+          <span>✏️ Voorbeeldmodus — wijzigingen zijn nog niet gepubliceerd</span>
+          <a href="/api/draft-mode/disable" className="underline opacity-80 hover:opacity-100">Sluiten</a>
+        </div>
+      )}
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full text-xs font-semibold shadow-xl flex items-center gap-2 pointer-events-none"
         style={{ backgroundColor: Y, color: B, boxShadow: `0 8px 30px rgba(250,203,4,0.4)` }}>
         ✦ Dit is een demo — gemaakt door SteylVisuals

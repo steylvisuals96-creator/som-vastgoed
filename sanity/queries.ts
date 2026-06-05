@@ -1,6 +1,5 @@
-import { client } from "./client";
+import { client, previewClient } from "./client";
 import { urlFor } from "./image";
-import { getZabunProperties } from "@/lib/zabun/properties";
 
 export type Property = {
   _id: string;
@@ -61,17 +60,22 @@ export type SiteSettings = {
   };
 };
 
-export async function getProperties(): Promise<Property[]> {
-  // Zabun heeft voorrang als credentials aanwezig zijn
-  if (process.env.ZABUN_API_KEY) {
-    return getZabunProperties();
-  }
+function getClient(draft = false) {
+  return draft ? (previewClient ?? client) : client;
+}
 
-  // Fallback: Sanity
-  if (!client) return [];
-  const raw = await client.fetch(
-    `*[_type == "property"] | order(order asc) { _id, title, type, location, price, beds, area, status, image }`
-  );
+export async function getProperties(draft = false): Promise<Property[]> {
+  const c = getClient(draft);
+  if (!c) return [];
+
+  const perspective = draft ? "previewDrafts" : "published";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = (await c.fetch(
+    `*[_type == "property"] | order(order asc) { _id, title, type, location, price, beds, area, status, image }`,
+    {},
+    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
+  )) as unknown as any[];
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return raw.map((p: any) => ({
     ...p,
@@ -79,11 +83,18 @@ export async function getProperties(): Promise<Property[]> {
   }));
 }
 
-export async function getTeamMembers(): Promise<TeamMember[]> {
-  if (!client) return [];
-  const raw = await client.fetch(
-    `*[_type == "teamMember"] | order(order asc) { _id, name, role, photo, photoUrl }`
-  );
+export async function getTeamMembers(draft = false): Promise<TeamMember[]> {
+  const c = getClient(draft);
+  if (!c) return [];
+
+  const perspective = draft ? "previewDrafts" : "published";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = (await c.fetch(
+    `*[_type == "teamMember"] | order(order asc) { _id, name, role, photo, photoUrl }`,
+    {},
+    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
+  )) as unknown as any[];
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return raw.map((m: any) => ({
     _id: m._id,
@@ -95,7 +106,14 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
   }));
 }
 
-export async function getSiteSettings(): Promise<SiteSettings | null> {
-  if (!client) return null;
-  return client.fetch(`*[_type == "siteSettings" && _id == "siteSettings"][0]`);
+export async function getSiteSettings(draft = false): Promise<SiteSettings | null> {
+  const c = getClient(draft);
+  if (!c) return null;
+
+  const perspective = draft ? "previewDrafts" : "published";
+  return c.fetch(
+    `*[_type == "siteSettings" && _id == "siteSettings"][0]`,
+    {},
+    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
+  ) as unknown as Promise<SiteSettings | null>;
 }

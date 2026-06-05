@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { draftMode } from "next/headers";
+import { VisualEditing } from "next-sanity/visual-editing";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -28,11 +30,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { isEnabled: isDraft } = await draftMode();
+
   return (
     <html lang="nl" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}>
         {children}
+        {isDraft && <VisualEditing />}
       </body>
     </html>
   );

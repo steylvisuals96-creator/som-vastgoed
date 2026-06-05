@@ -1,7 +1,7 @@
+import { draftMode } from "next/headers";
 import SOMClient from "@/components/SOMClient";
 import { getProperties, getTeamMembers, getSiteSettings } from "@/sanity/queries";
 
-// Fallback data used when Sanity is not yet configured
 const FALLBACK_PROPERTIES = [
   { _id: "1", type: "Woning", title: "Uitzonderlijke woning", location: "Riemst", price: "€ 499.900", beds: 3, area: 184, status: "Te koop", imageUrl: "/som-listings/listing-1.jpg" },
   { _id: "2", type: "Woning", title: "Gezinswoning", location: "Hasselt", price: "€ 497.500", beds: 4, area: 317, status: "Te koop", imageUrl: "/som-listings/listing-2.jpg" },
@@ -21,10 +21,15 @@ const FALLBACK_TEAM = [
 ];
 
 export default async function Home() {
+  const { isEnabled: isDraft } = await draftMode();
   const hasSanity = !!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 
   const [properties, team, settings] = hasSanity
-    ? await Promise.all([getProperties(), getTeamMembers(), getSiteSettings()])
+    ? await Promise.all([
+        getProperties(isDraft),
+        getTeamMembers(isDraft),
+        getSiteSettings(isDraft),
+      ])
     : [FALLBACK_PROPERTIES, FALLBACK_TEAM, null];
 
   return (
@@ -32,6 +37,7 @@ export default async function Home() {
       properties={properties}
       team={team}
       settings={settings}
+      isDraft={isDraft}
     />
   );
 }
