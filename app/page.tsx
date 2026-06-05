@@ -26,9 +26,9 @@ export default async function Home() {
 
   const [properties, team, settings] = hasSanity
     ? await Promise.all([
-        getProperties(isDraft),
-        getTeamMembers(isDraft),
-        getSiteSettings(isDraft),
+        getProperties(isDraft).catch(() => FALLBACK_PROPERTIES),
+        getTeamMembers(isDraft).catch(() => FALLBACK_TEAM),
+        getSiteSettings(isDraft).catch(() => null),
       ])
     : [FALLBACK_PROPERTIES, FALLBACK_TEAM, null];
 
