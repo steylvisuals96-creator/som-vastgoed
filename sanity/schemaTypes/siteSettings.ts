@@ -77,6 +77,7 @@ export const siteSettings = defineType({
         defineField({ name: "text2", title: "Alinea 2", type: "text", rows: 4 }),
         defineField({ name: "yearsLabel", title: "Jaren ervaring (getal)", type: "string" }),
         defineField({ name: "cta", title: "CTA knop tekst", type: "string" }),
+        defineField({ name: "image", title: "Foto (links in de sectie)", type: "image", options: { hotspot: true } }),
       ],
     }),
 

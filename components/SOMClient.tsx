@@ -340,7 +340,7 @@ function About({ s }: { s: SiteSettings["about"] | typeof D.about }) {
         <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
           transition={{ duration: 1, ease: EASE }} className="relative">
           <div className="overflow-hidden" style={{ borderRadius: "24px", aspectRatio: "4/5" }}>
-            <img src="/som-listings/listing-5.jpg" alt="SOM Vastgoed" className="w-full h-full object-cover" />
+            <img src={(s as SiteSettings["about"]).imageUrl ?? "/som-listings/listing-5.jpg"} alt="SOM Vastgoed" className="w-full h-full object-cover" />
           </div>
           <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.3, ease: EASE }}

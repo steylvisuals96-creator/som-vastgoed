@@ -52,6 +52,7 @@ export type SiteSettings = {
     text2: string;
     yearsLabel: string;
     cta: string;
+    imageUrl?: string;
   };
   contact: {
     phoneHasselt: string;
@@ -136,9 +137,19 @@ export async function getSiteSettings(draft = false): Promise<SiteSettings | nul
   if (!c) return null;
 
   const perspective = draft ? "previewDrafts" : "published";
-  return c.fetch(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = await c.fetch(
     `*[_type == "siteSettings" && _id == "siteSettings"][0]`,
     {},
     { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
-  ) as unknown as Promise<SiteSettings | null>;
+  ) as unknown as any;
+
+  if (!raw) return null;
+  return {
+    ...raw,
+    about: raw.about ? {
+      ...raw.about,
+      imageUrl: raw.about.image ? urlFor(raw.about.image).width(900).url() : undefined,
+    } : undefined,
+  } as SiteSettings;
 }
