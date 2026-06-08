@@ -188,17 +188,15 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
             {/* Map + sidebar layout */}
             <div className="flex" style={{ minHeight: "calc(100vh - 160px)" }}>
               {/* Map */}
-              <div style={{ flex: 1, position: "sticky", top: "160px", height: "calc(100vh - 160px)", overflow: "hidden" }}>
+              <div style={{ flex: 1, minWidth: 0, position: "sticky", top: "160px", height: "calc(100vh - 160px)", overflow: "hidden" }}>
                 <PropertyMap
                   properties={shown}
-                  onSelect={(p) => {
-                    setSelectedProperty(p);
-                  }}
+                  onSelect={(p) => setSelectedProperty(p)}
                 />
               </div>
 
               {/* Sidebar — scrollable list */}
-              <div style={{ width: "380px", flexShrink: 0, overflowY: "auto", backgroundColor: G, padding: "1.5rem", height: "calc(100vh - 160px)", borderLeft: "1px solid #e8e8e8" }}>
+              <div style={{ width: "360px", flexShrink: 0, overflowY: "auto", backgroundColor: G, padding: "1.5rem", height: "calc(100vh - 160px)", borderLeft: "1px solid #e8e8e8" }}>
                 <p className="text-xs font-medium mb-4" style={{ color: M }}>{shown.length} pand{shown.length !== 1 ? "en" : ""} op kaart</p>
                 <div className="flex flex-col gap-4">
                   {shown.map((p, i) => {

@@ -214,8 +214,12 @@ export default function PropertyMap({ properties, onSelect }: Props) {
         .leaflet-control-attribution {
           font-size: 9px !important;
         }
+        .leaflet-container {
+          width: 100%;
+          height: 100%;
+        }
       `}</style>
-      <div ref={mapRef} style={{ width: "100%", height: "100%", minHeight: "600px" }} />
+      <div ref={mapRef} style={{ width: "100%", height: "100%", minHeight: "600px", position: "relative" }} />
     </>
   );
 }
