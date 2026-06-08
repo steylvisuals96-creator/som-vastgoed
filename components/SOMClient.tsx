@@ -3,6 +3,7 @@
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
 import type { Property, TeamMember, SiteSettings, Project, Office } from "@/sanity/queries";
+import SiteFooter from "./SiteFooter";
 
 const Y = "#facb04";
 const B = "#111111";
@@ -659,26 +660,6 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
   );
 }
 
-// ── FOOTER ────────────────────────────────────────────────────────────────────
-function Footer({ contact }: { contact: typeof D.contact }) {
-  return (
-    <footer style={{ backgroundColor: "#0a0a0a", padding: "2.5rem clamp(1.5rem,6vw,5rem)" }}>
-      <div className="flex items-center justify-between flex-wrap gap-6">
-        <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.9rem", fontWeight: 700, color: W, letterSpacing: "0.12em", textTransform: "uppercase", opacity: 0.9 }}>
-          SOM <span style={{ color: Y }}>Vastgoed</span>
-        </span>
-        <div className="flex gap-8 text-xs font-light flex-wrap" style={{ color: "rgba(255,255,255,0.3)" }}>
-          <span>{contact.address}</span>
-          <span>{contact.phoneHasselt}</span>
-          <span>{contact.email}</span>
-        </div>
-        <p className="text-xs font-light" style={{ color: "rgba(255,255,255,0.2)" }}>
-          Website door <span style={{ color: Y }}>SteylVisuals</span>
-        </p>
-      </div>
-    </footer>
-  );
-}
 
 // ── ROOT ──────────────────────────────────────────────────────────────────────
 export default function SOMClient({ properties, team, settings, projects: _projects, isDraft }: Props) {
@@ -710,7 +691,7 @@ export default function SOMClient({ properties, team, settings, projects: _proje
       <About s={about} />
       <Team members={team} />
       <Contact s={contact} />
-      <Footer contact={contact} />
+      <SiteFooter />
     </div>
   );
 }

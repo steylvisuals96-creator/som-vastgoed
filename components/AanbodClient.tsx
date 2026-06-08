@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import type { Property } from "@/sanity/queries";
 import { PropertyCard } from "./SOMClient";
+import SiteFooter from "./SiteFooter";
 
 const Y = "#facb04";
 const B = "#111111";
@@ -277,22 +278,7 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
         )}
       </AnimatePresence>
 
-      {/* Footer */}
-      <footer style={{ backgroundColor: "#0a0a0a", padding: "2.5rem clamp(1.5rem,6vw,5rem)" }}>
-        <div className="flex items-center justify-between flex-wrap gap-6">
-          <a href="/" style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.9rem", fontWeight: 700, color: W, letterSpacing: "0.12em", textTransform: "uppercase", opacity: 0.9 }}>
-            SOM <span style={{ color: Y }}>Vastgoed</span>
-          </a>
-          <div className="flex gap-8 text-xs font-light flex-wrap" style={{ color: "rgba(255,255,255,0.3)" }}>
-            <span>Het Dorlik 16, 3500 Hasselt</span>
-            <span>+32 11 36 34 32</span>
-            <span>info@somvastgoed.be</span>
-          </div>
-          <p className="text-xs font-light" style={{ color: "rgba(255,255,255,0.2)" }}>
-            Website door <span style={{ color: Y }}>SteylVisuals</span>
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
