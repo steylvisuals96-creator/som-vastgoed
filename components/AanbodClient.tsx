@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import type { Property } from "@/sanity/queries";
 import { PropertyCard } from "./SOMClient";
 
@@ -28,6 +29,7 @@ function AanbodNav() {
 
       <div className="hidden md:flex items-center gap-8">
         <a href="/aanbod" className="text-sm font-semibold" style={{ color: Y }}>Aanbod</a>
+        <a href="/nieuwbouw" className="text-sm font-light text-white/70 hover:text-white transition-colors">Nieuwbouw</a>
         <a href="/#over-ons" className="text-sm font-light text-white/70 hover:text-white transition-colors">Over ons</a>
         <a href="/#team" className="text-sm font-light text-white/70 hover:text-white transition-colors">Team</a>
         <motion.a href="/#contact"
@@ -44,8 +46,15 @@ function AanbodNav() {
 const ALL_FILTERS = ["Alles", "Woning", "Villa", "Appartement", "Penthouse", "Eengezinswoning", "Grond"];
 
 export default function AanbodClient({ properties, isDraft }: { properties: Property[]; isDraft?: boolean }) {
+  const searchParams = useSearchParams();
   const [activeFilter, setActiveFilter] = useState("Alles");
   const [activeStatus, setActiveStatus] = useState("Alles");
+
+  useEffect(() => {
+    const status = searchParams.get("status");
+    if (status === "koop") setActiveStatus("Te koop");
+    else if (status === "huur") setActiveStatus("Te huur");
+  }, [searchParams]);
 
   const typeFilters = ALL_FILTERS.filter(f => f === "Alles" || properties.some(p => p.type === f));
   const statusFilters = ["Alles", "Te koop", "Te huur"];

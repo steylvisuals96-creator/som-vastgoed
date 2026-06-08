@@ -24,6 +24,30 @@ export type TeamMember = {
   photoUrl: string;
 };
 
+export type Project = {
+  _id: string;
+  name: string;
+  developer?: string;
+  location: string;
+  type?: string;
+  units?: number;
+  priceFrom?: string;
+  status: string;
+  completionDate?: string;
+  imageUrl: string;
+  galleryUrls?: string[];
+  description?: string;
+  slug?: string;
+  featured?: boolean;
+};
+
+export type Office = {
+  name: string;
+  address: string;
+  phone: string;
+  imageUrl?: string;
+};
+
 export type Stat = { value: string; label: string };
 export type Usp = { icon: string; title: string; sub: string };
 
@@ -54,6 +78,7 @@ export type SiteSettings = {
     cta: string;
     imageUrl?: string;
   };
+  offices?: Office[];
   contact: {
     phoneHasselt: string;
     phoneGenk: string;
@@ -109,6 +134,42 @@ export async function getPropertyBySlug(slug: string, draft = false): Promise<Pr
   };
 }
 
+export async function getRecentProperties(limit = 8, draft = false): Promise<Property[]> {
+  const c = getClient(draft);
+  if (!c) return [];
+  const perspective = draft ? "previewDrafts" : "published";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = (await c.fetch(
+    `*[_type == "property"] | order(_createdAt desc) [0..${limit - 1}] { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description }`,
+    {},
+    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
+  )) as unknown as any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return raw.map((p: any) => ({
+    ...p,
+    imageUrl: p.image ? urlFor(p.image).width(800).url() : "",
+    galleryUrls: (p.gallery ?? []).map((g: any) => urlFor(g).width(1200).url()),
+  }));
+}
+
+export async function getProjects(draft = false): Promise<Project[]> {
+  const c = getClient(draft);
+  if (!c) return [];
+  const perspective = draft ? "previewDrafts" : "published";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = (await c.fetch(
+    `*[_type == "project"] | order(order asc) { _id, name, developer, location, type, units, priceFrom, status, completionDate, featured, "slug": slug.current, image, gallery, description }`,
+    {},
+    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
+  )) as unknown as any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return raw.map((p: any) => ({
+    ...p,
+    imageUrl: p.image ? urlFor(p.image).width(800).url() : "",
+    galleryUrls: (p.gallery ?? []).map((g: any) => urlFor(g).width(1200).url()),
+  }));
+}
+
 export async function getTeamMembers(draft = false): Promise<TeamMember[]> {
   const c = getClient(draft);
   if (!c) return [];
@@ -151,5 +212,12 @@ export async function getSiteSettings(draft = false): Promise<SiteSettings | nul
       ...raw.about,
       imageUrl: raw.about.image ? urlFor(raw.about.image).width(900).url() : undefined,
     } : undefined,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    offices: (raw.offices ?? []).map((o: any) => ({
+      name: o.name,
+      address: o.address,
+      phone: o.phone,
+      imageUrl: o.image ? urlFor(o.image).width(600).height(400).url() : undefined,
+    })),
   } as SiteSettings;
 }

@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
-import type { Property, TeamMember, SiteSettings } from "@/sanity/queries";
+import type { Property, TeamMember, SiteSettings, Project, Office } from "@/sanity/queries";
 
 const Y = "#facb04";
 const B = "#111111";
@@ -17,7 +17,7 @@ const D = {
     tagline: "Vastgoed in Hasselt & omgeving",
     titleLine1: "Uw thuis vinden,",
     titleLine2Italic: "dat doen we samen.",
-    subtitle: "Gevestigd makelaarskantoor met vestigingen in Hasselt, Sint-Truiden en Genk. Persoonlijk begeleiding van A tot Z.",
+    subtitle: "Gevestigd makelaarskantoor met vestigingen in Hasselt en Genk. Persoonlijk begeleiding van A tot Z.",
     ctaPrimary: "Bekijk ons aanbod",
     ctaSecondary: "Gratis waardebepaling",
   },
@@ -36,14 +36,14 @@ const D = {
   },
   usps: [
     { icon: "🏆", title: "Gevestigd kantoor", sub: "Al meer dan 15 jaar actief in Limburg" },
-    { icon: "📍", title: "3 vestigingen", sub: "Hasselt, Sint-Truiden & Genk" },
+    { icon: "📍", title: "3 vestigingen", sub: "Hasselt, Hasselt Nieuwbouw & Genk" },
     { icon: "🤝", title: "Persoonlijk", sub: "Eén makelaar van A tot Z" },
     { icon: "⚡", title: "Snel resultaat", sub: "Gemiddeld 45 dagen verkoop" },
   ],
   about: {
     title: "Uw vertrouwde partner",
     titleItalic: "in Limburgs vastgoed",
-    text1: "Met SOM Vastgoed kiest u voor een gevestigd professioneel kantoor met vestigingen in de provincie Limburg in Hasselt, Sint-Truiden en Genk. Wij begeleiden u persoonlijk — van eerste bezichtiging tot sleuteloverdracht.",
+    text1: "Met SOM Vastgoed kiest u voor een gevestigd professioneel kantoor met vestigingen in de provincie Limburg in Hasselt en Genk. Wij begeleiden u persoonlijk — van eerste bezichtiging tot sleuteloverdracht.",
     text2: "Eerlijk advies, transparante communicatie en maximaal resultaat. Geen verrassingen — wel een makelaar die voor u gaat.",
     yearsLabel: "15+",
     cta: "Gratis waardebepaling",
@@ -63,6 +63,7 @@ type Props = {
   properties: Property[];
   team: TeamMember[];
   settings: SiteSettings | null;
+  projects: Project[];
   isDraft?: boolean;
 };
 
@@ -89,12 +90,9 @@ function Nav() {
 
       <div className="hidden md:flex items-center gap-8">
         <a href="/aanbod" className="text-sm font-light text-white/70 hover:text-white transition-colors">Aanbod</a>
-        {["Over ons", "Team"].map(l => (
-          <a key={l} href={`#${l.toLowerCase().replace(" ", "-")}`}
-            className="text-sm font-light text-white/70 hover:text-white transition-colors">
-            {l}
-          </a>
-        ))}
+        <a href="/nieuwbouw" className="text-sm font-light text-white/70 hover:text-white transition-colors">Nieuwbouw</a>
+        <a href="#over-ons" className="text-sm font-light text-white/70 hover:text-white transition-colors">Over ons</a>
+        <a href="#team" className="text-sm font-light text-white/70 hover:text-white transition-colors">Team</a>
         <motion.a href="#contact"
           className="text-sm font-semibold px-6 py-2.5 rounded-full"
           style={{ backgroundColor: Y, color: B }}
@@ -103,6 +101,49 @@ function Nav() {
         </motion.a>
       </div>
     </motion.nav>
+  );
+}
+
+// ── MARQUEE BANNER ────────────────────────────────────────────────────────────
+const TICKER_ITEMS = [
+  "500+ panden verkocht",
+  "15 jaar ervaring",
+  "Hasselt",
+  "Genk",
+  "Nieuwbouw & Projecten",
+  "Persoonlijke begeleiding",
+  "Gratis waardebepaling",
+  "Limburg",
+];
+
+function MarqueeBanner() {
+  const items = [...TICKER_ITEMS, ...TICKER_ITEMS];
+  return (
+    <div style={{ backgroundColor: Y, overflow: "hidden", position: "relative", height: "44px" }}>
+      <style>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .marquee-track {
+          display: flex;
+          width: max-content;
+          animation: marquee 28s linear infinite;
+        }
+        .marquee-track:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+      <div className="marquee-track h-full items-center flex">
+        {items.map((item, i) => (
+          <span key={i} className="flex items-center gap-4 whitespace-nowrap px-6"
+            style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: B }}>
+            {item}
+            <span style={{ color: "rgba(17,17,17,0.35)", fontSize: "0.6rem" }}>✦</span>
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -219,45 +260,49 @@ export function PropertyCard({ p, i }: { p: Property; i: number }) {
   );
 }
 
-// ── LISTINGS (homepage — uitgelichte panden) ──────────────────────────────────
+// ── LISTINGS (homepage — 8 recentste panden) ──────────────────────────────────
 function Listings({ properties }: { properties: Property[] }) {
-  const featured = properties.filter(p => p.featured);
-  const shown = featured.length > 0 ? featured : properties.slice(0, 6);
-
   return (
     <section id="aanbod" style={{ backgroundColor: G, padding: "clamp(5rem,10vh,8rem) clamp(1.5rem,6vw,5rem)" }}>
       <div className="flex items-end justify-between mb-14 flex-wrap gap-6">
         <div>
           <div className="flex items-center gap-3 mb-4">
             <div className="h-px w-8" style={{ backgroundColor: Y }} />
-            <span className="text-xs font-medium tracking-widest uppercase" style={{ color: "#b89000" }}>Uitgelicht aanbod</span>
+            <span className="text-xs font-medium tracking-widest uppercase" style={{ color: "#b89000" }}>Huidig aanbod</span>
           </div>
           <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2rem,4vw,3.2rem)", fontWeight: 400, color: B, lineHeight: 1.1 }}>
-            Panden in Limburg<br /><em style={{ color: M, fontStyle: "italic" }}>& omgeving</em>
+            Een greep uit ons<br /><em style={{ color: M, fontStyle: "italic" }}>huidig aanbod</em>
           </h2>
         </div>
         <motion.a href="/aanbod"
           className="text-xs font-medium flex items-center gap-2"
           style={{ color: M }}
           whileHover={{ color: B }}>
-          Alle {properties.length} panden bekijken
+          Volledig aanbod bekijken
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
         </motion.a>
       </div>
 
       <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}>
         <AnimatePresence mode="popLayout">
-          {shown.map((p, i) => <PropertyCard key={p._id} p={p} i={i} />)}
+          {properties.map((p, i) => <PropertyCard key={p._id} p={p} i={i} />)}
         </AnimatePresence>
       </div>
 
-      <div className="text-center mt-14">
-        <motion.a href="/aanbod"
+      <div className="flex items-center justify-center gap-4 mt-14 flex-wrap">
+        <motion.a href="/aanbod?status=koop"
           className="inline-flex items-center gap-2 text-sm font-semibold rounded-full px-8 py-4"
           style={{ backgroundColor: B, color: W }}
           whileHover={{ backgroundColor: Y, color: B }} whileTap={{ scale: 0.97 }}>
-          Volledig aanbod bekijken
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Te koop bekijken
+        </motion.a>
+        <motion.a href="/aanbod?status=huur"
+          className="inline-flex items-center gap-2 text-sm font-semibold rounded-full px-8 py-4 border"
+          style={{ borderColor: B, color: B, backgroundColor: "transparent" }}
+          whileHover={{ backgroundColor: B, color: W }} whileTap={{ scale: 0.97 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Te huur bekijken
         </motion.a>
       </div>
     </section>
@@ -377,6 +422,91 @@ function About({ s }: { s: SiteSettings["about"] | typeof D.about }) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
           </motion.a>
         </div>
+      </div>
+    </section>
+  );
+}
+
+// ── OFFICES ───────────────────────────────────────────────────────────────────
+const FALLBACK_OFFICES: Office[] = [
+  { name: "Vastgoedkantoor Hasselt", address: "Het Dorlik 16, 3500 Hasselt", phone: "+32 11 36 34 32" },
+  { name: "Nieuwbouwkantoor Hasselt", address: "Het Dorlik 16, 3500 Hasselt", phone: "+32 11 36 34 32" },
+  { name: "Vastgoedkantoor Genk", address: "Europalaan 30, 3600 Genk", phone: "+32 89 69 15 15" },
+];
+
+function Offices({ offices }: { offices: Office[] }) {
+  const list = offices.length > 0 ? offices : FALLBACK_OFFICES;
+  return (
+    <section id="kantoren" style={{ backgroundColor: W, padding: "clamp(5rem,10vh,8rem) clamp(1.5rem,6vw,5rem)" }}>
+      <div className="text-center mb-16">
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+          className="inline-flex items-center gap-3 mb-5">
+          <div className="h-px w-8" style={{ backgroundColor: "#b89000" }} />
+          <span className="text-xs font-medium tracking-widest uppercase" style={{ color: "#b89000" }}>Onze kantoren</span>
+          <div className="h-px w-8" style={{ backgroundColor: "#b89000" }} />
+        </motion.div>
+        <motion.h2 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: EASE }}
+          style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2rem,4vw,3.2rem)", fontWeight: 400, color: B }}>
+          Dichtbij u in<br /><em style={{ color: M }}>Limburg</em>
+        </motion.h2>
+      </div>
+
+      <div className="grid gap-8" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", maxWidth: "1100px", margin: "0 auto" }}>
+        {list.map((office, i) => (
+          <motion.div key={office.name}
+            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: i * 0.1, ease: EASE }}
+            whileHover={{ y: -6 }}
+            className="overflow-hidden"
+            style={{ borderRadius: "20px", boxShadow: "0 2px 20px rgba(0,0,0,0.07)", backgroundColor: W }}>
+            {/* Photo or placeholder */}
+            <div className="relative overflow-hidden" style={{ aspectRatio: "16/9", backgroundColor: "#f0ede8" }}>
+              {office.imageUrl ? (
+                <motion.img src={office.imageUrl} alt={office.name}
+                  className="w-full h-full object-cover"
+                  whileHover={{ scale: 1.05 }} transition={{ duration: 0.7 }} />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                  <p className="text-xs" style={{ color: "#ccc", letterSpacing: "0.06em" }}>Foto volgt</p>
+                </div>
+              )}
+              <div className="absolute top-4 left-4 text-xs font-semibold px-3 py-1.5 rounded-full"
+                style={{ backgroundColor: Y, color: B }}>
+                {i === 1 ? "Nieuwbouw" : "Vastgoed"}
+              </div>
+            </div>
+            {/* Content */}
+            <div className="p-6">
+              <h3 style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.4rem", fontWeight: 500, color: B, lineHeight: 1.2, marginBottom: "0.75rem" }}>
+                {office.name}
+              </h3>
+              <div className="flex flex-col gap-2.5">
+                <p className="text-xs flex items-center gap-2" style={{ color: M }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  {office.address}
+                </p>
+                <p className="text-xs flex items-center gap-2" style={{ color: M }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  <a href={`tel:${office.phone}`} className="hover:underline">{office.phone}</a>
+                </p>
+              </div>
+              <div className="mt-5 pt-5" style={{ borderTop: "1px solid #f0f0f0" }}>
+                <motion.a href="#contact"
+                  className="text-xs font-semibold flex items-center gap-1.5"
+                  style={{ color: B }}
+                  whileHover={{ color: "#b89000" }}>
+                  Maak een afspraak
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </motion.a>
+              </div>
+            </div>
+          </motion.div>
+        ))}
       </div>
     </section>
   );
@@ -551,13 +681,14 @@ function Footer({ contact }: { contact: typeof D.contact }) {
 }
 
 // ── ROOT ──────────────────────────────────────────────────────────────────────
-export default function SOMClient({ properties, team, settings, isDraft }: Props) {
+export default function SOMClient({ properties, team, settings, projects: _projects, isDraft }: Props) {
   const hero = settings?.hero ?? D.hero;
   const stats = settings?.stats ?? D.stats;
   const boldCta = settings?.boldCta ?? D.boldCta;
   const usps = settings?.usps ?? D.usps;
   const about = settings?.about ?? D.about;
   const contact = settings?.contact ?? D.contact;
+  const offices = settings?.offices ?? [];
 
   return (
     <div style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}>
@@ -569,15 +700,13 @@ export default function SOMClient({ properties, team, settings, isDraft }: Props
           <a href="/api/draft-mode/disable" className="underline opacity-80 hover:opacity-100">Sluiten</a>
         </div>
       )}
-      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full text-xs font-semibold shadow-xl flex items-center gap-2 pointer-events-none"
-        style={{ backgroundColor: Y, color: B, boxShadow: `0 8px 30px rgba(250,203,4,0.4)` }}>
-        ✦ Dit is een demo — gemaakt door SteylVisuals
-      </div>
       <Nav />
       <Hero s={hero} stats={stats} />
+      <MarqueeBanner />
       <Listings properties={properties} />
       <BoldCta s={boldCta} />
       <UspStrip usps={usps} />
+      <Offices offices={offices} />
       <About s={about} />
       <Team members={team} />
       <Contact s={contact} />

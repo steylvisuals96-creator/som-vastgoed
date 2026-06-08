@@ -81,6 +81,23 @@ export const siteSettings = defineType({
       ],
     }),
 
+    // ── Kantoren
+    defineField({
+      name: "offices",
+      title: "Kantoren",
+      type: "array",
+      of: [{
+        type: "object",
+        fields: [
+          defineField({ name: "name", title: "Naam", type: "string" }),
+          defineField({ name: "address", title: "Adres", type: "string" }),
+          defineField({ name: "phone", title: "Telefoon", type: "string" }),
+          defineField({ name: "image", title: "Foto kantoor", type: "image", options: { hotspot: true } }),
+        ],
+        preview: { select: { title: "name", subtitle: "address" } },
+      }],
+    }),
+
     // ── Contact
     defineField({
       name: "contact",

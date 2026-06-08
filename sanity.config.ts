@@ -41,6 +41,7 @@ export default defineConfig({
               ),
             S.divider(),
             S.documentTypeListItem("property").title("Panden"),
+            S.documentTypeListItem("project").title("Nieuwbouw & Projecten"),
             S.documentTypeListItem("teamMember").title("Team"),
           ]),
     }),
