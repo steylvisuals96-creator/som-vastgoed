@@ -79,9 +79,9 @@ function Nav() {
       className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-20"
       style={{ backgroundColor: bg, backdropFilter: blur, paddingLeft: "clamp(1.5rem,5vw,4rem)", paddingRight: "clamp(1.5rem,5vw,4rem)" }}
     >
-      <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "1rem", fontWeight: 700, color: W, letterSpacing: "0.12em", textTransform: "uppercase" }}>
-        SOM <span style={{ color: Y }}>Vastgoed</span>
-      </span>
+      <a href="/">
+        <img src="/som-project-logo-white.svg" alt="SOM Vastgoed" style={{ height: "40px", width: "auto" }} />
+      </a>
 
       <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex">
         <span className="text-xs font-semibold px-4 py-1.5 rounded-full" style={{ backgroundColor: Y, color: B }}>

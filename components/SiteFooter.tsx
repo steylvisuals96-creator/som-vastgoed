@@ -11,8 +11,8 @@ export default function SiteFooter() {
 
         {/* Brand */}
         <div>
-          <a href="/" style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.95rem", fontWeight: 700, color: W, letterSpacing: "0.12em", textTransform: "uppercase", opacity: 0.9 }}>
-            SOM <span style={{ color: Y }}>Vastgoed</span>
+          <a href="/">
+            <img src="/som-project-logo-white.svg" alt="SOM Vastgoed" style={{ height: "44px", width: "auto", opacity: 0.9 }} />
           </a>
           <p className="text-xs font-light mt-2 leading-relaxed" style={{ color: "rgba(255,255,255,0.25)", maxWidth: "220px" }}>
             Uw vertrouwde vastgoedmakelaar in Limburg — persoonlijk van A tot Z.
@@ -89,7 +89,7 @@ export default function SiteFooter() {
 
         <div className="flex items-center justify-between flex-wrap gap-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
           <p className="text-xs font-light" style={{ color: "rgba(255,255,255,0.15)" }}>
-            © {new Date().getFullYear()} SOM Vastgoed. Alle rechten voorbehouden.
+            © {new Date().getFullYear()} SOM Vastgoed · Alle rechten voorbehouden.
           </p>
           <p className="text-xs font-light" style={{ color: "rgba(255,255,255,0.15)" }}>
             Website door <span style={{ color: Y }}>SteylVisuals</span>
