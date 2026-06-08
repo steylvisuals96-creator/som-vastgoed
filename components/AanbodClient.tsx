@@ -42,6 +42,7 @@ function AanbodNav() {
       <div className="hidden md:flex items-center gap-8">
         <a href="/aanbod" className="text-sm font-semibold" style={{ color: Y }}>Aanbod</a>
         <a href="/nieuwbouw" className="text-sm font-light text-white/70 hover:text-white transition-colors">Nieuwbouw</a>
+        <a href="/schatting" className="text-sm font-light text-white/70 hover:text-white transition-colors">Schatting</a>
         <a href="/#over-ons" className="text-sm font-light text-white/70 hover:text-white transition-colors">Over ons</a>
         <a href="/#team" className="text-sm font-light text-white/70 hover:text-white transition-colors">Team</a>
         <motion.a href="/#contact"

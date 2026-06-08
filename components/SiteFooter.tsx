@@ -45,6 +45,7 @@ export default function SiteFooter() {
             {[
               ["Aanbod", "/aanbod"],
               ["Nieuwbouw", "/nieuwbouw"],
+              ["Gratis schatting", "/schatting"],
               ["Over ons", "/#over-ons"],
               ["Team", "/#team"],
               ["Contact", "/#contact"],
