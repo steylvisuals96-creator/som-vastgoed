@@ -1,6 +1,5 @@
 export const revalidate = 60;
 
-import { Suspense } from "react";
 import { draftMode } from "next/headers";
 import { getProperties } from "@/sanity/queries";
 import AanbodClient from "@/components/AanbodClient";
@@ -27,9 +26,5 @@ export default async function AanbodPage() {
     ? await getProperties(isDraft).catch(() => FALLBACK_PROPERTIES)
     : FALLBACK_PROPERTIES;
 
-  return (
-    <Suspense fallback={null}>
-      <AanbodClient properties={properties} isDraft={isDraft} />
-    </Suspense>
-  );
+  return <AanbodClient properties={properties} isDraft={isDraft} />;
 }
