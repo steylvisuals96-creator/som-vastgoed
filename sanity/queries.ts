@@ -140,7 +140,7 @@ export async function getRecentProperties(limit = 8, draft = false): Promise<Pro
   const perspective = draft ? "previewDrafts" : "published";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = (await c.fetch(
-    `*[_type == "property"] | order(_createdAt desc) [0..${limit - 1}] { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description }`,
+    `*[_type == "property" && !(status in ["Verkocht", "Verhuurd", "Onder compromis"])] | order(_createdAt desc) [0..${limit - 1}] { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description }`,
     {},
     { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
   )) as unknown as any[];
