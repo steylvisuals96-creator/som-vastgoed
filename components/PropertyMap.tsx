@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import type { Property } from "@/sanity/queries";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LeafletMarker = any;
 
 // ── Limburg municipality coordinates lookup ───────────────────────────────────
 const CITY_COORDS: Record<string, [number, number]> = {
@@ -87,12 +89,14 @@ const B = "#111111";
 interface Props {
   properties: Property[];
   onSelect: (p: Property) => void;
+  hoveredId?: string | null;
 }
 
-export default function PropertyMap({ properties, onSelect }: Props) {
+export default function PropertyMap({ properties, onSelect, hoveredId }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapInstanceRef = useRef<any>(null);
+  const markersRef = useRef<Record<string, LeafletMarker>>({});
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -182,6 +186,7 @@ export default function PropertyMap({ properties, onSelect }: Props) {
           }, 50);
         });
         marker.addTo(map);
+        markersRef.current[p._id] = marker;
       });
     });
 
@@ -193,6 +198,18 @@ export default function PropertyMap({ properties, onSelect }: Props) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Open popup on hover from sidebar
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+    // Close all popups first
+    mapInstanceRef.current.closePopup();
+    if (hoveredId && markersRef.current[hoveredId]) {
+      const marker = markersRef.current[hoveredId];
+      marker.openPopup();
+      mapInstanceRef.current.panTo(marker.getLatLng(), { animate: true, duration: 0.4 });
+    }
+  }, [hoveredId]);
 
   return (
     <>

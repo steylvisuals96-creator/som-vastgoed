@@ -63,6 +63,7 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
   const [activeStatus, setActiveStatus] = useState("Alles");
   const [view, setView] = useState<"list" | "map">("list");
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const selectedRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
@@ -192,6 +193,7 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
                 <PropertyMap
                   properties={shown}
                   onSelect={(p) => setSelectedProperty(p)}
+                  hoveredId={hoveredId}
                 />
               </div>
 
@@ -213,9 +215,13 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
                         className="block bg-white overflow-hidden cursor-pointer"
                         style={{
                           borderRadius: "16px",
-                          boxShadow: isSelected ? `0 0 0 2px ${Y}, 0 8px 24px rgba(0,0,0,0.1)` : "0 2px 12px rgba(0,0,0,0.06)",
+                          boxShadow: isSelected || hoveredId === p._id
+                            ? `0 0 0 2px ${Y}, 0 8px 24px rgba(0,0,0,0.1)`
+                            : "0 2px 12px rgba(0,0,0,0.06)",
                           transition: "box-shadow 0.2s",
                         }}
+                        onMouseEnter={() => setHoveredId(p._id)}
+                        onMouseLeave={() => setHoveredId(null)}
                         whileHover={{ y: -2 }}>
                         {p.imageUrl && (
                           <div className="relative overflow-hidden" style={{ aspectRatio: "16/8" }}>
