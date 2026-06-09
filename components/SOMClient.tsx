@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import { useState } from "react";
 import type { Property, TeamMember, SiteSettings, Project, Office } from "@/sanity/queries";
 import SiteFooter from "./SiteFooter";
+import SiteNav from "./SiteNav";
 
 const Y = "#facb04";
 const B = "#111111";
@@ -68,43 +69,7 @@ type Props = {
   isDraft?: boolean;
 };
 
-// ── NAV ──────────────────────────────────────────────────────────────────────
-function Nav() {
-  const { scrollY } = useScroll();
-  const bg = useTransform(scrollY, [0, 80], ["rgba(17,17,17,0)", "rgba(17,17,17,0.97)"]);
-  const blur = useTransform(scrollY, [0, 80], ["blur(0px)", "blur(20px)"]);
-
-  return (
-    <motion.nav
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-20"
-      style={{ backgroundColor: bg, backdropFilter: blur, paddingLeft: "clamp(1.5rem,5vw,4rem)", paddingRight: "clamp(1.5rem,5vw,4rem)" }}
-    >
-      <a href="/">
-        <img src="/som-project-logo-white.svg" alt="SOM Vastgoed" style={{ height: "40px", width: "auto" }} />
-      </a>
-
-      <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex">
-        <span className="text-xs font-semibold px-4 py-1.5 rounded-full" style={{ backgroundColor: Y, color: B }}>
-          ✦ DEMO — SteylVisuals
-        </span>
-      </div>
-
-      <div className="hidden md:flex items-center gap-8">
-        <a href="/aanbod" className="text-sm font-light text-white/70 hover:text-white transition-colors">Aanbod</a>
-        <a href="/nieuwbouw" className="text-sm font-light text-white/70 hover:text-white transition-colors">Nieuwbouw</a>
-        <a href="/schatting" className="text-sm font-light text-white/70 hover:text-white transition-colors">Schatting</a>
-        <a href="#over-ons" className="text-sm font-light text-white/70 hover:text-white transition-colors">Over ons</a>
-        <a href="#team" className="text-sm font-light text-white/70 hover:text-white transition-colors">Team</a>
-        <motion.a href="#contact"
-          className="text-sm font-semibold px-6 py-2.5 rounded-full"
-          style={{ backgroundColor: Y, color: B }}
-          whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-          Contact
-        </motion.a>
-      </div>
-    </motion.nav>
-  );
-}
+// Nav is now handled by the shared SiteNav component
 
 // ── MARQUEE BANNER ────────────────────────────────────────────────────────────
 const TICKER_ITEMS = [
@@ -682,7 +647,7 @@ export default function SOMClient({ properties, team, settings, projects: _proje
           <a href="/api/draft-mode/disable" className="underline opacity-80 hover:opacity-100">Sluiten</a>
         </div>
       )}
-      <Nav />
+      <SiteNav activePage="home" transparentAtTop />
       <Hero s={hero} stats={stats} />
       <MarqueeBanner />
       <Listings properties={properties} />

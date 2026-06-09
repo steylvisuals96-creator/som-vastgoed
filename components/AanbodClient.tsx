@@ -1,12 +1,13 @@
 "use client";
 
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import type { Property } from "@/sanity/queries";
 import { PropertyCard } from "./SOMClient";
 import SiteFooter from "./SiteFooter";
+import SiteNav from "./SiteNav";
 
 const Y = "#facb04";
 const B = "#111111";
@@ -25,36 +26,7 @@ const PropertyMap = dynamic(() => import("./PropertyMap"), { ssr: false, loading
   </div>
 )});
 
-function AanbodNav() {
-  const { scrollY } = useScroll();
-  const bg = useTransform(scrollY, [0, 80], ["rgba(17,17,17,0.95)", "rgba(17,17,17,0.97)"]);
-  const blur = useTransform(scrollY, [0, 80], ["blur(0px)", "blur(20px)"]);
-
-  return (
-    <motion.nav
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-20"
-      style={{ backgroundColor: bg, backdropFilter: blur, paddingLeft: "clamp(1.5rem,5vw,4rem)", paddingRight: "clamp(1.5rem,5vw,4rem)" }}
-    >
-      <a href="/">
-        <img src="/som-project-logo-white.svg" alt="SOM Vastgoed" style={{ height: "40px", width: "auto" }} />
-      </a>
-
-      <div className="hidden md:flex items-center gap-8">
-        <a href="/aanbod" className="text-sm font-semibold" style={{ color: Y }}>Aanbod</a>
-        <a href="/nieuwbouw" className="text-sm font-light text-white/70 hover:text-white transition-colors">Nieuwbouw</a>
-        <a href="/schatting" className="text-sm font-light text-white/70 hover:text-white transition-colors">Schatting</a>
-        <a href="/#over-ons" className="text-sm font-light text-white/70 hover:text-white transition-colors">Over ons</a>
-        <a href="/#team" className="text-sm font-light text-white/70 hover:text-white transition-colors">Team</a>
-        <motion.a href="/#contact"
-          className="text-sm font-semibold px-6 py-2.5 rounded-full"
-          style={{ backgroundColor: Y, color: B }}
-          whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-          Contact
-        </motion.a>
-      </div>
-    </motion.nav>
-  );
-}
+// Nav handled by SiteNav
 
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
@@ -156,7 +128,7 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
         </div>
       )}
 
-      <AanbodNav />
+      <SiteNav activePage="aanbod" />
 
       {/* Page header */}
       <section style={{ backgroundColor: B, paddingTop: "clamp(8rem,15vh,11rem)", paddingBottom: "clamp(4rem,7vh,6rem)", paddingLeft: "clamp(1.5rem,6vw,5rem)", paddingRight: "clamp(1.5rem,6vw,5rem)" }}>

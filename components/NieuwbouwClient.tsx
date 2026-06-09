@@ -1,8 +1,9 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import type { Project } from "@/sanity/queries";
 import SiteFooter from "./SiteFooter";
+import SiteNav from "./SiteNav";
 
 const Y = "#facb04";
 const B = "#111111";
@@ -18,30 +19,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   "Uitverkocht": { bg: "#e0e0e0", text: M },
 };
 
-function Nav() {
-  const { scrollY } = useScroll();
-  const bg = useTransform(scrollY, [0, 80], ["rgba(17,17,17,0.95)", "rgba(17,17,17,0.97)"]);
-
-  return (
-    <motion.nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-20"
-      style={{ backgroundColor: bg, backdropFilter: "blur(20px)", paddingLeft: "clamp(1.5rem,5vw,4rem)", paddingRight: "clamp(1.5rem,5vw,4rem)" }}>
-      <a href="/">
-        <img src="/som-project-logo-white.svg" alt="SOM Vastgoed" style={{ height: "40px", width: "auto" }} />
-      </a>
-      <div className="hidden md:flex items-center gap-8">
-        <a href="/aanbod" className="text-sm font-light text-white/70 hover:text-white transition-colors">Aanbod</a>
-        <a href="/nieuwbouw" className="text-sm font-semibold" style={{ color: Y }}>Nieuwbouw</a>
-        <a href="/schatting" className="text-sm font-light text-white/70 hover:text-white transition-colors">Schatting</a>
-        <a href="/#over-ons" className="text-sm font-light text-white/70 hover:text-white transition-colors">Over ons</a>
-        <a href="/#team" className="text-sm font-light text-white/70 hover:text-white transition-colors">Team</a>
-        <motion.a href="/#contact" className="text-sm font-semibold px-6 py-2.5 rounded-full"
-          style={{ backgroundColor: Y, color: B }} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-          Contact
-        </motion.a>
-      </div>
-    </motion.nav>
-  );
-}
+// Nav handled by SiteNav
 
 function ProjectCard({ p, i }: { p: Project; i: number }) {
   const status = STATUS_COLORS[p.status] ?? STATUS_COLORS["In verkoop"];
@@ -129,7 +107,7 @@ export default function NieuwbouwClient({ projects, isDraft }: { projects: Proje
         </div>
       )}
 
-      <Nav />
+      <SiteNav activePage="nieuwbouw" />
 
       {/* Header */}
       <section style={{ backgroundColor: B, paddingTop: "clamp(8rem,15vh,11rem)", paddingBottom: "clamp(4rem,7vh,6rem)", paddingLeft: "clamp(1.5rem,6vw,5rem)", paddingRight: "clamp(1.5rem,6vw,5rem)" }}>

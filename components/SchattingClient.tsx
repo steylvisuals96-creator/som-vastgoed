@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import SiteNav from "./SiteNav";
 import { useState } from "react";
 import SiteFooter from "./SiteFooter";
 
@@ -47,26 +48,7 @@ const INITIAL: FormData = {
 
 const STEPS = ["Type", "Locatie", "Kenmerken", "Extra's", "Contact"];
 
-// ── Nav ───────────────────────────────────────────────────────────────────────
-function Nav() {
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-20"
-      style={{ backgroundColor: "rgba(17,17,17,0.97)", backdropFilter: "blur(20px)", paddingLeft: "clamp(1.5rem,5vw,4rem)", paddingRight: "clamp(1.5rem,5vw,4rem)" }}>
-      <a href="/">
-        <img src="/som-project-logo-white.svg" alt="SOM Vastgoed" style={{ height: "40px", width: "auto" }} />
-      </a>
-      <div className="hidden md:flex items-center gap-8">
-        <a href="/aanbod" className="text-sm font-light text-white/70 hover:text-white transition-colors">Aanbod</a>
-        <a href="/nieuwbouw" className="text-sm font-light text-white/70 hover:text-white transition-colors">Nieuwbouw</a>
-        <a href="/#over-ons" className="text-sm font-light text-white/70 hover:text-white transition-colors">Over ons</a>
-        <motion.a href="/#contact" className="text-sm font-semibold px-6 py-2.5 rounded-full"
-          style={{ backgroundColor: Y, color: B }} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-          Contact
-        </motion.a>
-      </div>
-    </nav>
-  );
-}
+// Nav handled by SiteNav
 
 // ── Progress bar ──────────────────────────────────────────────────────────────
 function ProgressBar({ step, total }: { step: number; total: number }) {
@@ -455,7 +437,7 @@ export default function SchattingClient() {
 
   return (
     <div style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}>
-      <Nav />
+      <SiteNav activePage="schatting" />
 
       {/* Hero strip */}
       <section style={{ backgroundColor: B, paddingTop: "clamp(7rem,13vh,10rem)", paddingBottom: "clamp(3rem,5vh,4rem)", paddingLeft: "clamp(1.5rem,6vw,5rem)", paddingRight: "clamp(1.5rem,6vw,5rem)" }}>
