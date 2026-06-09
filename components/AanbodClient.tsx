@@ -56,13 +56,43 @@ function AanbodNav() {
   );
 }
 
-const ALL_FILTERS = ["Alles", "Woning", "Villa", "Appartement", "Penthouse", "Eengezinswoning", "Grond"];
+function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <motion.button
+      initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.85 }}
+      onClick={onRemove}
+      className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full cursor-pointer"
+      style={{ backgroundColor: "#111", color: "#fff" }}
+      whileHover={{ backgroundColor: "#333" }}
+      whileTap={{ scale: 0.95 }}>
+      {label}
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </motion.button>
+  );
+}
+
+const ALL_TYPES = ["Alle types", "Woning", "Villa", "Appartement", "Penthouse", "Eengezinswoning", "Grond", "Garage", "Handelspand"];
+
+// Parse "€ 419.000" → 419000, or null for "Prijs op aanvraag" etc.
+function parsePrice(s: string): number | null {
+  const cleaned = s.replace(/[€\s.]/g, "").replace(",", ".");
+  const n = parseFloat(cleaned);
+  return isNaN(n) ? null : n;
+}
 
 // ── Inner component that reads searchParams (needs Suspense) ──────────────────
 function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?: boolean }) {
   const searchParams = useSearchParams();
-  const [activeFilter, setActiveFilter] = useState("Alles");
+
+  // Filters
+  const [gemeente, setGemeente] = useState("Alle gemeenten");
+  const [type, setType] = useState("Alle types");
   const [activeStatus, setActiveStatus] = useState("Alles");
+  const [minPrijs, setMinPrijs] = useState("");
+  const [maxPrijs, setMaxPrijs] = useState("");
+  const [sort, setSort] = useState<"recent" | "prijs-asc" | "prijs-desc" | "gemeente">("recent");
+
   const [view, setView] = useState<"list" | "map">("list");
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -74,20 +104,46 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
     else if (status === "huur") setActiveStatus("Te huur");
   }, [searchParams]);
 
-  // Scroll to selected property card when pin clicked
   useEffect(() => {
     if (selectedProperty && selectedRef.current) {
       selectedRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [selectedProperty]);
 
-  const typeFilters = ALL_FILTERS.filter(f => f === "Alles" || properties.some(p => p.type === f));
+  // Unique gemeenten from data
+  const gemeenten = ["Alle gemeenten", ...Array.from(new Set(properties.map(p => p.location))).sort()];
+  const types = ALL_TYPES.filter(t => t === "Alle types" || properties.some(p => p.type === t));
   const statusFilters = ["Alles", "Te koop", "Te huur"];
 
-  const shown = properties.filter(p => {
-    const typeMatch = activeFilter === "Alles" || p.type === activeFilter;
-    const statusMatch = activeStatus === "Alles" || p.status.startsWith(activeStatus);
-    return typeMatch && statusMatch;
+  const minVal = minPrijs ? parseFloat(minPrijs.replace(/\./g, "").replace(",", ".")) : null;
+  const maxVal = maxPrijs ? parseFloat(maxPrijs.replace(/\./g, "").replace(",", ".")) : null;
+
+  const filtered = properties.filter(p => {
+    if (gemeente !== "Alle gemeenten" && p.location !== gemeente) return false;
+    if (type !== "Alle types" && p.type !== type) return false;
+    if (activeStatus !== "Alles" && !p.status.startsWith(activeStatus)) return false;
+    if (minVal !== null || maxVal !== null) {
+      const price = parsePrice(p.price ?? "");
+      if (price === null) return true; // keep "Prijs op aanvraag"
+      if (minVal !== null && price < minVal) return false;
+      if (maxVal !== null && price > maxVal) return false;
+    }
+    return true;
+  });
+
+  const shown = [...filtered].sort((a, b) => {
+    if (sort === "prijs-asc") {
+      const pa = parsePrice(a.price ?? "") ?? Infinity;
+      const pb = parsePrice(b.price ?? "") ?? Infinity;
+      return pa - pb;
+    }
+    if (sort === "prijs-desc") {
+      const pa = parsePrice(a.price ?? "") ?? -Infinity;
+      const pb = parsePrice(b.price ?? "") ?? -Infinity;
+      return pb - pa;
+    }
+    if (sort === "gemeente") return (a.location ?? "").localeCompare(b.location ?? "");
+    return 0; // recent = server order
   });
 
   return (
@@ -121,64 +177,147 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
         </motion.p>
       </section>
 
-      {/* Filters + view toggle */}
-      <section style={{ backgroundColor: W, padding: "1.25rem clamp(1.5rem,6vw,5rem)", borderBottom: "1px solid #f0f0f0", position: "sticky", top: "80px", zIndex: 40 }}>
-        <div className="flex items-center justify-between flex-wrap gap-4">
+      {/* Filter bar */}
+      <section style={{ backgroundColor: W, borderBottom: "1px solid #ebebeb", position: "sticky", top: "80px", zIndex: 40 }}>
+        {/* Main filter row */}
+        <div style={{ padding: "1rem clamp(1.5rem,6vw,5rem)" }}>
           <div className="flex items-center gap-3 flex-wrap">
-            {/* Type filter */}
-            <div className="flex gap-2 flex-wrap">
-              {typeFilters.map(f => (
-                <motion.button key={f} onClick={() => setActiveFilter(f)}
-                  className="text-xs font-medium px-4 py-2 rounded-full border transition-colors cursor-pointer"
-                  animate={{
-                    backgroundColor: activeFilter === f ? B : "transparent",
-                    color: activeFilter === f ? W : M,
-                    borderColor: activeFilter === f ? B : "#e0e0e0",
-                  }}
-                  whileTap={{ scale: 0.96 }}>
-                  {f}
-                </motion.button>
-              ))}
+
+            {/* Gemeente dropdown */}
+            <div className="relative">
+              <select
+                value={gemeente}
+                onChange={e => setGemeente(e.target.value)}
+                className="appearance-none text-sm font-medium pr-8 pl-4 py-2.5 rounded-xl border cursor-pointer outline-none"
+                style={{ backgroundColor: gemeente !== "Alle gemeenten" ? B : W, color: gemeente !== "Alle gemeenten" ? W : B, borderColor: gemeente !== "Alle gemeenten" ? B : "#e0e0e0", minWidth: "160px" }}>
+                {gemeenten.map(g => <option key={g} value={g}>{g}</option>)}
+              </select>
+              <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={gemeente !== "Alle gemeenten" ? W : M} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
             </div>
 
-            {/* Divider */}
-            <div className="h-5 w-px hidden md:block" style={{ backgroundColor: "#e0e0e0" }} />
+            {/* Type dropdown */}
+            <div className="relative">
+              <select
+                value={type}
+                onChange={e => setType(e.target.value)}
+                className="appearance-none text-sm font-medium pr-8 pl-4 py-2.5 rounded-xl border cursor-pointer outline-none"
+                style={{ backgroundColor: type !== "Alle types" ? B : W, color: type !== "Alle types" ? W : B, borderColor: type !== "Alle types" ? B : "#e0e0e0", minWidth: "140px" }}>
+                {types.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+              <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={type !== "Alle types" ? W : M} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
 
-            {/* Status filter */}
-            <div className="flex gap-1 p-1 rounded-full" style={{ backgroundColor: "rgba(0,0,0,0.05)" }}>
+            {/* Price range */}
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Min. prijs"
+                value={minPrijs}
+                onChange={e => setMinPrijs(e.target.value)}
+                className="text-sm px-4 py-2.5 rounded-xl border outline-none"
+                style={{ width: "120px", borderColor: "#e0e0e0", color: B }}
+              />
+              <span className="text-xs" style={{ color: "#ccc" }}>—</span>
+              <input
+                type="text"
+                placeholder="Max. prijs"
+                value={maxPrijs}
+                onChange={e => setMaxPrijs(e.target.value)}
+                className="text-sm px-4 py-2.5 rounded-xl border outline-none"
+                style={{ width: "120px", borderColor: "#e0e0e0", color: B }}
+              />
+            </div>
+
+            {/* Status pills */}
+            <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: "rgba(0,0,0,0.05)" }}>
               {statusFilters.map(s => (
                 <motion.button key={s} onClick={() => setActiveStatus(s)}
-                  className="text-xs font-medium px-4 py-1.5 rounded-full cursor-pointer"
+                  className="text-xs font-medium px-4 py-2 rounded-lg cursor-pointer"
                   animate={{ backgroundColor: activeStatus === s ? B : "transparent", color: activeStatus === s ? W : M }}
                   whileTap={{ scale: 0.96 }}>
                   {s}
                 </motion.button>
               ))}
             </div>
-          </div>
 
-          {/* View toggle — list / map */}
-          <div className="flex gap-1 p-1 rounded-full" style={{ backgroundColor: "rgba(0,0,0,0.05)" }}>
-            <motion.button onClick={() => setView("list")}
-              className="flex items-center gap-1.5 text-xs font-medium px-4 py-1.5 rounded-full cursor-pointer"
-              animate={{ backgroundColor: view === "list" ? B : "transparent", color: view === "list" ? W : M }}
-              whileTap={{ scale: 0.96 }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-              </svg>
-              Lijst
-            </motion.button>
-            <motion.button onClick={() => setView("map")}
-              className="flex items-center gap-1.5 text-xs font-medium px-4 py-1.5 rounded-full cursor-pointer"
-              animate={{ backgroundColor: view === "map" ? B : "transparent", color: view === "map" ? W : M }}
-              whileTap={{ scale: 0.96 }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>
-              </svg>
-              Kaart
-            </motion.button>
+            {/* Reset — only shown when filters are active */}
+            {(gemeente !== "Alle gemeenten" || type !== "Alle types" || minPrijs || maxPrijs || activeStatus !== "Alles") && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                onClick={() => { setGemeente("Alle gemeenten"); setType("Alle types"); setMinPrijs(""); setMaxPrijs(""); setActiveStatus("Alles"); }}
+                className="text-xs font-medium px-3 py-2 rounded-xl cursor-pointer flex items-center gap-1.5 transition-colors hover:bg-red-50"
+                style={{ color: "#e53e3e", border: "1px solid #fed7d7" }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Wissen
+              </motion.button>
+            )}
+
+            {/* Spacer */}
+            <div className="flex-1 hidden md:block" />
+
+            {/* Sort */}
+            <div className="hidden md:flex items-center gap-2 text-xs" style={{ color: M }}>
+              <span className="font-medium">Sortering:</span>
+              {(["recent", "prijs-asc", "prijs-desc", "gemeente"] as const).map((s, i) => {
+                const labels = { "recent": "Recent", "prijs-asc": "Prijs ↑", "prijs-desc": "Prijs ↓", "gemeente": "Gemeente" };
+                return (
+                  <button key={s} onClick={() => setSort(s)}
+                    className="cursor-pointer transition-colors"
+                    style={{ color: sort === s ? Y : M, fontWeight: sort === s ? 600 : 400 }}>
+                    {labels[s]}{i < 3 ? <span style={{ color: "#ddd" }}> · </span> : null}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* View toggle */}
+            <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: "rgba(0,0,0,0.05)" }}>
+              <motion.button onClick={() => setView("list")}
+                className="flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-lg cursor-pointer"
+                animate={{ backgroundColor: view === "list" ? B : "transparent", color: view === "list" ? W : M }}
+                whileTap={{ scale: 0.96 }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+                </svg>
+                Lijst
+              </motion.button>
+              <motion.button onClick={() => setView("map")}
+                className="flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-lg cursor-pointer"
+                animate={{ backgroundColor: view === "map" ? B : "transparent", color: view === "map" ? W : M }}
+                whileTap={{ scale: 0.96 }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>
+                </svg>
+                Kaart
+              </motion.button>
+            </div>
           </div>
         </div>
+
+        {/* Active filter chips */}
+        {(gemeente !== "Alle gemeenten" || type !== "Alle types" || minPrijs || maxPrijs || activeStatus !== "Alles") && (
+          <div style={{ padding: "0 clamp(1.5rem,6vw,5rem) 0.75rem" }} className="flex gap-2 flex-wrap">
+            {gemeente !== "Alle gemeenten" && (
+              <FilterChip label={gemeente} onRemove={() => setGemeente("Alle gemeenten")} />
+            )}
+            {type !== "Alle types" && (
+              <FilterChip label={type} onRemove={() => setType("Alle types")} />
+            )}
+            {activeStatus !== "Alles" && (
+              <FilterChip label={activeStatus} onRemove={() => setActiveStatus("Alles")} />
+            )}
+            {minPrijs && (
+              <FilterChip label={`Min. €${minPrijs}`} onRemove={() => setMinPrijs("")} />
+            )}
+            {maxPrijs && (
+              <FilterChip label={`Max. €${maxPrijs}`} onRemove={() => setMaxPrijs("")} />
+            )}
+          </div>
+        )}
       </section>
 
       {/* Content */}
