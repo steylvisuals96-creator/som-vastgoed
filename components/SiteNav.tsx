@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 
 const Y = "#facb04";
@@ -67,10 +68,13 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
       >
         {/* Logo */}
         <a href="/" onClick={() => setOpen(false)}>
-          <img
+          <Image
             src="/som-project-logo-white.svg"
             alt="SOM Vastgoed"
+            width={120}
+            height={40}
             style={{ height: "40px", width: "auto" }}
+            priority
           />
         </a>
 

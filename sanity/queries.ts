@@ -170,6 +170,25 @@ export async function getProjects(draft = false): Promise<Project[]> {
   }));
 }
 
+export async function getProjectBySlug(slug: string, draft = false): Promise<Project | null> {
+  const c = getClient(draft);
+  if (!c) return null;
+  const perspective = draft ? "previewDrafts" : "published";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = (await c.fetch(
+    `*[_type == "project" && slug.current == $slug][0] { _id, name, developer, location, type, units, priceFrom, status, completionDate, featured, "slug": slug.current, image, gallery, description }`,
+    { slug },
+    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
+  )) as unknown as any;
+  if (!raw) return null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return {
+    ...raw,
+    imageUrl: raw.image ? urlFor(raw.image).width(1400).url() : "",
+    galleryUrls: (raw.gallery ?? []).map((g: any) => urlFor(g).width(1200).url()),
+  };
+}
+
 export async function getTeamMembers(draft = false): Promise<TeamMember[]> {
   const c = getClient(draft);
   if (!c) return [];

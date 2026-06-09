@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Project } from "@/sanity/queries";
 import SiteFooter from "./SiteFooter";
@@ -36,9 +37,9 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
       {/* Image */}
       <div className="relative overflow-hidden" style={{ aspectRatio: "16/10" }}>
         {p.imageUrl ? (
-          <motion.img src={p.imageUrl} alt={p.name}
-            className="w-full h-full object-cover"
-            whileHover={{ scale: 1.05 }} transition={{ duration: 0.7 }} />
+          <motion.div className="absolute inset-0" whileHover={{ scale: 1.05 }} transition={{ duration: 0.7 }}>
+            <Image src={p.imageUrl} alt={p.name} fill className="object-cover" sizes="(min-width: 1024px) 400px, 90vw" />
+          </motion.div>
         ) : (
           <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: "#e8e8e8" }}>
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

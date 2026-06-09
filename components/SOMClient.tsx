@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
 import type { Property, TeamMember, SiteSettings, Project, Office } from "@/sanity/queries";
@@ -187,10 +188,9 @@ export function PropertyCard({ p, i }: { p: Property; i: number }) {
       whileHover={{ y: -6, boxShadow: "0 24px 60px rgba(0,0,0,0.13)" }}
       onClick={() => window.location.href = href}>
       <div className="relative overflow-hidden" style={{ aspectRatio: "16/10" }}>
-        <motion.img src={p.imageUrl} alt={p.title}
-          className="w-full h-full object-cover"
-          transition={{ duration: 0.7 }}
-          whileHover={{ scale: 1.07 }} />
+        <motion.div className="absolute inset-0" whileHover={{ scale: 1.07 }} transition={{ duration: 0.7 }}>
+          <Image src={p.imageUrl} alt={p.title} fill className="object-cover" sizes="(min-width: 1024px) 400px, 90vw" />
+        </motion.div>
         <div className="absolute top-4 left-4 text-xs font-semibold px-3 py-1.5 rounded-full"
           style={{ backgroundColor: Y, color: B }}>{p.status}</div>
         <div className="absolute top-4 right-4 text-xs font-medium px-3 py-1.5 rounded-full backdrop-blur-sm"
@@ -351,8 +351,14 @@ function About({ s }: { s: SiteSettings["about"] | typeof D.about }) {
       <div className="grid gap-20 items-center" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
         <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
           transition={{ duration: 1, ease: EASE }} className="relative">
-          <div className="overflow-hidden" style={{ borderRadius: "24px", aspectRatio: "4/5" }}>
-            <img src={(s as SiteSettings["about"]).imageUrl ?? "/som-listings/listing-5.jpg"} alt="SOM Vastgoed" className="w-full h-full object-cover" />
+          <div className="relative overflow-hidden" style={{ borderRadius: "24px", aspectRatio: "4/5" }}>
+            <Image
+              src={(s as SiteSettings["about"]).imageUrl ?? "/som-listings/listing-5.jpg"}
+              alt="SOM Vastgoed"
+              fill
+              className="object-cover"
+              sizes="(min-width: 1024px) 500px, 90vw"
+            />
           </div>
           <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.3, ease: EASE }}
@@ -428,11 +434,11 @@ function Offices({ offices }: { offices: Office[] }) {
             className="overflow-hidden"
             style={{ borderRadius: "20px", boxShadow: "0 2px 20px rgba(0,0,0,0.07)", backgroundColor: W }}>
             {/* Photo or placeholder */}
-            <div className="relative overflow-hidden" style={{ aspectRatio: "16/9", backgroundColor: "#f0ede8" }}>
+            <div className="relative overflow-hidden" style={{ aspectRatio: "16/9", backgroundColor: "#f0ede8", position: "relative" }}>
               {office.imageUrl ? (
-                <motion.img src={office.imageUrl} alt={office.name}
-                  className="w-full h-full object-cover"
-                  whileHover={{ scale: 1.05 }} transition={{ duration: 0.7 }} />
+                <motion.div className="absolute inset-0" whileHover={{ scale: 1.05 }} transition={{ duration: 0.7 }}>
+                  <Image src={office.imageUrl} alt={office.name} fill className="object-cover" sizes="(min-width: 1024px) 400px, 90vw" />
+                </motion.div>
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center gap-3">
                   <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -504,10 +510,10 @@ function Team({ members }: { members: TeamMember[] }) {
             transition={{ duration: 0.7, delay: i * 0.08, ease: EASE }}
             whileHover={{ y: -6 }} className="bg-white overflow-hidden group"
             style={{ borderRadius: "20px", boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
-            <div className="overflow-hidden" style={{ aspectRatio: "3/4" }}>
-              <motion.img src={m.photoUrl} alt={m.name}
-                className="w-full h-full object-cover"
-                whileHover={{ scale: 1.05 }} transition={{ duration: 0.6 }} />
+            <div className="relative overflow-hidden" style={{ aspectRatio: "3/4" }}>
+              <motion.div className="absolute inset-0" whileHover={{ scale: 1.05 }} transition={{ duration: 0.6 }}>
+                <Image src={m.photoUrl} alt={m.name} fill className="object-cover" sizes="(min-width: 1024px) 280px, 50vw" />
+              </motion.div>
             </div>
             <div className="p-5">
               <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.25rem", fontWeight: 500, color: B }}>{m.name}</p>
