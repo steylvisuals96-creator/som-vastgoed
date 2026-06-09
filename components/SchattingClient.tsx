@@ -322,44 +322,74 @@ function Step5({ data, set }: { data: FormData; set: (k: keyof FormData, v: stri
 }
 
 // ── Success screen ────────────────────────────────────────────────────────────
-function Success({ data }: { data: FormData }) {
+function Success({ data, schatting }: { data: FormData; schatting: { min: number; max: number } | null }) {
+  function fmt(n: number) {
+    return "€ " + n.toLocaleString("nl-BE");
+  }
+
   return (
     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: EASE }}
       className="flex flex-col items-center text-center py-8 px-4">
+
       <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.2 }}
-        className="w-20 h-20 rounded-full flex items-center justify-center mb-8"
+        className="w-20 h-20 rounded-full flex items-center justify-center mb-6"
         style={{ backgroundColor: Y }}>
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={B} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </motion.div>
 
-      <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 400, color: B, lineHeight: 1.1, marginBottom: "1rem" }}>
-        Aanvraag ontvangen!
+      <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 400, color: B, lineHeight: 1.1, marginBottom: "0.75rem" }}>
+        Uw schatting is klaar!
       </h2>
-      <p className="text-base font-light mb-2" style={{ color: M, maxWidth: "420px" }}>
-        Bedankt, <strong style={{ color: B }}>{data.naam}</strong>. Onze expert analyseert de gegevens van uw{" "}
-        <strong style={{ color: B }}>{data.propertyType.toLowerCase()}</strong> in <strong style={{ color: B }}>{data.gemeente}</strong>.
-      </p>
-      <p className="text-sm font-light mb-10" style={{ color: M }}>
-        U ontvangt binnen <strong style={{ color: B }}>24 uur</strong> een gedetailleerde schatting op <strong style={{ color: B }}>{data.email}</strong>.
+      <p className="text-sm font-light mb-8" style={{ color: M, maxWidth: "400px" }}>
+        Gebaseerd op actuele marktprijzen in <strong style={{ color: B }}>{data.gemeente}</strong> voor een {data.propertyType.toLowerCase()} van{" "}
+        {data.bewoonbaarOpp ? <><strong style={{ color: B }}>{data.bewoonbaarOpp} m²</strong></> : "uw eigendom"}.
       </p>
 
-      {/* Summary card */}
-      <div className="w-full max-w-md rounded-2xl p-6 mb-10 text-left" style={{ backgroundColor: G, border: "1px solid #e8e8e8" }}>
-        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: M }}>Samenvatting aanvraag</p>
-        <div className="grid gap-2" style={{ gridTemplateColumns: "1fr 1fr" }}>
-          {[
+      {/* Prijsvork — het hoofdelement */}
+      {schatting ? (
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.6, ease: EASE }}
+          className="w-full max-w-md rounded-3xl p-8 mb-6"
+          style={{ backgroundColor: B, boxShadow: "0 12px 40px rgba(0,0,0,0.15)" }}>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>
+            Geschatte marktwaarde
+          </p>
+          <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2.2rem,5vw,3.2rem)", fontWeight: 300, color: W, lineHeight: 1.1 }}>
+            {fmt(schatting.min)}<br />
+            <span style={{ color: Y }}>— {fmt(schatting.max)}</span>
+          </p>
+          <p className="text-xs mt-4" style={{ color: "rgba(255,255,255,0.3)" }}>
+            ✦ Indicatieve schatting op basis van Limburgse marktdata · Een exacte waardebepaling volgt na bezoek ter plaatse
+          </p>
+        </motion.div>
+      ) : (
+        <div className="w-full max-w-md rounded-2xl p-6 mb-6" style={{ backgroundColor: G, border: "1px solid #e8e8e8" }}>
+          <p className="text-sm" style={{ color: M }}>Onze expert neemt contact op met uw persoonlijke schatting.</p>
+        </div>
+      )}
+
+      {/* Bevestiging */}
+      <p className="text-sm font-light mb-8" style={{ color: M }}>
+        De details zijn verstuurd naar ons team. We nemen zo snel mogelijk contact op via{" "}
+        <strong style={{ color: B }}>{data.email}</strong> of <strong style={{ color: B }}>{data.telefoon}</strong>.
+      </p>
+
+      {/* Samenvatting */}
+      <div className="w-full max-w-md rounded-2xl p-5 mb-8 text-left" style={{ backgroundColor: G, border: "1px solid #ebebeb" }}>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: M }}>Samenvatting</p>
+        <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr" }}>
+          {([
             ["Type", data.propertyType],
             ["Locatie", `${data.gemeente}${data.straat ? `, ${data.straat}` : ""}`],
-            data.bewoonbaarOpp && ["Opp.", `${data.bewoonbaarOpp} m²`],
-            data.slaapkamers && ["Slaapkamers", data.slaapkamers],
-            data.bouwjaar && ["Bouwjaar", data.bouwjaar],
-            data.staat && ["Staat", data.staat.split("—")[0].trim()],
-          ].filter(Boolean).map(([k, v]) => (
-            <div key={k as string}>
-              <p className="text-xs" style={{ color: M }}>{k as string}</p>
-              <p className="text-sm font-medium" style={{ color: B }}>{v as string}</p>
+            data.bewoonbaarOpp ? ["Opp.", `${data.bewoonbaarOpp} m²`] : null,
+            data.slaapkamers ? ["Slaapkamers", data.slaapkamers] : null,
+            data.bouwjaar ? ["Bouwjaar", data.bouwjaar] : null,
+            data.staat ? ["Staat", data.staat.split("—")[0].trim()] : null,
+          ] as ([string, string] | null)[]).filter((x): x is [string, string] => x !== null).map(([k, v]) => (
+            <div key={k}>
+              <p className="text-xs" style={{ color: M }}>{k}</p>
+              <p className="text-sm font-medium" style={{ color: B }}>{v}</p>
             </div>
           ))}
         </div>
@@ -385,6 +415,7 @@ export default function SchattingClient() {
   const [data, setData] = useState<FormData>(INITIAL);
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
+  const [schatting, setSchatting] = useState<{ min: number; max: number } | null>(null);
 
   function set(key: keyof FormData, value: string | boolean) {
     setData(prev => ({ ...prev, [key]: value }));
@@ -402,11 +433,13 @@ export default function SchattingClient() {
   async function handleSubmit() {
     setSending(true);
     try {
-      await fetch("/api/schatting", {
+      const res = await fetch("/api/schatting", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      const json = await res.json();
+      if (json.schatting) setSchatting(json.schatting);
     } catch { /* best effort */ }
     setSending(false);
     setSubmitted(true);
@@ -447,7 +480,7 @@ export default function SchattingClient() {
         <div className="mx-auto" style={{ maxWidth: "760px" }}>
           {submitted ? (
             <div className="bg-white rounded-3xl p-8 md:p-12" style={{ boxShadow: "0 4px 40px rgba(0,0,0,0.08)" }}>
-              <Success data={data} />
+              <Success data={data} schatting={schatting} />
             </div>
           ) : (
             <motion.div className="bg-white rounded-3xl p-8 md:p-12" style={{ boxShadow: "0 4px 40px rgba(0,0,0,0.08)" }}
