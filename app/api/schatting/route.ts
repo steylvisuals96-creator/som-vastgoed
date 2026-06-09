@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const TO_EMAIL = process.env.NOTIFICATION_EMAIL ?? "info@somvastgoed.be";
 
 // ── Limburgse marktprijzen per gemeente (€/m² bewoonbaar, 2024) ───────────────
@@ -217,6 +216,7 @@ export async function POST(req: NextRequest) {
 
     // Stuur e-mail via Resend
     if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
         from: "SOM Vastgoed Schatting <onboarding@resend.dev>",
         to: [TO_EMAIL],
