@@ -151,9 +151,16 @@ export default function PropertyMap({ properties, onSelect, hoveredId }: Props) 
 
       // Place markers
       properties.forEach((p) => {
-        const coords = getCoords(p.location);
-        if (!coords) return;
-        const [lat, lng] = [jitter(coords[0]), jitter(coords[1])];
+        // Prefer exact scraped lat/lng from Sanity, fall back to city-level lookup
+        let lat: number, lng: number;
+        if (p.lat && p.lng) {
+          lat = p.lat;
+          lng = p.lng;
+        } else {
+          const coords = getCoords(p.location);
+          if (!coords) return;
+          [lat, lng] = [jitter(coords[0]), jitter(coords[1])];
+        }
 
         const marker = L.marker([lat, lng], { icon: makeIcon(p.status) });
 
@@ -166,7 +173,7 @@ export default function PropertyMap({ properties, onSelect, hoveredId }: Props) 
                 <span style="font-size:10px;color:#888">${p.type}</span>
               </div>
               <p style="font-size:13px;font-weight:500;margin:0 0 2px;color:#111;line-height:1.3">${p.title}</p>
-              <p style="font-size:11px;color:#888;margin:0 0 6px">${p.location}</p>
+              <p style="font-size:11px;color:#888;margin:0 0 6px">${p.fullAddress ?? p.location}</p>
               <p style="font-size:14px;font-weight:700;color:#111;margin:0 0 8px">${p.price}</p>
               <div style="display:flex;gap:12px;font-size:11px;color:#888">
                 <span>${p.beds} slpk</span>
