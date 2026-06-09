@@ -4,6 +4,7 @@ import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import CookieBanner from "@/components/CookieBanner";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -40,6 +41,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}>
         {children}
         {isDraft && <VisualEditing />}
+        <CookieBanner />
         <SpeedInsights />
         <Analytics />
       </body>
