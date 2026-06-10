@@ -116,9 +116,57 @@ export default function PropertyDetailClient({ property: p, isDraft }: { propert
               ))}
             </motion.div>
 
+            {/* Specs grid */}
+            {(p.landArea || p.buildYear || p.condition || p.bebouwing || p.epc || p.epcLabel) && (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2, ease: EASE }}
+                className="mb-8 pb-8" style={{ borderBottom: "1px solid #e8e8e8" }}>
+                <p className="text-xs font-medium uppercase tracking-widest mb-5" style={{ color: M }}>Specificaties</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {p.landArea && (
+                    <div className="flex flex-col gap-0.5 p-4 rounded-2xl bg-white" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+                      <p className="text-xs font-light" style={{ color: M }}>Perceel</p>
+                      <p className="text-sm font-medium" style={{ color: B }}>{p.landArea} m²</p>
+                    </div>
+                  )}
+                  {p.buildYear && (
+                    <div className="flex flex-col gap-0.5 p-4 rounded-2xl bg-white" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+                      <p className="text-xs font-light" style={{ color: M }}>Bouwjaar</p>
+                      <p className="text-sm font-medium" style={{ color: B }}>{p.buildYear}</p>
+                    </div>
+                  )}
+                  {p.bebouwing && p.bebouwing !== "-" && (
+                    <div className="flex flex-col gap-0.5 p-4 rounded-2xl bg-white" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+                      <p className="text-xs font-light" style={{ color: M }}>Bebouwing</p>
+                      <p className="text-sm font-medium" style={{ color: B }}>{p.bebouwing}</p>
+                    </div>
+                  )}
+                  {p.condition && p.condition !== "-" && (
+                    <div className="flex flex-col gap-0.5 p-4 rounded-2xl bg-white" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+                      <p className="text-xs font-light" style={{ color: M }}>Staat</p>
+                      <p className="text-sm font-medium" style={{ color: B }}>{p.condition}</p>
+                    </div>
+                  )}
+                  {(p.epc || p.epcLabel) && (
+                    <div className="flex flex-col gap-0.5 p-4 rounded-2xl bg-white col-span-2" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+                      <p className="text-xs font-light" style={{ color: M }}>EPC</p>
+                      <div className="flex items-center gap-3">
+                        {p.epcLabel && (
+                          <span className="text-sm font-bold px-3 py-1 rounded-lg" style={{
+                            backgroundColor: p.epcLabel === "A" ? "#22c55e" : p.epcLabel === "B" ? "#86efac" : p.epcLabel === "C" ? "#fde68a" : p.epcLabel === "D" ? "#fdba74" : p.epcLabel === "E" ? "#f97316" : "#ef4444",
+                            color: ["A", "B"].includes(p.epcLabel ?? "") ? "#166534" : "#fff"
+                          }}>{p.epcLabel}</span>
+                        )}
+                        {p.epc && <p className="text-sm font-medium" style={{ color: B }}>{p.epc} kWh/m²/jaar</p>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
             {/* Description */}
             {p.description && (
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2, ease: EASE }}>
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3, ease: EASE }}>
                 <p className="text-xs font-medium uppercase tracking-widest mb-4" style={{ color: M }}>Beschrijving</p>
                 <p className="text-sm leading-loose whitespace-pre-line" style={{ color: "#555" }}>{p.description}</p>
               </motion.div>
