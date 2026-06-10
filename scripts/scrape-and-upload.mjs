@@ -147,43 +147,153 @@ function capitalise(s) {
 }
 
 function extractDescription(html) {
-  // 1. <div itemprop="description"> or <section itemprop="description">
-  let m = html.match(/itemprop=["']description["'][^>]*>([\s\S]{50,5000}?)<\/(?:div|section|article)/i);
-  if (m) { const t = cleanText(stripTags(m[1])); if (t.length > 50) return t.slice(0, 3000); }
+  // 1. Zabun/SOM old site: <div ... id="description"> contains the full rich description
+  let m = html.match(/id=["']description["'][^>]*>([\s\S]{80,}?)<\/div>/i);
+  if (m) {
+    const text = cleanText(stripTags(m[1]));
+    if (text.length > 80) return text.slice(0, 5000);
+  }
 
-  // 2. Common description div classes
-  const descClasses = ["description", "omschrijving", "property-description", "listing-description", "detail-description", "text-content", "content-text", "property__description", "detail__description"];
+  // 2. property-details_content class (same site, alternative selector)
+  m = html.match(/class=["'][^"']*property-details_content[^"']*["'][^>]*>([\s\S]{80,}?)<\/div>/i);
+  if (m) {
+    const text = cleanText(stripTags(m[1]));
+    if (text.length > 80) return text.slice(0, 5000);
+  }
+
+  // 3. itemprop="description"
+  m = html.match(/itemprop=["']description["'][^>]*>([\s\S]{50,5000}?)<\/(?:div|section|article)/i);
+  if (m) { const t = cleanText(stripTags(m[1])); if (t.length > 50) return t.slice(0, 5000); }
+
+  // 4. Common description div classes
+  const descClasses = ["description", "omschrijving", "property-description", "listing-description", "detail-description"];
   for (const cls of descClasses) {
     m = html.match(new RegExp(`class=["'][^"']*${cls}[^"']*["'][^>]*>([\\s\\S]{80,5000}?)<\\/(?:div|section)`, "i"));
     if (m) {
       const text = cleanText(stripTags(m[1]));
-      if (text.length > 80) return text.slice(0, 3000);
+      if (text.length > 80) return text.slice(0, 5000);
     }
   }
 
-  // 3. meta description as fallback (already has nice plain text)
+  // 5. meta description as last fallback
   m = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']{80,})["']/i);
-  if (m) return cleanText(m[1]).slice(0, 3000);
+  if (m) return cleanText(m[1]).slice(0, 5000);
 
   return null;
+}
+
+// ── Parse property-fields tables (label → value pairs) ────────────────────
+// Structure: <td class="property-fields_label">LABEL</td> ... <div class="property-fields_value">VALUE</div>
+function parseFieldsSection(html, sectionId) {
+  const idx = html.indexOf(`id="${sectionId}"`);
+  if (idx === -1) return {};
+
+  // Grab ~4000 chars after the id= occurrence
+  const snippet = html.slice(idx, idx + 4000);
+  const pairs = {};
+  const rowRe = /<td[^>]*property-fields_label[^>]*>([\s\S]*?)<\/td>[\s\S]*?<div[^>]*property-fields_value[^>]*>([\s\S]*?)<\/div>/gi;
+  let m;
+  while ((m = rowRe.exec(snippet)) !== null) {
+    const label = cleanText(stripTags(m[1]));
+    const value = cleanText(stripTags(m[2]));
+    if (label && value) pairs[label] = value;
+  }
+  return pairs;
+}
+
+function parseNum(str) {
+  if (!str) return null;
+  // "1.455 m²" → 1455, "304 m²" → 304, "2004" → 2004
+  const raw = str.replace(/[^\d.,]/g, "").replace(/\./g, "").replace(",", ".");
+  const n = parseFloat(raw);
+  return isNaN(n) ? null : n;
 }
 
 function extractSpecs(html) {
   const specs = {};
 
-  // Beds: look for slaapkamer(s) preceded by a number
-  let m = html.match(/(\d+)\s*slaapkamer/i);
-  if (m) specs.beds = parseInt(m[1]);
+  // ── From structured HTML sections ─────────────────────────────────────────
+  const dims = parseFieldsSection(html, "dimensions");
+  const tech = parseFieldsSection(html, "technical");
+  const epcFields = parseFieldsSection(html, "epc");
 
-  // Area: bewoonbare oppervlakte, woonoppervlakte, living area
-  m = html.match(/(\d+(?:[.,]\d+)?)\s*m[²2]/i);
-  if (m) specs.area = parseFloat(m[1].replace(",", "."));
+  // Bewoonbare opp.
+  const areaRaw = dims["Bewoonbare opp."] || dims["Woonoppervlakte"] || dims["Bewoonbare oppervlakte"];
+  if (areaRaw) {
+    const val = parseNum(areaRaw);
+    if (val && val > 10 && val < 5000) specs.area = val;
+  }
 
-  // Try to also find: "Bewoonbare opp.: 185 m²"
-  m = html.match(/(?:bewoonbare|woon|living)\s*(?:oppervlakte|opp\.?|area)[^:]*:\s*(\d+(?:[.,]\d+)?)/i);
-  if (m) specs.area = parseFloat(m[1].replace(",", "."));
+  // Grondoppervlakte
+  const landRaw = dims["Totale opp. grond"] || dims["Perceel"] || dims["Grond oppervlakte"];
+  if (landRaw) {
+    const val = parseNum(landRaw);
+    if (val && val > 0) specs.landArea = val;
+  }
+
+  // Bouwjaar
+  const yearRaw = tech["Bouwjaar"];
+  if (yearRaw) { const y = parseInt(yearRaw); if (y > 1800 && y < 2030) specs.buildYear = y; }
+
+  // Staat / conditie
+  if (tech["Algemene staat"]) specs.condition = tech["Algemene staat"];
+  else if (tech["Staat"]) specs.condition = tech["Staat"];
+
+  // Bebouwing type
+  if (tech["Bebouwing"]) specs.bebouwing = tech["Bebouwing"];
+
+  // EPC waarde — extract number before "kWh" to avoid picking up the "2" in m²
+  const epcRaw = epcFields["EPC"];
+  if (epcRaw) {
+    const epcM = epcRaw.match(/^(\d+(?:[.,]\d+)?)/);
+    if (epcM) {
+      const val = parseFloat(epcM[1].replace(",", "."));
+      if (val > 0 && val < 2000) specs.epc = val;
+    }
+  }
+
+  // EPC label — from img src like /img/energy/epc/c.svg
+  const epcIdx = html.indexOf(`id="epc"`);
+  if (epcIdx > -1) {
+    const epcSnippet = html.slice(epcIdx, epcIdx + 2000);
+    const labelM = epcSnippet.match(/\/img\/energy\/epc\/([a-g])\.svg/i);
+    if (labelM) specs.epcLabel = labelM[1].toUpperCase();
+  }
+
+  // ── Beds from slaapkamer count ─────────────────────────────────────────────
+  const bedsRaw = tech["Aantal slaapkamers"];
+  if (bedsRaw) { const b = parseInt(bedsRaw); if (b > 0) specs.beds = b; }
+  if (!specs.beds) {
+    const m = html.match(/(\d+)\s*slaapkamer/i);
+    if (m) specs.beds = parseInt(m[1]);
+  }
+
+  // ── Area fallback from description meta ───────────────────────────────────
+  if (!specs.area) {
+    const descM = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']{20,600})["']/i);
+    if (descM) {
+      const desc = descM[1];
+      const areaM = desc.match(/(\d+(?:[.,]\d+)?)\s*m[²2]\s*woon/i) || desc.match(/[–-]\s*(\d+(?:[.,]\d+)?)\s*m[²2]/i);
+      if (areaM) {
+        const val = parseFloat(areaM[1].replace(".", "").replace(",", "."));
+        if (val > 10 && val < 2000) specs.area = val;
+      }
+    }
+  }
 
   return specs;
+}
+
+// ── GPS from data-location attribute ─────────────────────────────────────────
+function extractGPS(html) {
+  const m = html.match(/class="property-map"[^>]*data-location=(\{"latitude":[^}]+\})/);
+  if (m) {
+    try {
+      const loc = JSON.parse(m[1]);
+      if (loc.latitude && loc.longitude) return { lat: loc.latitude, lng: loc.longitude };
+    } catch (_) {}
+  }
+  return null;
 }
 
 function stripTags(html) {
@@ -301,35 +411,43 @@ async function processProperty(prop, index) {
   const address = extractAddress(html);
   const description = extractDescription(html);
   const specs = extractSpecs(html);
+  // GPS: prefer exact data-location pin from page, fall back to Nominatim
+  const gpsFromPage = extractGPS(html);
 
   console.log(`  → ${imageUrls.length} fotos gevonden`);
   console.log(`  → Adres: ${address ?? "(niet gevonden)"}`);
   console.log(`  → Beschrijving: ${description ? description.slice(0, 80) + "…" : "(niet gevonden)"}`);
-  console.log(`  → Specs: beds=${specs.beds ?? "-"}, area=${specs.area ?? "-"}`);
+  console.log(`  → Specs: beds=${specs.beds ?? "-"}, area=${specs.area ?? "-"}, landArea=${specs.landArea ?? "-"}, bouwjaar=${specs.buildYear ?? "-"}, staat=${specs.condition ?? "-"}, bebouwing=${specs.bebouwing ?? "-"}, epc=${specs.epc ?? "-"} (${specs.epcLabel ?? "-"})`);
 
-  // 3. Geocode
-  let coords = null;
-  if (address) {
+  // 3. GPS — exact pin from page, Nominatim only as fallback
+  let coords = gpsFromPage;
+  if (coords) {
+    console.log(`  → GPS (pagina-pin): ${coords.lat}, ${coords.lng}`);
+  } else if (address) {
     await sleep(1100); // Nominatim rate limit: max 1 req/sec
     coords = await geocode(address);
-    console.log(`  → Coords: ${coords ? `${coords.lat}, ${coords.lng}` : "(niet gevonden)"}`);
+    console.log(`  → GPS (Nominatim): ${coords ? `${coords.lat}, ${coords.lng}` : "(niet gevonden)"}`);
   }
 
-  // 4. Upload photos (max 10)
-  const toUpload = imageUrls.slice(0, 10);
+  // 4. Upload photos (max 10) — skip if DESC_ONLY mode
   const uploadedAssetIds = [];
-  for (let i = 0; i < toUpload.length; i++) {
-    const imgUrl = toUpload[i];
-    try {
-      const assetId = await uploadImageToSanity(imgUrl);
-      uploadedAssetIds.push(assetId);
-      process.stdout.write(`  ✓ foto ${i + 1}/${toUpload.length} `);
-      await sleep(200); // small pause between uploads
-    } catch (e) {
-      process.stdout.write(`  ✗ foto ${i + 1} FOUT: ${e.message.slice(0, 60)} `);
+  if (!process.env.DESC_ONLY) {
+    const toUpload = imageUrls.slice(0, 10);
+    for (let i = 0; i < toUpload.length; i++) {
+      const imgUrl = toUpload[i];
+      try {
+        const assetId = await uploadImageToSanity(imgUrl);
+        uploadedAssetIds.push(assetId);
+        process.stdout.write(`  ✓ foto ${i + 1}/${toUpload.length} `);
+        await sleep(200);
+      } catch (e) {
+        process.stdout.write(`  ✗ foto ${i + 1} FOUT: ${e.message.slice(0, 60)} `);
+      }
     }
+    console.log();
+  } else {
+    console.log("  (foto upload overgeslagen — DESC_ONLY mode)");
   }
-  console.log();
 
   // 5. Build patch
   const patch = {};
@@ -351,6 +469,12 @@ async function processProperty(prop, index) {
   if (description) patch.description = description;
   if (specs.beds) patch.beds = specs.beds;
   if (specs.area) patch.area = specs.area;
+  if (specs.landArea) patch.landArea = specs.landArea;
+  if (specs.buildYear) patch.buildYear = specs.buildYear;
+  if (specs.condition) patch.condition = specs.condition;
+  if (specs.bebouwing) patch.bebouwing = specs.bebouwing;
+  if (specs.epc) patch.epc = specs.epc;
+  if (specs.epcLabel) patch.epcLabel = specs.epcLabel;
 
   if (Object.keys(patch).length === 0) {
     console.log("  → Niets te patchen");

@@ -18,6 +18,12 @@ export type Property = {
   fullAddress?: string;
   lat?: number;
   lng?: number;
+  landArea?: number;
+  buildYear?: number;
+  condition?: string;
+  bebouwing?: string;
+  epc?: number;
+  epcLabel?: string;
 };
 
 export type TeamMember = {
@@ -104,7 +110,7 @@ export async function getProperties(draft = false): Promise<Property[]> {
   const perspective = draft ? "previewDrafts" : "published";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = (await c.fetch(
-    `*[_type == "property"] | order(order asc) { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng }`,
+    `*[_type == "property"] | order(order asc) { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng, landArea, buildYear, condition, bebouwing, epc, epcLabel }`,
     {},
     { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
   )) as unknown as any[];
@@ -124,7 +130,7 @@ export async function getPropertyBySlug(slug: string, draft = false): Promise<Pr
   const perspective = draft ? "previewDrafts" : "published";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = (await c.fetch(
-    `*[_type == "property" && slug.current == $slug][0] { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng }`,
+    `*[_type == "property" && slug.current == $slug][0] { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng, landArea, buildYear, condition, bebouwing, epc, epcLabel }`,
     { slug },
     { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
   )) as unknown as any;
@@ -143,7 +149,7 @@ export async function getRecentProperties(limit = 8, draft = false): Promise<Pro
   const perspective = draft ? "previewDrafts" : "published";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = (await c.fetch(
-    `*[_type == "property" && !(status in ["Verkocht", "Verhuurd", "Onder compromis", "Onder bod", "Verkoopblokkering"])] | order(_createdAt desc) [0..${limit - 1}] { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng }`,
+    `*[_type == "property" && !(status in ["Verkocht", "Verhuurd", "Onder compromis", "Onder bod", "Verkoopblokkering"])] | order(_createdAt desc) [0..${limit - 1}] { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng, landArea, buildYear, condition, bebouwing, epc, epcLabel }`,
     {},
     { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
   )) as unknown as any[];
