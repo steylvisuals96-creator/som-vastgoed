@@ -17,6 +17,7 @@ type FormData = {
   // Step 1 — type
   propertyType: string;
   // Step 2 — locatie
+  postcode: string;
   gemeente: string;
   straat: string;
   nummer: string;
@@ -40,7 +41,7 @@ type FormData = {
 };
 
 const INITIAL: FormData = {
-  propertyType: "", gemeente: "", straat: "", nummer: "",
+  propertyType: "", postcode: "", gemeente: "", straat: "", nummer: "",
   bewoonbaarOpp: "", perceelOpp: "", bouwjaar: "", slaapkamers: "", badkamers: "",
   garage: "Geen", tuin: false, terras: false, epc: "", staat: "",
   naam: "", email: "", telefoon: "", opmerking: "",
@@ -176,21 +177,15 @@ function Step1({ data, set }: { data: FormData; set: (k: keyof FormData, v: stri
 }
 
 function Step2({ data, set }: { data: FormData; set: (k: keyof FormData, v: string | boolean) => void }) {
-  const gemeenten = [
-    "Hasselt", "Genk", "Tongeren", "Sint-Truiden", "Maaseik", "Lommel", "Bilzen",
-    "Diepenbeek", "Beringen", "Heusden-Zolder", "Herk-de-Stad", "Lummen", "Alken",
-    "Wellen", "Borgloon", "Nieuwerkerken", "Gingelom", "Zoutleeuw", "Landen",
-    "Riemst", "Maasmechelen", "Lanaken", "Dilsen-Stokkem", "Peer", "Houthalen-Helchteren",
-    "Leopoldsburg", "Ham", "Tessenderlo", "Diest", "Andere",
-  ].sort();
   return (
     <div>
       <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(1.8rem,3vw,2.6rem)", fontWeight: 400, color: B, lineHeight: 1.1, marginBottom: "0.5rem" }}>
         Waar is de woning gelegen?
       </h2>
-      <p className="text-sm mb-8" style={{ color: M }}>Geef het adres van de te schatten eigendom.</p>
-      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
-        <Select label="Gemeente" value={data.gemeente} onChange={v => set("gemeente", v)} options={gemeenten} />
+      <p className="text-sm mb-8" style={{ color: M }}>Geef het adres van de te schatten eigendom — overal in België.</p>
+      <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
+        <Input label="Postcode" value={data.postcode} onChange={v => set("postcode", v.replace(/\D/g, "").slice(0, 4))} placeholder="3500" type="text" required />
+        <Input label="Gemeente" value={data.gemeente} onChange={v => set("gemeente", v)} placeholder="Hasselt" required />
         <Input label="Straat" value={data.straat} onChange={v => set("straat", v)} placeholder="Dorpstraat" required />
         <Input label="Huisnummer" value={data.nummer} onChange={v => set("nummer", v)} placeholder="12A" />
       </div>
@@ -342,7 +337,7 @@ function Success({ data, schatting }: { data: FormData; schatting: { min: number
             <span style={{ color: Y }}>— {fmt(schatting.max)}</span>
           </p>
           <p className="text-xs mt-4" style={{ color: "rgba(255,255,255,0.3)" }}>
-            ✦ Indicatieve schatting op basis van Limburgse marktdata · Een exacte waardebepaling volgt na bezoek ter plaatse
+            ✦ Indicatieve schatting op basis van lokale marktdata · Een exacte waardebepaling volgt na bezoek ter plaatse
           </p>
         </motion.div>
       ) : (
@@ -363,7 +358,7 @@ function Success({ data, schatting }: { data: FormData; schatting: { min: number
         <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr" }}>
           {([
             ["Type", data.propertyType],
-            ["Locatie", `${data.gemeente}${data.straat ? `, ${data.straat}` : ""}`],
+            ["Locatie", `${data.postcode ? `${data.postcode} ` : ""}${data.gemeente}${data.straat ? `, ${data.straat}` : ""}`],
             data.bewoonbaarOpp ? ["Opp.", `${data.bewoonbaarOpp} m²`] : null,
             data.slaapkamers ? ["Slaapkamers", data.slaapkamers] : null,
             data.bouwjaar ? ["Bouwjaar", data.bouwjaar] : null,
@@ -405,7 +400,7 @@ export default function SchattingClient() {
 
   function canNext() {
     if (step === 0) return !!data.propertyType;
-    if (step === 1) return !!data.gemeente;
+    if (step === 1) return data.postcode.length === 4 && !!data.gemeente;
     if (step === 2) return !!data.bewoonbaarOpp;
     if (step === 3) return true;
     if (step === 4) return !!data.naam && !!data.email && !!data.telefoon;
