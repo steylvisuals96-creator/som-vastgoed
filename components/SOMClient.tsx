@@ -639,7 +639,6 @@ export default function SOMClient({ properties, team, settings, projects: _proje
   const stats = settings?.stats ?? D.stats;
   const boldCta = settings?.boldCta ?? D.boldCta;
   const usps = settings?.usps ?? D.usps;
-  const about = settings?.about ?? D.about;
   const contact = settings?.contact ?? D.contact;
   const offices = settings?.offices ?? [];
 
@@ -660,7 +659,8 @@ export default function SOMClient({ properties, team, settings, projects: _proje
       <BoldCta s={boldCta} />
       <UspStrip usps={usps} />
       <Offices offices={offices} />
-      <About s={about} />
+      {/* "Over ons" tijdelijk verborgen tot de about-tekst in Sanity is ingevuld.
+          Heractiveren: <About s={settings?.about ?? D.about} /> */}
       <Team members={team} />
       <Contact s={contact} />
       <SiteFooter />
