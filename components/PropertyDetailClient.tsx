@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
 import type { Property } from "@/sanity/queries";
+import SiteNav from "./SiteNav";
 
 const Y = "#facb04";
 const B = "#111111";
@@ -10,30 +11,6 @@ const W = "#ffffff";
 const G = "#f7f7f5";
 const M = "#888";
 const EASE = [0.16, 1, 0.3, 1] as [number, number, number, number];
-
-function Nav() {
-  const { scrollY } = useScroll();
-  const bg = useTransform(scrollY, [0, 80], ["rgba(17,17,17,0)", "rgba(17,17,17,0.97)"]);
-  const blur = useTransform(scrollY, [0, 80], ["blur(0px)", "blur(20px)"]);
-
-  return (
-    <motion.nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-20"
-      style={{ backgroundColor: bg, backdropFilter: blur, paddingLeft: "clamp(1.5rem,5vw,4rem)", paddingRight: "clamp(1.5rem,5vw,4rem)" }}>
-      <a href="/" style={{ fontFamily: "var(--font-dm-sans)", fontSize: "1rem", fontWeight: 700, color: W, letterSpacing: "0.12em", textTransform: "uppercase" }}>
-        SOM <span style={{ color: Y }}>Vastgoed</span>
-      </a>
-      <div className="hidden md:flex items-center gap-8">
-        <a href="/aanbod" className="text-sm font-light text-white/70 hover:text-white transition-colors">Aanbod</a>
-        <a href="/#over-ons" className="text-sm font-light text-white/70 hover:text-white transition-colors">Over ons</a>
-        <a href="/#team" className="text-sm font-light text-white/70 hover:text-white transition-colors">Team</a>
-        <motion.a href="/#contact" className="text-sm font-semibold px-6 py-2.5 rounded-full"
-          style={{ backgroundColor: Y, color: B }} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-          Contact
-        </motion.a>
-      </div>
-    </motion.nav>
-  );
-}
 
 export default function PropertyDetailClient({ property: p, isDraft }: { property: Property; isDraft?: boolean }) {
   const [activePhoto, setActivePhoto] = useState<string | null>(null);
@@ -49,10 +26,10 @@ export default function PropertyDetailClient({ property: p, isDraft }: { propert
         </div>
       )}
 
-      <Nav />
+      <SiteNav activePage="aanbod" transparentAtTop />
 
       {/* Hero */}
-      <div className="relative overflow-hidden" style={{ height: "70vh", minHeight: "480px" }}>
+      <div className="relative overflow-hidden" style={{ height: "78vh", minHeight: "520px" }}>
         <img src={p.imageUrl} alt={p.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(17,17,17,0.7) 0%, rgba(17,17,17,0.1) 60%, transparent 100%)" }} />
 
@@ -222,11 +199,20 @@ export default function PropertyDetailClient({ property: p, isDraft }: { propert
             </div>
             <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
               {allPhotos.map((url, i) => (
-                <motion.div key={i} className="overflow-hidden cursor-pointer"
-                  style={{ borderRadius: "16px", aspectRatio: "4/3" }}
-                  whileHover={{ scale: 1.02 }} transition={{ duration: 0.3 }}
+                <motion.div key={i} className="overflow-hidden cursor-pointer group relative"
+                  style={{ borderRadius: "16px", aspectRatio: i === 0 ? "16/9" : "4/3", gridColumn: i === 0 ? "1 / -1" : undefined }}
+                  whileHover={{ scale: 1.01 }} transition={{ duration: 0.35 }}
                   onClick={() => setActivePhoto(url)}>
-                  <img src={url} alt={`${p.title} foto ${i + 1}`} className="w-full h-full object-cover" />
+                  <img src={url} alt={`${p.title} foto ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-sm"
+                      style={{ backgroundColor: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.4)" }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+                      </svg>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>

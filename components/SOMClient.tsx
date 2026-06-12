@@ -14,6 +14,53 @@ const G = "#f7f7f5";
 const M = "#888";
 const EASE = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
+// SVG icon maps — replaces emoji for professional look
+const USP_ICONS: Record<string, React.ReactNode> = {
+  "🏆": (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+      <path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+    </svg>
+  ),
+  "📍": (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+    </svg>
+  ),
+  "🤝": (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  ),
+  "⚡": (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+    </svg>
+  ),
+};
+
+const CONTACT_ICONS: Record<string, React.ReactNode> = {
+  "📞": (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+    </svg>
+  ),
+  "✉️": (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+      <polyline points="22,6 12,13 2,6"/>
+    </svg>
+  ),
+  "📍": (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+    </svg>
+  ),
+};
+
 // ── Default fallback values (used before Sanity is connected)
 const D = {
   hero: {
@@ -116,9 +163,23 @@ function MarqueeBanner() {
 }
 
 // ── HERO ─────────────────────────────────────────────────────────────────────
-function Hero({ s, stats }: { s: SiteSettings["hero"] | typeof D.hero; stats: typeof D.stats }) {
+function Hero({ s, stats, featuredImg }: { s: SiteSettings["hero"] | typeof D.hero; stats: typeof D.stats; featuredImg?: string }) {
   return (
     <section className="relative overflow-hidden" style={{ minHeight: "100svh", backgroundColor: B }}>
+      {/* Right side editorial photo — desktop only */}
+      {featuredImg && (
+        <div className="hidden xl:block absolute right-0 top-0 bottom-0 overflow-hidden" style={{ width: "42%" }}>
+          <div className="absolute inset-0 z-10" style={{ background: "linear-gradient(to right, #111111 0%, rgba(17,17,17,0.5) 50%, rgba(17,17,17,0.2) 100%)" }} />
+          <motion.img
+            src={featuredImg}
+            alt=""
+            className="w-full h-full object-cover"
+            initial={{ scale: 1.08, opacity: 0 }}
+            animate={{ scale: 1, opacity: 0.5 }}
+            transition={{ duration: 2.5, ease: "easeOut" }}
+          />
+        </div>
+      )}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full" style={{ background: "radial-gradient(ellipse at 80% 30%, rgba(250,203,4,0.07) 0%, transparent 65%)" }} />
         <div className="absolute bottom-0 left-0 w-px h-2/3" style={{ background: "linear-gradient(to top, transparent, rgba(250,203,4,0.15))" }} />
@@ -183,29 +244,35 @@ export function PropertyCard({ p, i }: { p: Property; i: number }) {
     <motion.article key={p._id} layout
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}
       transition={{ duration: 0.5, delay: i * 0.06, ease: EASE }}
-      className="group bg-white overflow-hidden cursor-pointer"
+      className="group bg-white overflow-hidden cursor-pointer relative"
       style={{ borderRadius: "20px", boxShadow: "0 2px 20px rgba(0,0,0,0.06)" }}
       whileHover={{ y: -6, boxShadow: "0 24px 60px rgba(0,0,0,0.13)" }}
       onClick={() => window.location.href = href}>
+      {/* Yellow accent line on hover */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-10"
+        style={{ backgroundColor: Y }} />
       <div className="relative overflow-hidden" style={{ aspectRatio: "16/10" }}>
         <motion.div className="absolute inset-0" whileHover={{ scale: 1.07 }} transition={{ duration: 0.7 }}>
           <Image src={p.imageUrl} alt={p.title} fill className="object-cover" sizes="(min-width: 1024px) 400px, 90vw" />
         </motion.div>
+        {/* Gradient overlay at bottom of image */}
+        <div className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
+          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.4), transparent)" }} />
         <div className="absolute top-4 left-4 text-xs font-semibold px-3 py-1.5 rounded-full"
           style={{ backgroundColor: Y, color: B }}>{p.status}</div>
         <div className="absolute top-4 right-4 text-xs font-medium px-3 py-1.5 rounded-full backdrop-blur-sm"
           style={{ backgroundColor: "rgba(17,17,17,0.65)", color: W }}>{p.type}</div>
       </div>
       <div className="p-6">
-        <div className="flex items-start justify-between mb-2">
-          <div>
-            <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.35rem", fontWeight: 500, color: B, lineHeight: 1.2 }}>{p.title}</p>
+        <div className="flex items-start justify-between mb-2 gap-3">
+          <div className="min-w-0">
+            <p className="truncate" style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.35rem", fontWeight: 500, color: B, lineHeight: 1.2 }}>{p.title}</p>
             <p className="text-xs mt-1 flex items-center gap-1" style={{ color: M }}>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
               {p.location}
             </p>
           </div>
-          <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.4rem", fontWeight: 500, color: B }}>{p.price}</p>
+          <p className="shrink-0" style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.45rem", fontWeight: 600, color: B, letterSpacing: "-0.01em" }}>{p.price}</p>
         </div>
         <div className="flex items-center gap-5 mt-4 pt-4 text-xs font-light" style={{ color: M, borderTop: "1px solid #f0f0f0" }}>
           <span className="flex items-center gap-1.5">
@@ -216,10 +283,12 @@ export function PropertyCard({ p, i }: { p: Property; i: number }) {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /></svg>
             {p.area} m²
           </span>
-          <motion.a href={href} className="ml-auto text-xs font-semibold flex items-center gap-1" style={{ color: B }} whileHover={{ color: "#b89000" }}
+          <motion.a href={href} className="ml-auto text-xs font-semibold flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors"
+            style={{ color: B, backgroundColor: "transparent", border: "1px solid #e8e8e8" }}
+            whileHover={{ backgroundColor: Y, borderColor: Y, color: B }}
             onClick={e => e.stopPropagation()}>
             Meer info
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
           </motion.a>
         </div>
       </div>
@@ -270,6 +339,39 @@ function Listings({ properties }: { properties: Property[] }) {
           whileHover={{ backgroundColor: B, color: W }} whileTap={{ scale: 0.97 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           Te huur bekijken
+        </motion.a>
+      </div>
+    </section>
+  );
+}
+
+// ── VISUAL STRIP (editorial photo break) ─────────────────────────────────────
+function VisualStrip({ imgUrl }: { imgUrl?: string }) {
+  return (
+    <section className="relative overflow-hidden" style={{ height: "clamp(320px, 46vh, 480px)" }}>
+      {imgUrl && (
+        <img src={imgUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+      )}
+      {!imgUrl && <div className="absolute inset-0" style={{ backgroundColor: "#1a1a18" }} />}
+      <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(17,17,17,0.92) 0%, rgba(17,17,17,0.6) 50%, rgba(17,17,17,0.25) 100%)" }} />
+      <div className="relative h-full flex flex-col justify-center" style={{ padding: "0 clamp(1.5rem,6vw,5rem)" }}>
+        <motion.p initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: EASE }}
+          className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: Y }}>
+          Uw thuis. Ons vak.
+        </motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          transition={{ duration: 0.9, ease: EASE }} className="text-white mb-8 max-w-2xl"
+          style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2.4rem,5.5vw,4.8rem)", fontWeight: 300, lineHeight: 1.05, letterSpacing: "-0.02em" }}>
+          Persoonlijke begeleiding,<br /><em style={{ color: Y }}>van A tot Z.</em>
+        </motion.h2>
+        <motion.a href="/schatting" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.25 }}
+          className="inline-flex items-center gap-2 text-sm font-semibold rounded-full px-8 py-4 self-start"
+          style={{ backgroundColor: Y, color: B }}
+          whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+          Gratis waardebepaling
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
         </motion.a>
       </div>
     </section>
@@ -329,9 +431,9 @@ function UspStrip({ usps }: { usps: typeof D.usps }) {
             transition={{ duration: 0.6, delay: i * 0.08, ease: EASE }}
             className="flex items-start gap-4 p-6 rounded-2xl"
             style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-              style={{ backgroundColor: "rgba(250,203,4,0.12)" }}>
-              {item.icon}
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: "rgba(250,203,4,0.12)", color: Y }}>
+              {USP_ICONS[item.icon] ?? item.icon}
             </div>
             <div>
               <p className="text-sm font-medium text-white mb-1">{item.title}</p>
@@ -560,8 +662,10 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
               { icon: "📍", label: "Adres", value: s.address },
             ].map(c => (
               <div key={c.label} className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm flex-shrink-0"
-                  style={{ backgroundColor: "rgba(250,203,4,0.1)" }}>{c.icon}</div>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: "rgba(250,203,4,0.1)", color: Y }}>
+                  {CONTACT_ICONS[c.icon as keyof typeof CONTACT_ICONS] ?? c.icon}
+                </div>
                 <div>
                   <p className="text-xs font-medium uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.3)" }}>{c.label}</p>
                   <p className="text-sm text-white">{c.value}</p>
@@ -653,9 +757,10 @@ export default function SOMClient({ properties, team, settings, projects: _proje
         </div>
       )}
       <SiteNav activePage="home" transparentAtTop />
-      <Hero s={hero} stats={stats} />
+      <Hero s={hero} stats={stats} featuredImg={properties[0]?.imageUrl} />
       <MarqueeBanner />
       <Listings properties={properties} />
+      <VisualStrip imgUrl={properties[1]?.imageUrl} />
       <BoldCta s={boldCta} />
       <UspStrip usps={usps} />
       <Offices offices={offices} />

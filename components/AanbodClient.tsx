@@ -209,7 +209,7 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
               {statusFilters.map(s => (
                 <motion.button key={s} onClick={() => setActiveStatus(s)}
                   className="text-xs font-medium px-4 py-2 rounded-lg cursor-pointer"
-                  animate={{ backgroundColor: activeStatus === s ? B : "transparent", color: activeStatus === s ? W : M }}
+                  animate={{ backgroundColor: activeStatus === s ? B : "rgba(0,0,0,0)", color: activeStatus === s ? W : M }}
                   whileTap={{ scale: 0.96 }}>
                   {s}
                 </motion.button>
@@ -250,7 +250,7 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
             <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: "rgba(0,0,0,0.05)" }}>
               <motion.button onClick={() => setView("list")}
                 className="flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-lg cursor-pointer"
-                animate={{ backgroundColor: view === "list" ? B : "transparent", color: view === "list" ? W : M }}
+                animate={{ backgroundColor: view === "list" ? B : "rgba(0,0,0,0)", color: view === "list" ? W : M }}
                 whileTap={{ scale: 0.96 }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
@@ -259,7 +259,7 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
               </motion.button>
               <motion.button onClick={() => setView("map")}
                 className="flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-lg cursor-pointer"
-                animate={{ backgroundColor: view === "map" ? B : "transparent", color: view === "map" ? W : M }}
+                animate={{ backgroundColor: view === "map" ? B : "rgba(0,0,0,0)", color: view === "map" ? W : M }}
                 whileTap={{ scale: 0.96 }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>
