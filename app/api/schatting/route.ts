@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const TO_EMAILS = process.env.NOTIFICATION_EMAIL
-  ? [process.env.NOTIFICATION_EMAIL]
-  : ["maxime@somvastgoed.be", "steylvisuals96@gmail.com"];
+const TO_EMAILS = ["maxime@somvastgoed.be", "steylvisuals96@gmail.com"];
 
 // ── Marktprijzen per gemeente (€/m² bewoonbaar, 2024) ─────────────────────────
 const GEMEENTE_PRIJS: Record<string, number> = {
