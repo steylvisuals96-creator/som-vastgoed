@@ -378,6 +378,70 @@ function VisualStrip({ imgUrl }: { imgUrl?: string }) {
   );
 }
 
+// ── SCHATTING TEASER ──────────────────────────────────────────────────────────
+function SchattingTeaser() {
+  const steps = [
+    { nr: "01", title: "Vul uw gegevens in", sub: "Adres, type woning en oppervlakte — 2 minuten werk." },
+    { nr: "02", title: "Onze experts analyseren", sub: "Wij vergelijken met recente verkopen in de buurt." },
+    { nr: "03", title: "Ontvang uw schatting", sub: "Een eerlijke marktwaarde, zonder verplichtingen." },
+  ];
+  return (
+    <section style={{ backgroundColor: "#fafaf8", padding: "clamp(4rem,9vh,7rem) clamp(1.5rem,6vw,5rem)" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+        {/* Koptekst */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-14">
+          <div>
+            <motion.p initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className="text-xs font-semibold uppercase tracking-widest mb-4"
+              style={{ color: Y }}>
+              Gratis &amp; vrijblijvend
+            </motion.p>
+            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: EASE }}
+              style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2rem,4.5vw,3.6rem)", fontWeight: 500, color: B, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+              Wat is uw woning<br /><em style={{ color: "#555", fontWeight: 300 }}>waard vandaag?</em>
+            </motion.h2>
+          </div>
+          <motion.a
+            href="/schatting"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="inline-flex items-center gap-2 text-sm font-semibold rounded-full px-8 py-4 self-start md:self-auto flex-shrink-0"
+            style={{ backgroundColor: B, color: "#fff" }}
+            whileHover={{ backgroundColor: Y, color: B }}
+          >
+            Start gratis schatting
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+            </svg>
+          </motion.a>
+        </div>
+
+        {/* Stappen */}
+        <div className="grid gap-px" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", backgroundColor: "#e5e5e0" }}>
+          {steps.map(({ nr, title, sub }, i) => (
+            <motion.div
+              key={nr}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: i * 0.12, ease: EASE }}
+              style={{ backgroundColor: "#fafaf8", padding: "clamp(1.75rem,4vw,2.5rem)" }}
+            >
+              <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "3rem", fontWeight: 300, color: Y, lineHeight: 1, marginBottom: "1rem" }}>{nr}</p>
+              <p style={{ fontWeight: 600, fontSize: "1rem", color: B, marginBottom: "0.5rem" }}>{title}</p>
+              <p style={{ fontSize: "0.875rem", color: "#666", lineHeight: 1.6 }}>{sub}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── BOLD CTA ──────────────────────────────────────────────────────────────────
 function BoldCta({ s }: { s: SiteSettings["boldCta"] | typeof D.boldCta }) {
   return (
@@ -761,6 +825,7 @@ export default function SOMClient({ properties, team, settings, projects: _proje
       <MarqueeBanner />
       <Listings properties={properties} />
       <VisualStrip imgUrl={properties[1]?.imageUrl} />
+      <SchattingTeaser />
       <BoldCta s={boldCta} />
       <UspStrip usps={usps} />
       <Offices offices={offices} />

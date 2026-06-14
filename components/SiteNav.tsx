@@ -10,6 +10,7 @@ const W = "#ffffff";
 const EASE = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
 const NAV_LINKS = [
+  { label: "Home",      href: "/" },
   { label: "Aanbod",    href: "/aanbod" },
   { label: "Nieuwbouw", href: "/nieuwbouw" },
   { label: "Schatting", href: "/schatting" },
