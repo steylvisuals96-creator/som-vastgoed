@@ -58,8 +58,26 @@ export const property = defineType({
 
     // ── BESCHRIJVING ───────────────────────────────────────────────────────────
     defineField({
-      name: "description", title: "Beschrijving", type: "text", group: "beschrijving", rows: 8,
-      description: "Schrijf een pakkende, professionele beschrijving. Aanbevolen: 100–150 woorden.",
+      name: "description",
+      title: "Beschrijving",
+      type: "array",
+      group: "beschrijving",
+      description: "Schrijf een pakkende, professionele beschrijving. Aanbevolen: 100–150 woorden. Gebruik vet voor troeven.",
+      of: [
+        {
+          type: "block",
+          styles: [
+            { title: "Normaal", value: "normal" },
+            { title: "Koptekst", value: "h3" },
+          ],
+          marks: {
+            decorators: [
+              { title: "Vet", value: "strong" },
+              { title: "Cursief", value: "em" },
+            ],
+          },
+        },
+      ],
     }),
 
     // ── LOCATIE & GPS ──────────────────────────────────────────────────────────

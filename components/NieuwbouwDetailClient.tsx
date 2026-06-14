@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { Project } from "@/sanity/queries";
 import SiteNav from "./SiteNav";
 import SiteFooter from "./SiteFooter";
+import PortableText from "./PortableText";
 
 const Y = "#facb04";
 const B = "#111111";
@@ -214,13 +215,13 @@ export default function NieuwbouwDetailClient({ project: p, isDraft }: { project
                 {p.name}<br /><em style={{ color: M }}>in {p.location}</em>
               </h2>
             </motion.div>
-            <motion.p
+            <motion.div
               initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.1 }}
               className="text-sm leading-loose"
-              style={{ color: M, whiteSpace: "pre-line" }}>
-              {p.description}
-            </motion.p>
+              style={{ color: M }}>
+              <PortableText value={p.description} />
+            </motion.div>
           </div>
         </section>
       )}

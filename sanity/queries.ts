@@ -1,6 +1,14 @@
 import { client, previewClient } from "./client";
 import { urlFor } from "./image";
 
+export type PortableTextBlock = {
+  _type: string;
+  _key: string;
+  style?: string;
+  children?: { _key: string; _type: string; text: string; marks?: string[] }[];
+  markDefs?: { _key: string; _type: string }[];
+};
+
 export type Property = {
   _id: string;
   title: string;
@@ -13,7 +21,7 @@ export type Property = {
   imageUrl: string;
   featured?: boolean;
   slug?: string;
-  description?: string;
+  description?: PortableTextBlock[] | string;
   galleryUrls?: string[];
   fullAddress?: string;
   lat?: number;
@@ -45,7 +53,7 @@ export type Project = {
   completionDate?: string;
   imageUrl: string;
   galleryUrls?: string[];
-  description?: string;
+  description?: PortableTextBlock[] | string;
   slug?: string;
   featured?: boolean;
 };

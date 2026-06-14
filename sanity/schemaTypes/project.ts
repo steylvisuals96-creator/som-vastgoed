@@ -45,8 +45,26 @@ export const project = defineType({
 
     // ── BESCHRIJVING ───────────────────────────────────────────────────────────
     defineField({
-      name: "description", title: "Beschrijving", type: "text", group: "beschrijving", rows: 6,
+      name: "description",
+      title: "Beschrijving",
+      type: "array",
+      group: "beschrijving",
       description: "Beschrijf het project: ligging, architectuur, troeven. Aanbevolen: 80–120 woorden.",
+      of: [
+        {
+          type: "block",
+          styles: [
+            { title: "Normaal", value: "normal" },
+            { title: "Koptekst", value: "h3" },
+          ],
+          marks: {
+            decorators: [
+              { title: "Vet", value: "strong" },
+              { title: "Cursief", value: "em" },
+            ],
+          },
+        },
+      ],
     }),
 
     // ── DETAILS & STATUS ───────────────────────────────────────────────────────

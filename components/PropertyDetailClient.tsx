@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
 import type { Property } from "@/sanity/queries";
 import SiteNav from "./SiteNav";
+import PortableText from "./PortableText";
 
 const Y = "#facb04";
 const B = "#111111";
@@ -145,7 +146,7 @@ export default function PropertyDetailClient({ property: p, isDraft }: { propert
             {p.description && (
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3, ease: EASE }}>
                 <p className="text-xs font-medium uppercase tracking-widest mb-4" style={{ color: M }}>Beschrijving</p>
-                <p className="text-sm leading-loose whitespace-pre-line" style={{ color: "#555" }}>{p.description}</p>
+                <div className="text-sm" style={{ color: "#555" }}><PortableText value={p.description} /></div>
               </motion.div>
             )}
           </div>

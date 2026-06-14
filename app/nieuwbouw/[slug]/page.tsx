@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }) 
   if (!project) return { title: "Project — SOM Vastgoed" };
   return {
     title: `${project.name} — SOM Vastgoed`,
-    description: project.description
+    description: typeof project.description === "string"
       ? project.description.slice(0, 155)
       : `${project.name} — nieuwbouwproject in ${project.location}.`,
     openGraph: {
