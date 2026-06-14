@@ -1,10 +1,23 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function EditBar({ isDraft }: { isDraft: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    // Niet tonen binnen een iframe (Presentation tool) of op /studio pagina's
+    const inIframe = typeof window !== "undefined" && window.self !== window.top;
+    const inStudio = pathname.startsWith("/studio");
+    if (!inIframe && !inStudio) {
+      setVisible(true);
+    }
+  }, [pathname]);
+
+  if (!visible) return null;
 
   function logout() {
     router.push(`/api/admin/logout?redirectTo=${encodeURIComponent(pathname)}`);

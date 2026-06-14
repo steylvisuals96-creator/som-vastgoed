@@ -107,6 +107,7 @@ export type SiteSettings = {
   };
 };
 
+// Draft mode gebruikt previewClient (met perspective: "previewDrafts" + stega)
 function getClient(draft = false) {
   return draft ? (previewClient ?? client) : client;
 }
@@ -115,13 +116,10 @@ export async function getProperties(draft = false): Promise<Property[]> {
   const c = getClient(draft);
   if (!c) return [];
 
-  const perspective = draft ? "previewDrafts" : "published";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = (await c.fetch(
-    `*[_type == "property"] | order(order asc) { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng, landArea, buildYear, condition, bebouwing, epc, epcLabel }`,
-    {},
-    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
-  )) as unknown as any[];
+  const raw = await c.fetch<any[]>(
+    `*[_type == "property"] | order(order asc) { _id, _type, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng, landArea, buildYear, condition, bebouwing, epc, epcLabel }`,
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return raw.map((p: any) => ({
@@ -135,13 +133,11 @@ export async function getPropertyBySlug(slug: string, draft = false): Promise<Pr
   const c = getClient(draft);
   if (!c) return null;
 
-  const perspective = draft ? "previewDrafts" : "published";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = (await c.fetch(
-    `*[_type == "property" && slug.current == $slug][0] { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng, landArea, buildYear, condition, bebouwing, epc, epcLabel }`,
+  const raw = await c.fetch<any>(
+    `*[_type == "property" && slug.current == $slug][0] { _id, _type, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng, landArea, buildYear, condition, bebouwing, epc, epcLabel }`,
     { slug },
-    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
-  )) as unknown as any;
+  );
 
   if (!raw) return null;
   return {
@@ -154,13 +150,12 @@ export async function getPropertyBySlug(slug: string, draft = false): Promise<Pr
 export async function getRecentProperties(limit = 8, draft = false): Promise<Property[]> {
   const c = getClient(draft);
   if (!c) return [];
-  const perspective = draft ? "previewDrafts" : "published";
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = (await c.fetch(
-    `*[_type == "property" && !(status in ["Verkocht", "Verhuurd", "Onder compromis", "Onder bod", "Verkoopblokkering"])] | order(order asc) [0..${limit - 1}] { _id, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng, landArea, buildYear, condition, bebouwing, epc, epcLabel }`,
-    {},
-    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
-  )) as unknown as any[];
+  const raw = await c.fetch<any[]>(
+    `*[_type == "property" && !(status in ["Verkocht", "Verhuurd", "Onder compromis", "Onder bod", "Verkoopblokkering"])] | order(order asc) [0..${limit - 1}] { _id, _type, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng, landArea, buildYear, condition, bebouwing, epc, epcLabel }`,
+  );
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return raw.map((p: any) => ({
     ...p,
@@ -172,13 +167,12 @@ export async function getRecentProperties(limit = 8, draft = false): Promise<Pro
 export async function getProjects(draft = false): Promise<Project[]> {
   const c = getClient(draft);
   if (!c) return [];
-  const perspective = draft ? "previewDrafts" : "published";
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = (await c.fetch(
-    `*[_type == "project"] | order(order asc) { _id, name, developer, location, type, units, priceFrom, status, completionDate, featured, "slug": slug.current, image, gallery, description }`,
-    {},
-    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
-  )) as unknown as any[];
+  const raw = await c.fetch<any[]>(
+    `*[_type == "project"] | order(order asc) { _id, _type, name, developer, location, type, units, priceFrom, status, completionDate, featured, "slug": slug.current, image, gallery, description }`,
+  );
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return raw.map((p: any) => ({
     ...p,
@@ -190,15 +184,14 @@ export async function getProjects(draft = false): Promise<Project[]> {
 export async function getProjectBySlug(slug: string, draft = false): Promise<Project | null> {
   const c = getClient(draft);
   if (!c) return null;
-  const perspective = draft ? "previewDrafts" : "published";
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = (await c.fetch(
-    `*[_type == "project" && slug.current == $slug][0] { _id, name, developer, location, type, units, priceFrom, status, completionDate, featured, "slug": slug.current, image, gallery, description }`,
+  const raw = await c.fetch<any>(
+    `*[_type == "project" && slug.current == $slug][0] { _id, _type, name, developer, location, type, units, priceFrom, status, completionDate, featured, "slug": slug.current, image, gallery, description }`,
     { slug },
-    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
-  )) as unknown as any;
+  );
+
   if (!raw) return null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return {
     ...raw,
     imageUrl: raw.image ? urlFor(raw.image).width(1400).url() : "",
@@ -210,13 +203,10 @@ export async function getTeamMembers(draft = false): Promise<TeamMember[]> {
   const c = getClient(draft);
   if (!c) return [];
 
-  const perspective = draft ? "previewDrafts" : "published";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = (await c.fetch(
-    `*[_type == "teamMember"] | order(order asc) { _id, name, role, photo, photoUrl }`,
-    {},
-    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
-  )) as unknown as any[];
+  const raw = await c.fetch<any[]>(
+    `*[_type == "teamMember"] | order(order asc) { _id, _type, name, role, photo, photoUrl }`,
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return raw.map((m: any) => ({
@@ -233,15 +223,13 @@ export async function getSiteSettings(draft = false): Promise<SiteSettings | nul
   const c = getClient(draft);
   if (!c) return null;
 
-  const perspective = draft ? "previewDrafts" : "published";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = await c.fetch(
-    `*[_type == "siteSettings" && _id == "siteSettings"][0]`,
-    {},
-    { perspective, filterResponse: true } as unknown as Parameters<typeof c.fetch>[2]
-  ) as unknown as any;
+  const raw = await c.fetch<any>(
+    `*[_type == "siteSettings"][0]`,
+  );
 
   if (!raw) return null;
+
   return {
     ...raw,
     about: raw.about ? {
@@ -250,9 +238,7 @@ export async function getSiteSettings(draft = false): Promise<SiteSettings | nul
     } : undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     offices: (raw.offices ?? []).map((o: any) => ({
-      name: o.name,
-      address: o.address,
-      phone: o.phone,
+      ...o,
       imageUrl: o.image ? urlFor(o.image).width(600).height(400).url() : undefined,
     })),
   } as SiteSettings;

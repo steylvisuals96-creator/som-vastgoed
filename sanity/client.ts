@@ -8,7 +8,7 @@ export const client = projectId
   ? createClient({ projectId, dataset, apiVersion: "2024-01-01", useCdn: true })
   : null;
 
-// Draft-mode client met stega encoding voor visual editing
+// Draft-mode client: perspective op previewDrafts + stega encoding voor de Presentation tool
 export const previewClient = projectId
   ? createClient({
       projectId,
@@ -16,6 +16,7 @@ export const previewClient = projectId
       apiVersion: "2024-01-01",
       useCdn: false,
       token,
+      perspective: "previewDrafts",
       stega: {
         enabled: true,
         studioUrl: "/studio",
