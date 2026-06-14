@@ -4,6 +4,7 @@ import { visionTool } from "@sanity/vision";
 import { presentationTool } from "sanity/presentation";
 import { media } from "sanity-plugin-media";
 import { schemaTypes } from "./sanity/schemaTypes";
+import WelcomeDashboard from "./studio/WelcomeDashboard";
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
@@ -95,6 +96,17 @@ export default defineConfig({
         S.list()
           .title("SOM Vastgoed")
           .items([
+
+            // ── WELKOM ─────────────────────────────────────────────────────────
+            S.listItem()
+              .title("🏡 Startscherm")
+              .id("welcome")
+              .child(
+                S.component(WelcomeDashboard)
+                  .title("Welkom bij SOM Vastgoed CMS")
+              ),
+
+            S.divider(),
 
             // ── PANDEN ─────────────────────────────────────────────────────────
             S.listItem()
