@@ -1,28 +1,17 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
-import { useState, useTransition } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function EditBar({ isDraft }: { isDraft: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
-  const [editOn, setEditOn] = useState(isDraft);
-
-  function toggleEdit() {
-    startTransition(() => {
-      if (editOn) {
-        router.push(`/api/draft-mode/disable?redirectTo=${encodeURIComponent(pathname)}`);
-      } else {
-        router.push(`/api/draft-mode/enable?redirectTo=${encodeURIComponent(pathname)}`);
-      }
-      setEditOn(!editOn);
-    });
-  }
 
   function logout() {
     router.push(`/api/admin/logout?redirectTo=${encodeURIComponent(pathname)}`);
   }
+
+  // Open de Presentation tool op de huidige pagina
+  const presentationUrl = `/studio/presentation?preview=${encodeURIComponent(pathname)}`;
 
   return (
     <div style={{
@@ -35,64 +24,78 @@ export default function EditBar({ isDraft }: { isDraft: boolean }) {
       alignItems: "center",
       gap: "0.5rem",
       backgroundColor: "#111111",
-      border: "1px solid #333",
+      border: "1px solid #2a2a2a",
       borderRadius: "999px",
-      padding: "0.5rem 0.75rem",
-      boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
+      padding: "0.45rem 0.85rem",
+      boxShadow: "0 4px 24px rgba(0,0,0,0.55)",
       fontFamily: "system-ui, sans-serif",
       fontSize: "0.8rem",
       color: "#fff",
       userSelect: "none",
       whiteSpace: "nowrap",
     }}>
-      {/* Status dot */}
+
+      {/* Status indicator */}
       <span style={{
-        width: "8px", height: "8px", borderRadius: "50%", flexShrink: 0,
-        backgroundColor: editOn ? "#22c55e" : "#6b7280",
-        boxShadow: editOn ? "0 0 6px #22c55e" : "none",
+        width: "7px", height: "7px", borderRadius: "50%", flexShrink: 0,
+        backgroundColor: isDraft ? "#22c55e" : "#facb04",
+        boxShadow: isDraft ? "0 0 5px #22c55e" : "0 0 5px #facb04",
       }} />
 
-      <span style={{ color: "#aaa", marginRight: "0.25rem" }}>SOM Admin</span>
+      <span style={{ color: "#888", fontSize: "0.75rem" }}>SOM Admin</span>
 
-      {/* Toggle knop */}
-      <button
-        onClick={toggleEdit}
-        disabled={pending}
+      {/* Scheidingslijn */}
+      <span style={{ width: "1px", height: "14px", backgroundColor: "#2a2a2a", flexShrink: 0 }} />
+
+      {/* Bewerken knop → gaat naar Presentation tool */}
+      <a
+        href={presentationUrl}
         style={{
-          backgroundColor: editOn ? "#facb04" : "#222",
-          color: editOn ? "#111" : "#fff",
-          border: editOn ? "none" : "1px solid #444",
+          backgroundColor: "#facb04",
+          color: "#111",
           borderRadius: "999px",
-          padding: "0.3rem 0.85rem",
+          padding: "0.3rem 0.9rem",
           fontSize: "0.78rem",
           fontWeight: 700,
-          cursor: pending ? "default" : "pointer",
-          opacity: pending ? 0.6 : 1,
-          transition: "all 0.2s",
-        }}
-      >
-        {pending ? "..." : editOn ? "✏️ Bewerken AAN" : "✏️ Bewerken UIT"}
-      </button>
-
-      {/* Naar Studio */}
-      <a
-        href="/studio"
-        style={{
-          color: "#aaa",
           textDecoration: "none",
-          padding: "0.3rem 0.6rem",
-          borderRadius: "999px",
-          fontSize: "0.75rem",
-          transition: "color 0.15s",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.35rem",
+          transition: "opacity 0.15s",
         }}
-        onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
-        onMouseLeave={e => (e.currentTarget.style.color = "#aaa")}
+        onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+        onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
       >
-        Studio →
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+        </svg>
+        Bewerken
+      </a>
+
+      {/* Voorvertoning toggle */}
+      <a
+        href={isDraft
+          ? `/api/draft-mode/disable?redirectTo=${encodeURIComponent(pathname)}`
+          : `/api/draft-mode/enable?redirectTo=${encodeURIComponent(pathname)}`}
+        style={{
+          color: isDraft ? "#22c55e" : "#666",
+          textDecoration: "none",
+          fontSize: "0.73rem",
+          padding: "0.25rem 0.5rem",
+          borderRadius: "999px",
+          border: isDraft ? "1px solid #22c55e33" : "1px solid #2a2a2a",
+          transition: "all 0.15s",
+        }}
+        title={isDraft ? "Voorvertoning uitschakelen" : "Voorvertoning inschakelen (ongepubliceerde wijzigingen)"}
+        onMouseEnter={e => (e.currentTarget.style.color = isDraft ? "#4ade80" : "#aaa")}
+        onMouseLeave={e => (e.currentTarget.style.color = isDraft ? "#22c55e" : "#666")}
+      >
+        {isDraft ? "👁️ Voorbeeld AAN" : "👁️ Voorbeeld"}
       </a>
 
       {/* Scheidingslijn */}
-      <span style={{ width: "1px", height: "16px", backgroundColor: "#333", flexShrink: 0 }} />
+      <span style={{ width: "1px", height: "14px", backgroundColor: "#2a2a2a", flexShrink: 0 }} />
 
       {/* Uitloggen */}
       <button
@@ -100,14 +103,14 @@ export default function EditBar({ isDraft }: { isDraft: boolean }) {
         style={{
           background: "none",
           border: "none",
-          color: "#666",
-          fontSize: "0.75rem",
+          color: "#555",
+          fontSize: "0.72rem",
           cursor: "pointer",
-          padding: "0.3rem 0.4rem",
+          padding: "0.25rem 0.35rem",
           transition: "color 0.15s",
         }}
         onMouseEnter={e => (e.currentTarget.style.color = "#ff6b6b")}
-        onMouseLeave={e => (e.currentTarget.style.color = "#666")}
+        onMouseLeave={e => (e.currentTarget.style.color = "#555")}
       >
         Uitloggen
       </button>
