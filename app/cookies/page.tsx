@@ -13,7 +13,7 @@ const B = "#111111";
 export default function CookiesPage() {
   return (
     <>
-      <SiteNav activePage="" />
+      <SiteNav />
       <main style={{ backgroundColor: "#fafaf8", minHeight: "100vh", paddingTop: "6rem", paddingBottom: "5rem" }}>
         <div style={{ maxWidth: "720px", margin: "0 auto", padding: "0 1.5rem" }}>
 
