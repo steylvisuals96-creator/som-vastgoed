@@ -70,11 +70,11 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
         {/* Logo */}
         <a href="/" onClick={() => setOpen(false)}>
           <Image
-            src="/som-project-logo-white.svg"
+            src="/som-logo.png"
             alt="SOM Vastgoed"
-            width={120}
-            height={40}
-            style={{ height: "40px", width: "auto" }}
+            width={160}
+            height={56}
+            style={{ height: "44px", width: "auto", filter: "invert(1) hue-rotate(180deg)" }}
             priority
           />
         </a>
