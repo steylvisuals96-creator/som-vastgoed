@@ -1,6 +1,5 @@
 export const revalidate = 60;
 
-import { draftMode } from "next/headers";
 import { getProperties } from "@/sanity/queries";
 import AanbodClient from "@/components/AanbodClient";
 
@@ -19,12 +18,10 @@ export const metadata = {
 };
 
 export default async function AanbodPage() {
-  const { isEnabled: isDraft } = await draftMode();
   const hasSanity = !!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-
   const properties = hasSanity
-    ? await getProperties(isDraft).catch(() => FALLBACK_PROPERTIES)
+    ? await getProperties().catch(() => FALLBACK_PROPERTIES)
     : FALLBACK_PROPERTIES;
 
-  return <AanbodClient properties={properties} isDraft={isDraft} />;
+  return <AanbodClient properties={properties} />;
 }

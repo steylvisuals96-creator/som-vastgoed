@@ -54,7 +54,7 @@ function parsePrice(s: string): number | null {
 }
 
 // ── Inner component that reads searchParams (needs Suspense) ──────────────────
-function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?: boolean }) {
+function AanbodInner({ properties }: { properties: Property[] }) {
   const searchParams = useSearchParams();
 
   // Filters
@@ -120,14 +120,6 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
 
   return (
     <div style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}>
-      {isDraft && (
-        <div className="fixed top-0 left-0 right-0 z-[9999] flex items-center justify-between px-6 py-2 text-xs font-semibold"
-          style={{ backgroundColor: "#0070f3", color: "#fff" }}>
-          <span>✏️ Voorbeeldmodus</span>
-          <a href="/api/draft-mode/disable" className="underline opacity-80 hover:opacity-100">Sluiten</a>
-        </div>
-      )}
-
       <SiteNav activePage="aanbod" />
 
       {/* Page header */}
@@ -396,7 +388,7 @@ function AanbodInner({ properties, isDraft }: { properties: Property[]; isDraft?
 }
 
 // Wrap in Suspense for useSearchParams
-export default function AanbodClient(props: { properties: Property[]; isDraft?: boolean }) {
+export default function AanbodClient(props: { properties: Property[] }) {
   return (
     <Suspense fallback={null}>
       <AanbodInner {...props} />

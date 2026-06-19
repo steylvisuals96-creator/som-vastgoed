@@ -1,6 +1,5 @@
 export const revalidate = 60;
 
-import { draftMode } from "next/headers";
 import { getProjects } from "@/sanity/queries";
 import NieuwbouwClient from "@/components/NieuwbouwClient";
 
@@ -10,12 +9,8 @@ export const metadata = {
 };
 
 export default async function NieuwbouwPage() {
-  const { isEnabled: isDraft } = await draftMode();
   const hasSanity = !!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+  const projects = hasSanity ? await getProjects().catch(() => []) : [];
 
-  const projects = hasSanity
-    ? await getProjects(isDraft).catch(() => [])
-    : [];
-
-  return <NieuwbouwClient projects={projects} isDraft={isDraft} />;
+  return <NieuwbouwClient projects={projects} />;
 }

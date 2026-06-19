@@ -96,21 +96,13 @@ function Lightbox({ images, startIndex, onClose }: { images: string[]; startInde
 }
 
 /* ── Main component ─────────────────────────────────────────────────────────── */
-export default function NieuwbouwDetailClient({ project: p, isDraft }: { project: Project; isDraft?: boolean }) {
+export default function NieuwbouwDetailClient({ project: p }: { project: Project }) {
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const status = STATUS_COLORS[p.status] ?? STATUS_COLORS["In verkoop"];
   const allImages = [p.imageUrl, ...(p.galleryUrls ?? [])].filter(Boolean) as string[];
 
   return (
     <div style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}>
-      {isDraft && (
-        <div className="fixed top-0 left-0 right-0 z-[9999] flex items-center justify-between px-6 py-2 text-xs font-semibold"
-          style={{ backgroundColor: "#0070f3", color: "#fff" }}>
-          <span>✏️ Voorbeeldmodus</span>
-          <a href="/api/draft-mode/disable" className="underline opacity-80">Sluiten</a>
-        </div>
-      )}
-
       <SiteNav activePage="nieuwbouw" />
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}

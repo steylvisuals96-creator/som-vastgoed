@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
-import { draftMode } from "next/headers";
 import { cookies } from "next/headers";
-import { VisualEditing } from "next-sanity/visual-editing";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import CookieBanner from "@/components/CookieBanner";
@@ -36,7 +34,6 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const { isEnabled: isDraft } = await draftMode();
   const jar = await cookies();
   const isAdmin = jar.get("som_admin")?.value === "1";
 
@@ -44,8 +41,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="nl" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}>
         {children}
-        {isDraft && <VisualEditing />}
-        {isAdmin && <EditBar isDraft={isDraft} />}
+        {isAdmin && <EditBar />}
         <CookieBanner />
         <SpeedInsights />
         <Analytics />

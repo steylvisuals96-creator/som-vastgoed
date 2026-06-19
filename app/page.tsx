@@ -1,6 +1,5 @@
 export const revalidate = 60;
 
-import { draftMode } from "next/headers";
 import SOMClient from "@/components/SOMClient";
 import { getRecentProperties, getTeamMembers, getSiteSettings, getProjects } from "@/sanity/queries";
 
@@ -23,15 +22,14 @@ const FALLBACK_TEAM = [
 ];
 
 export default async function Home() {
-  const { isEnabled: isDraft } = await draftMode();
   const hasSanity = !!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 
   const [properties, team, settings, projects] = hasSanity
     ? await Promise.all([
-        getRecentProperties(8, isDraft).catch(() => FALLBACK_PROPERTIES),
-        getTeamMembers(isDraft).catch(() => FALLBACK_TEAM),
-        getSiteSettings(isDraft).catch(() => null),
-        getProjects(isDraft).catch(() => []),
+        getRecentProperties(8).catch(() => FALLBACK_PROPERTIES),
+        getTeamMembers().catch(() => FALLBACK_TEAM),
+        getSiteSettings().catch(() => null),
+        getProjects().catch(() => []),
       ])
     : [FALLBACK_PROPERTIES, FALLBACK_TEAM, null, []];
 
@@ -41,7 +39,6 @@ export default async function Home() {
       team={team}
       settings={settings}
       projects={projects}
-      isDraft={isDraft}
     />
   );
 }

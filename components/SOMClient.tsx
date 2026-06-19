@@ -114,7 +114,6 @@ type Props = {
   team: TeamMember[];
   settings: SiteSettings | null;
   projects: Project[];
-  isDraft?: boolean;
 };
 
 // Nav is now handled by the shared SiteNav component
@@ -802,7 +801,7 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
 
 
 // ── ROOT ──────────────────────────────────────────────────────────────────────
-export default function SOMClient({ properties, team, settings, projects: _projects, isDraft }: Props) {
+export default function SOMClient({ properties, team, settings, projects: _projects }: Props) {
   const hero = settings?.hero ?? D.hero;
   const stats = settings?.stats ?? D.stats;
   const boldCta = settings?.boldCta ?? D.boldCta;
@@ -812,14 +811,6 @@ export default function SOMClient({ properties, team, settings, projects: _proje
 
   return (
     <div style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}>
-      {/* Draft mode banner */}
-      {isDraft && (
-        <div className="fixed top-0 left-0 right-0 z-[9999] flex items-center justify-between px-6 py-2 text-xs font-semibold"
-          style={{ backgroundColor: "#0070f3", color: "#fff" }}>
-          <span>✏️ Voorbeeldmodus — wijzigingen zijn nog niet gepubliceerd</span>
-          <a href="/api/draft-mode/disable" className="underline opacity-80 hover:opacity-100">Sluiten</a>
-        </div>
-      )}
       <SiteNav activePage="home" transparentAtTop />
       <Hero s={hero} stats={stats} featuredImg={properties[0]?.imageUrl} />
       <MarqueeBanner />

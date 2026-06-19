@@ -1,7 +1,6 @@
 export const revalidate = 60;
 export const dynamicParams = true;
 
-import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 import { getPropertyBySlug, getProperties } from "@/sanity/queries";
 import PropertyDetailClient from "@/components/PropertyDetailClient";
@@ -25,10 +24,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function PropertyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const { isEnabled: isDraft } = await draftMode();
-
-  const property = await getPropertyBySlug(slug, isDraft).catch(() => null);
+  const property = await getPropertyBySlug(slug).catch(() => null);
   if (!property) notFound();
 
-  return <PropertyDetailClient property={property} isDraft={isDraft} />;
+  return <PropertyDetailClient property={property} />;
 }

@@ -1,4 +1,4 @@
-import { client, previewClient } from "./client";
+import { client } from "./client";
 import { urlFor } from "./image";
 
 export type PortableTextBlock = {
@@ -107,20 +107,12 @@ export type SiteSettings = {
   };
 };
 
-// Draft mode gebruikt previewClient (met perspective: "previewDrafts" + stega)
-function getClient(draft = false) {
-  return draft ? (previewClient ?? client) : client;
-}
-
-export async function getProperties(draft = false): Promise<Property[]> {
-  const c = getClient(draft);
-  if (!c) return [];
-
+export async function getProperties(): Promise<Property[]> {
+  if (!client) return [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = await c.fetch<any[]>(
+  const raw = await client.fetch<any[]>(
     `*[_type == "property"] | order(order asc) { _id, _type, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng, landArea, buildYear, condition, bebouwing, epc, epcLabel }`,
   );
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return raw.map((p: any) => ({
     ...p,
@@ -129,33 +121,28 @@ export async function getProperties(draft = false): Promise<Property[]> {
   }));
 }
 
-export async function getPropertyBySlug(slug: string, draft = false): Promise<Property | null> {
-  const c = getClient(draft);
-  if (!c) return null;
-
+export async function getPropertyBySlug(slug: string): Promise<Property | null> {
+  if (!client) return null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = await c.fetch<any>(
+  const raw = await client.fetch<any>(
     `*[_type == "property" && slug.current == $slug][0] { _id, _type, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng, landArea, buildYear, condition, bebouwing, epc, epcLabel }`,
     { slug },
   );
-
   if (!raw) return null;
   return {
     ...raw,
     imageUrl: raw.image ? urlFor(raw.image).width(1200).url() : "",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     galleryUrls: (raw.gallery ?? []).map((g: any) => urlFor(g).width(1200).url()),
   };
 }
 
-export async function getRecentProperties(limit = 8, draft = false): Promise<Property[]> {
-  const c = getClient(draft);
-  if (!c) return [];
-
+export async function getRecentProperties(limit = 8): Promise<Property[]> {
+  if (!client) return [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = await c.fetch<any[]>(
+  const raw = await client.fetch<any[]>(
     `*[_type == "property" && !(status in ["Verkocht", "Verhuurd", "Onder compromis", "Onder bod", "Verkoopblokkering"])] | order(order asc) [0..${limit - 1}] { _id, _type, title, type, location, price, beds, area, status, featured, "slug": slug.current, image, gallery, description, fullAddress, lat, lng, landArea, buildYear, condition, bebouwing, epc, epcLabel }`,
   );
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return raw.map((p: any) => ({
     ...p,
@@ -164,15 +151,12 @@ export async function getRecentProperties(limit = 8, draft = false): Promise<Pro
   }));
 }
 
-export async function getProjects(draft = false): Promise<Project[]> {
-  const c = getClient(draft);
-  if (!c) return [];
-
+export async function getProjects(): Promise<Project[]> {
+  if (!client) return [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = await c.fetch<any[]>(
+  const raw = await client.fetch<any[]>(
     `*[_type == "project"] | order(order asc) { _id, _type, name, developer, location, type, units, priceFrom, status, completionDate, featured, "slug": slug.current, image, gallery, description }`,
   );
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return raw.map((p: any) => ({
     ...p,
@@ -181,55 +165,42 @@ export async function getProjects(draft = false): Promise<Project[]> {
   }));
 }
 
-export async function getProjectBySlug(slug: string, draft = false): Promise<Project | null> {
-  const c = getClient(draft);
-  if (!c) return null;
-
+export async function getProjectBySlug(slug: string): Promise<Project | null> {
+  if (!client) return null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = await c.fetch<any>(
+  const raw = await client.fetch<any>(
     `*[_type == "project" && slug.current == $slug][0] { _id, _type, name, developer, location, type, units, priceFrom, status, completionDate, featured, "slug": slug.current, image, gallery, description }`,
     { slug },
   );
-
   if (!raw) return null;
   return {
     ...raw,
     imageUrl: raw.image ? urlFor(raw.image).width(1400).url() : "",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     galleryUrls: (raw.gallery ?? []).map((g: any) => urlFor(g).width(1200).url()),
   };
 }
 
-export async function getTeamMembers(draft = false): Promise<TeamMember[]> {
-  const c = getClient(draft);
-  if (!c) return [];
-
+export async function getTeamMembers(): Promise<TeamMember[]> {
+  if (!client) return [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = await c.fetch<any[]>(
+  const raw = await client.fetch<any[]>(
     `*[_type == "teamMember"] | order(order asc) { _id, _type, name, role, photo, photoUrl }`,
   );
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return raw.map((m: any) => ({
     _id: m._id,
     name: m.name,
     role: m.role,
-    photoUrl: m.photo
-      ? urlFor(m.photo).width(350).height(467).url()
-      : (m.photoUrl ?? ""),
+    photoUrl: m.photo ? urlFor(m.photo).width(350).height(467).url() : (m.photoUrl ?? ""),
   }));
 }
 
-export async function getSiteSettings(draft = false): Promise<SiteSettings | null> {
-  const c = getClient(draft);
-  if (!c) return null;
-
+export async function getSiteSettings(): Promise<SiteSettings | null> {
+  if (!client) return null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = await c.fetch<any>(
-    `*[_type == "siteSettings"][0]`,
-  );
-
+  const raw = await client.fetch<any>(`*[_type == "siteSettings"][0]`);
   if (!raw) return null;
-
   return {
     ...raw,
     about: raw.about ? {

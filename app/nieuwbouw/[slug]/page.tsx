@@ -1,7 +1,6 @@
 export const revalidate = 60;
 
 import { notFound } from "next/navigation";
-import { draftMode } from "next/headers";
 import { getProjectBySlug, getProjects } from "@/sanity/queries";
 import NieuwbouwDetailClient from "@/components/NieuwbouwDetailClient";
 
@@ -32,14 +31,9 @@ export async function generateMetadata({ params }: { params: Promise<Params> }) 
 
 export default async function NieuwbouwDetailPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const { isEnabled: isDraft } = await draftMode();
   const hasSanity = !!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-
-  const project = hasSanity
-    ? await getProjectBySlug(slug, isDraft).catch(() => null)
-    : null;
-
+  const project = hasSanity ? await getProjectBySlug(slug).catch(() => null) : null;
   if (!project) notFound();
 
-  return <NieuwbouwDetailClient project={project} isDraft={isDraft} />;
+  return <NieuwbouwDetailClient project={project} />;
 }

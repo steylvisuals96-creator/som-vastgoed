@@ -3,18 +3,14 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function EditBar({ isDraft }: { isDraft: boolean }) {
+export default function EditBar() {
   const pathname = usePathname();
   const router = useRouter();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Niet tonen binnen een iframe (Presentation tool) of op /studio pagina's
     const inIframe = typeof window !== "undefined" && window.self !== window.top;
-    const inStudio = pathname.startsWith("/studio");
-    if (!inIframe && !inStudio) {
-      setVisible(true);
-    }
+    if (!inIframe) setVisible(true);
   }, [pathname]);
 
   if (!visible) return null;
@@ -22,9 +18,6 @@ export default function EditBar({ isDraft }: { isDraft: boolean }) {
   function logout() {
     router.push(`/api/admin/logout?redirectTo=${encodeURIComponent(pathname)}`);
   }
-
-  // Open de Presentation tool op de huidige pagina
-  const presentationUrl = `/studio/presentation?preview=${encodeURIComponent(pathname)}`;
 
   return (
     <div style={{
@@ -47,70 +40,13 @@ export default function EditBar({ isDraft }: { isDraft: boolean }) {
       userSelect: "none",
       whiteSpace: "nowrap",
     }}>
-
-      {/* Status indicator */}
       <span style={{
         width: "7px", height: "7px", borderRadius: "50%", flexShrink: 0,
-        backgroundColor: isDraft ? "#22c55e" : "#facb04",
-        boxShadow: isDraft ? "0 0 5px #22c55e" : "0 0 5px #facb04",
+        backgroundColor: "#facb04",
+        boxShadow: "0 0 5px #facb04",
       }} />
-
       <span style={{ color: "#888", fontSize: "0.75rem" }}>SOM Admin</span>
-
-      {/* Scheidingslijn */}
       <span style={{ width: "1px", height: "14px", backgroundColor: "#2a2a2a", flexShrink: 0 }} />
-
-      {/* Bewerken knop → gaat naar Presentation tool */}
-      <a
-        href={presentationUrl}
-        style={{
-          backgroundColor: "#facb04",
-          color: "#111",
-          borderRadius: "999px",
-          padding: "0.3rem 0.9rem",
-          fontSize: "0.78rem",
-          fontWeight: 700,
-          textDecoration: "none",
-          display: "flex",
-          alignItems: "center",
-          gap: "0.35rem",
-          transition: "opacity 0.15s",
-        }}
-        onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
-        onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
-      >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-        </svg>
-        Bewerken
-      </a>
-
-      {/* Voorvertoning toggle */}
-      <a
-        href={isDraft
-          ? `/api/draft-mode/disable?redirectTo=${encodeURIComponent(pathname)}`
-          : `/api/draft-mode/enable?redirectTo=${encodeURIComponent(pathname)}`}
-        style={{
-          color: isDraft ? "#22c55e" : "#666",
-          textDecoration: "none",
-          fontSize: "0.73rem",
-          padding: "0.25rem 0.5rem",
-          borderRadius: "999px",
-          border: isDraft ? "1px solid #22c55e33" : "1px solid #2a2a2a",
-          transition: "all 0.15s",
-        }}
-        title={isDraft ? "Voorvertoning uitschakelen" : "Voorvertoning inschakelen (ongepubliceerde wijzigingen)"}
-        onMouseEnter={e => (e.currentTarget.style.color = isDraft ? "#4ade80" : "#aaa")}
-        onMouseLeave={e => (e.currentTarget.style.color = isDraft ? "#22c55e" : "#666")}
-      >
-        {isDraft ? "👁️ Voorbeeld AAN" : "👁️ Voorbeeld"}
-      </a>
-
-      {/* Scheidingslijn */}
-      <span style={{ width: "1px", height: "14px", backgroundColor: "#2a2a2a", flexShrink: 0 }} />
-
-      {/* Uitloggen */}
       <button
         onClick={logout}
         style={{

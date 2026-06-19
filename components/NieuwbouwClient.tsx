@@ -97,17 +97,9 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
   );
 }
 
-export default function NieuwbouwClient({ projects, isDraft }: { projects: Project[]; isDraft?: boolean }) {
+export default function NieuwbouwClient({ projects }: { projects: Project[] }) {
   return (
     <div style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}>
-      {isDraft && (
-        <div className="fixed top-0 left-0 right-0 z-[9999] flex items-center justify-between px-6 py-2 text-xs font-semibold"
-          style={{ backgroundColor: "#0070f3", color: "#fff" }}>
-          <span>✏️ Voorbeeldmodus</span>
-          <a href="/api/draft-mode/disable" className="underline opacity-80">Sluiten</a>
-        </div>
-      )}
-
       <SiteNav activePage="nieuwbouw" />
 
       {/* Header */}
