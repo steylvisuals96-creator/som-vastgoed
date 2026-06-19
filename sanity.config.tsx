@@ -89,6 +89,61 @@ export default defineConfig({
           enable: "/api/draft-mode/enable",
         },
       },
+      resolve: {
+        mainDocuments: (params) => {
+          const { pathname } = params;
+
+          if (pathname === "/") {
+            return [{ type: "siteSettings", id: "siteSettings" }];
+          }
+
+          const aanbodMatch = pathname.match(/^\/aanbod\/([^/]+)/);
+          if (aanbodMatch) {
+            return [{ type: "property", slug: { current: aanbodMatch[1] } }];
+          }
+
+          if (pathname === "/aanbod") {
+            return [{ type: "siteSettings", id: "siteSettings" }];
+          }
+
+          const nieuwbouwMatch = pathname.match(/^\/nieuwbouw\/([^/]+)/);
+          if (nieuwbouwMatch) {
+            return [{ type: "project", slug: { current: nieuwbouwMatch[1] } }];
+          }
+
+          if (pathname === "/nieuwbouw") {
+            return [{ type: "siteSettings", id: "siteSettings" }];
+          }
+
+          return [];
+        },
+        locations: {
+          siteSettings: (doc) => [
+            { title: "Home", href: "/" },
+            { title: "Aanbod", href: "/aanbod" },
+            { title: "Nieuwbouw", href: "/nieuwbouw" },
+          ],
+          property: (doc) => {
+            const slug = (doc as { slug?: { current?: string } })?.slug?.current;
+            return slug
+              ? [
+                  { title: doc.title as string ?? "Pand", href: `/aanbod/${slug}` },
+                  { title: "Aanbod overzicht", href: "/aanbod" },
+                ]
+              : [];
+          },
+          project: (doc) => {
+            const slug = (doc as { slug?: { current?: string } })?.slug?.current;
+            return slug
+              ? [
+                  { title: doc.title as string ?? "Project", href: `/nieuwbouw/${slug}` },
+                  { title: "Nieuwbouw overzicht", href: "/nieuwbouw" },
+                ]
+              : [];
+          },
+          teamMember: () => [{ title: "Home", href: "/" }],
+        },
+      },
     }),
 
     structureTool({
