@@ -90,21 +90,21 @@ export default defineConfig({
         },
       },
       resolve: {
-        mainDocuments: (params) => {
-          const { pathname } = params;
-
-          const aanbodMatch = pathname.match(/^\/aanbod\/([^/]+)/);
-          if (aanbodMatch) {
-            return [{ _type: "property", slug: { current: aanbodMatch[1] } }];
-          }
-
-          const nieuwbouwMatch = pathname.match(/^\/nieuwbouw\/([^/]+)/);
-          if (nieuwbouwMatch) {
-            return [{ _type: "project", slug: { current: nieuwbouwMatch[1] } }];
-          }
-
-          return [{ _type: "siteSettings", _id: "siteSettings" }];
-        },
+        mainDocuments: [
+          { route: "/", type: "siteSettings" },
+          { route: "/aanbod", type: "siteSettings" },
+          { route: "/nieuwbouw", type: "siteSettings" },
+          {
+            route: "/aanbod/:slug",
+            filter: ({ params }: { params: Record<string, string> }) =>
+              `_type == "property" && slug.current == "${params.slug}"`,
+          },
+          {
+            route: "/nieuwbouw/:slug",
+            filter: ({ params }: { params: Record<string, string> }) =>
+              `_type == "project" && slug.current == "${params.slug}"`,
+          },
+        ],
         locations: {
           siteSettings: () => ({
             message: "Website Instellingen",
