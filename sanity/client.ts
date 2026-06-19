@@ -9,7 +9,8 @@ export const client = projectId
   : null;
 
 // Draft-mode client: perspective op previewDrafts + stega encoding voor de Presentation tool
-export const previewClient = projectId
+// Alleen aanmaken als er een token is — anders valt draft mode terug op de gewone client
+export const previewClient = projectId && token
   ? createClient({
       projectId,
       dataset,
