@@ -22,6 +22,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Bericht is verplicht" }, { status: 400 });
   }
 
+  // Sla lead op in Payload CMS (fire-and-forget)
+  if (process.env.CMS_URL && process.env.CMS_WEBHOOK_SECRET) {
+    fetch(`${process.env.CMS_URL}/api/webhook/lead`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-webhook-secret": process.env.CMS_WEBHOOK_SECRET },
+      body: JSON.stringify({
+        naam: [firstName, lastName].filter(Boolean).join(" "),
+        email,
+        telefoon: typeof phone === "string" ? phone : undefined,
+        bericht: message,
+        bron: "website",
+        pand_ref: typeof propertyId === "number" ? String(propertyId) : undefined,
+      }),
+    }).catch(() => {});
+  }
+
   try {
     await sendContactMessage({
       firstName: typeof firstName === "string" ? firstName : undefined,

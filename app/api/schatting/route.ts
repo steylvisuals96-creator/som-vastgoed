@@ -299,6 +299,24 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Sla lead op in Payload CMS
+    if (process.env.CMS_URL && process.env.CMS_WEBHOOK_SECRET) {
+      const bericht = [
+        `Type: ${data.propertyType}`,
+        `Locatie: ${data.postcode ?? ""} ${data.gemeente}${data.straat ? `, ${data.straat} ${data.nummer ?? ""}` : ""}`,
+        data.bewoonbaarOpp ? `Opp.: ${data.bewoonbaarOpp} m²` : null,
+        data.bouwjaar ? `Bouwjaar: ${data.bouwjaar}` : null,
+        data.staat ? `Staat: ${data.staat}` : null,
+        schatting ? `Geschatte waarde: €${schatting.min.toLocaleString("nl-BE")} – €${schatting.max.toLocaleString("nl-BE")}` : null,
+      ].filter(Boolean).join("\n");
+
+      fetch(`${process.env.CMS_URL}/api/webhook/lead`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-webhook-secret": process.env.CMS_WEBHOOK_SECRET },
+        body: JSON.stringify({ naam: data.naam, email: data.email, telefoon: data.telefoon, bericht, bron: "website" }),
+      }).catch(() => {});
+    }
+
     return NextResponse.json({ ok: true, schatting });
   } catch (err) {
     console.error("Schatting API error:", err);
