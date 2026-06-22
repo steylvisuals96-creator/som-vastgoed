@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   // Stuur email naar SOM Vastgoed via Resend
   await resend.emails.send({
     from: "SOM Vastgoed Website <onboarding@resend.dev>",
-    to: ["maxime@somvastgoed.be", process.env.NOTIFICATION_EMAIL!].filter(Boolean),
+    to: [process.env.NOTIFICATION_EMAIL!].filter(Boolean),
     replyTo: email,
     subject: `Nieuw contactbericht van ${naam}`,
     html: `
