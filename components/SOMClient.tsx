@@ -695,6 +695,29 @@ function Team({ members }: { members: TeamMember[] }) {
 // ── CONTACT ───────────────────────────────────────────────────────────────────
 function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    setLoading(true);
+    try {
+      await fetch("https://som-vastgoed-cms.vercel.app/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          naam: fd.get("naam"),
+          email: fd.get("email"),
+          telefoon: fd.get("telefoon"),
+          interesse: fd.get("interesse"),
+          bericht: fd.get("bericht"),
+        }),
+      });
+    } catch {}
+    setSent(true);
+    setLoading(false);
+  }
+
   return (
     <section id="contact" style={{ backgroundColor: B, padding: "clamp(5rem,10vh,8rem) clamp(1.5rem,6vw,5rem)" }}>
       <div className="grid gap-20 items-start" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
@@ -751,14 +774,14 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
         ) : (
           <motion.form initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             transition={{ duration: 0.8, ease: EASE }}
-            onSubmit={(e) => { e.preventDefault(); setSent(true); }}
+            onSubmit={handleSubmit}
             className="flex flex-col gap-5 p-8 rounded-3xl"
             style={{ backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}>
             <div className="grid gap-4" style={{ gridTemplateColumns: "1fr 1fr" }}>
-              {[["Naam", "text", "Jouw naam"], ["E-mail", "email", "jouw@email.be"]].map(([label, type, ph]) => (
+              {[["Naam", "text", "Jouw naam", "naam"], ["E-mail", "email", "jouw@email.be", "email"]].map(([label, type, ph, name]) => (
                 <div key={label} className="flex flex-col gap-2">
                   <label className="text-xs font-medium uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.4)" }}>{label}</label>
-                  <input type={type} placeholder={ph} required
+                  <input type={type} name={name} placeholder={ph} required
                     className="text-sm font-light outline-none"
                     style={{ backgroundColor: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "0.85rem 1rem", color: W }}
                     onFocus={e => (e.target.style.borderColor = Y)}
@@ -768,7 +791,7 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-xs font-medium uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.4)" }}>Interesse</label>
-              <select className="text-sm font-light outline-none"
+              <select name="interesse" className="text-sm font-light outline-none"
                 style={{ backgroundColor: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "0.85rem 1rem", color: "rgba(255,255,255,0.6)", appearance: "none" }}>
                 <option value="">Wat kan ik voor u doen?</option>
                 <option>Woning kopen</option>
@@ -779,18 +802,18 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-xs font-medium uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.4)" }}>Bericht</label>
-              <textarea rows={4} placeholder="Vertel ons wat u zoekt..."
+              <textarea name="bericht" rows={4} placeholder="Vertel ons wat u zoekt..."
                 className="text-sm font-light outline-none resize-none"
                 style={{ backgroundColor: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "0.85rem 1rem", color: W }}
                 onFocus={e => (e.target.style.borderColor = Y)}
                 onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} />
             </div>
-            <motion.button type="submit"
+            <motion.button type="submit" disabled={loading}
               className="text-sm font-semibold rounded-full py-4 mt-1 flex items-center justify-center gap-2"
-              style={{ backgroundColor: Y, color: B }}
+              style={{ backgroundColor: Y, color: B, opacity: loading ? 0.7 : 1 }}
               whileHover={{ opacity: 0.9 }} whileTap={{ scale: 0.97 }}>
-              Verstuur bericht
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+              {loading ? "Versturen..." : "Verstuur bericht"}
+              {!loading && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>}
             </motion.button>
           </motion.form>
         )}
