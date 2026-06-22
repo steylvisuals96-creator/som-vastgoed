@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   await resend.emails.send({
     from: "SOM Vastgoed Website <onboarding@resend.dev>",
     to: [process.env.NOTIFICATION_EMAIL!].filter(Boolean),
-    replyTo: email,
+    reply_to: email,
     subject: `Nieuw contactbericht van ${naam}`,
     html: `
       <div style="font-family:system-ui,sans-serif;max-width:560px">
