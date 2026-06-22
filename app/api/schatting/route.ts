@@ -310,7 +310,7 @@ export async function POST(req: NextRequest) {
         schatting ? `Geschatte waarde: €${schatting.min.toLocaleString("nl-BE")} – €${schatting.max.toLocaleString("nl-BE")}` : null,
       ].filter(Boolean).join("\n");
 
-      fetch(`${process.env.CMS_URL}/api/webhook/lead`, {
+      await fetch(`${process.env.CMS_URL}/api/webhook/lead`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-webhook-secret": process.env.CMS_WEBHOOK_SECRET },
         body: JSON.stringify({ naam: data.naam, email: data.email, telefoon: data.telefoon, bericht, bron: "website" }),
