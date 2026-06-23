@@ -778,10 +778,10 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
             className="flex flex-col gap-5 p-8 rounded-3xl"
             style={{ backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}>
             <div className="grid gap-4" style={{ gridTemplateColumns: "1fr 1fr" }}>
-              {[["Naam", "text", "Jouw naam", "naam"], ["E-mail", "email", "jouw@email.be", "email"]].map(([label, type, ph, name]) => (
+              {[["Naam", "text", "Jouw naam", "naam"], ["E-mail", "email", "jouw@email.be", "email"], ["Telefoon", "tel", "+32 ...", "telefoon"]].map(([label, type, ph, name]) => (
                 <div key={label} className="flex flex-col gap-2">
                   <label className="text-xs font-medium uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.4)" }}>{label}</label>
-                  <input type={type} name={name} placeholder={ph} required
+                  <input type={type} name={name} placeholder={ph} required={name !== "telefoon"}
                     className="text-sm font-light outline-none"
                     style={{ backgroundColor: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "0.85rem 1rem", color: W }}
                     onFocus={e => (e.target.style.borderColor = Y)}
