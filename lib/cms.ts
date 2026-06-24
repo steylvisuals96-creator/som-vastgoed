@@ -85,3 +85,96 @@ export async function getCMSPropertyById(idOrSlug: string): Promise<Property | n
 export function isCMSSlug(slug: string): boolean {
   return slug.startsWith("cms-");
 }
+
+export type CMSNieuwsItem = {
+  id: string;
+  slug: string;
+  titel: string;
+  samenvatting?: string;
+  afbeeldingUrl?: string;
+  categorie?: string;
+  publicatiedatum?: string;
+  inhoud?: unknown;
+  seo_titel?: string;
+  seo_beschrijving?: string;
+};
+
+export type CMSTestimonial = {
+  id: string;
+  naam: string;
+  type?: string;
+  tekst: string;
+  beoordeling?: string;
+};
+
+export async function getCMSNieuws(): Promise<CMSNieuwsItem[]> {
+  try {
+    const res = await fetch(
+      `${CMS_BASE}/api/nieuws?limit=50&depth=1&where[gepubliceerd][equals]=true&sort=-publicatiedatum`,
+      { next: { revalidate: 300 } }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.docs ?? []).map((n: any) => ({
+      id: n.id,
+      slug: n.slug,
+      titel: n.titel,
+      samenvatting: n.samenvatting,
+      afbeeldingUrl: mediaUrl(n.afbeelding?.url),
+      categorie: n.categorie,
+      publicatiedatum: n.publicatiedatum,
+      inhoud: n.inhoud,
+      seo_titel: n.seo_titel,
+      seo_beschrijving: n.seo_beschrijving,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function getCMSNieuwsItem(slug: string): Promise<CMSNieuwsItem | null> {
+  try {
+    const res = await fetch(
+      `${CMS_BASE}/api/nieuws?where[slug][equals]=${slug}&where[gepubliceerd][equals]=true&depth=1&limit=1`,
+      { next: { revalidate: 300 } }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const n = data.docs?.[0];
+    if (!n) return null;
+    return {
+      id: n.id,
+      slug: n.slug,
+      titel: n.titel,
+      samenvatting: n.samenvatting,
+      afbeeldingUrl: mediaUrl(n.afbeelding?.url),
+      categorie: n.categorie,
+      publicatiedatum: n.publicatiedatum,
+      inhoud: n.inhoud,
+      seo_titel: n.seo_titel,
+      seo_beschrijving: n.seo_beschrijving,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function getCMSTestimonials(): Promise<CMSTestimonial[]> {
+  try {
+    const res = await fetch(
+      `${CMS_BASE}/api/testimonials?limit=20&depth=0&where[goedgekeurd][equals]=true`,
+      { next: { revalidate: 300 } }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.docs ?? []).map((t: any) => ({
+      id: t.id,
+      naam: t.naam,
+      type: t.type,
+      tekst: t.tekst,
+      beoordeling: t.beoordeling ?? "5",
+    }));
+  } catch {
+    return [];
+  }
+}

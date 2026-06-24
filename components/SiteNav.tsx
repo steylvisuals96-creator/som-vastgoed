@@ -13,13 +13,14 @@ const NAV_LINKS = [
   { label: "Home",      href: "/" },
   { label: "Aanbod",    href: "/aanbod" },
   { label: "Nieuwbouw", href: "/nieuwbouw" },
+  { label: "Nieuws",    href: "/nieuws" },
   { label: "Schatting", href: "/schatting" },
   { label: "Over ons",  href: "/#over-ons" },
   { label: "Team",      href: "/#team" },
 ];
 
 type Props = {
-  activePage?: "aanbod" | "nieuwbouw" | "schatting" | "home";
+  activePage?: "aanbod" | "nieuwbouw" | "schatting" | "home" | "nieuws";
   /** true = transparent at top, fills on scroll (homepage) */
   transparentAtTop?: boolean;
 };

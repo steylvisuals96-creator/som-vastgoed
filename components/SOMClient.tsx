@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
 import type { Property, TeamMember, SiteSettings, Project, Office } from "@/sanity/queries";
+import type { CMSTestimonial } from "@/lib/cms";
 import SiteFooter from "./SiteFooter";
 import SiteNav from "./SiteNav";
 
@@ -114,6 +115,7 @@ type Props = {
   team: TeamMember[];
   settings: SiteSettings | null;
   projects: Project[];
+  testimonials?: CMSTestimonial[];
 };
 
 // Nav is now handled by the shared SiteNav component
@@ -692,6 +694,47 @@ function Team({ members }: { members: TeamMember[] }) {
   );
 }
 
+// ── GETUIGENISSEN ─────────────────────────────────────────────────────────────
+function Getuigenissen({ items }: { items: CMSTestimonial[] }) {
+  if (!items.length) return null;
+  const stars = (n: string) => "★".repeat(Number(n) || 5) + "☆".repeat(Math.max(0, 5 - (Number(n) || 5)));
+  return (
+    <section style={{ backgroundColor: B, padding: "clamp(5rem,10vh,8rem) clamp(1.5rem,6vw,5rem)" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: "clamp(2.5rem,5vh,4rem)" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 12, marginBottom: "1.25rem" }}>
+            <div style={{ height: 1, width: 32, backgroundColor: Y }} />
+            <span style={{ fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: Y }}>Wat klanten zeggen</span>
+            <div style={{ height: 1, width: 32, backgroundColor: Y }} />
+          </div>
+          <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2rem,4vw,3.2rem)", fontWeight: 400, color: W, lineHeight: 1.15 }}>
+            Getuigenissen
+          </h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.5rem" }}>
+          {items.map((t, i) => (
+            <motion.div key={t.id}
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: i * 0.08, ease: EASE }}
+              style={{ background: "#1a1a1a", borderRadius: 12, padding: "1.75rem", border: "1px solid #2a2a2a" }}>
+              <div style={{ color: Y, fontSize: "1.1rem", marginBottom: "1rem", letterSpacing: 2 }}>
+                {stars(t.beoordeling ?? "5")}
+              </div>
+              <p style={{ color: "#d0cbc4", fontSize: "0.925rem", lineHeight: 1.7, marginBottom: "1.25rem", fontStyle: "italic" }}>
+                &ldquo;{t.tekst}&rdquo;
+              </p>
+              <div>
+                <p style={{ color: W, fontWeight: 700, fontSize: "0.875rem" }}>{t.naam}</p>
+                {t.type && <p style={{ color: "#888", fontSize: "0.75rem", marginTop: 2, textTransform: "capitalize" }}>{t.type}</p>}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── CONTACT ───────────────────────────────────────────────────────────────────
 function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
   const [sent, setSent] = useState(false);
@@ -824,7 +867,7 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
 
 
 // ── ROOT ──────────────────────────────────────────────────────────────────────
-export default function SOMClient({ properties, team, settings, projects: _projects }: Props) {
+export default function SOMClient({ properties, team, settings, projects: _projects, testimonials = [] }: Props) {
   const hero = settings?.hero ?? D.hero;
   const stats = settings?.stats ?? D.stats;
   const boldCta = settings?.boldCta ?? D.boldCta;
@@ -846,6 +889,7 @@ export default function SOMClient({ properties, team, settings, projects: _proje
       {/* "Over ons" tijdelijk verborgen tot de about-tekst in Sanity is ingevuld.
           Heractiveren: <About s={settings?.about ?? D.about} /> */}
       <Team members={team} />
+      <Getuigenissen items={testimonials} />
       <Contact s={contact} />
       <SiteFooter />
     </div>
