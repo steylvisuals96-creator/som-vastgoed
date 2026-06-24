@@ -6,6 +6,11 @@ import { getCMSNieuws } from "@/lib/cms";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 
+const CARD_STYLE = `
+  .nieuws-card { transition: transform 0.2s, box-shadow 0.2s; }
+  .nieuws-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,0.12) !important; }
+`;
+
 export const metadata: Metadata = {
   title: "Nieuws & Vastgoedtips | SOM Vastgoed",
   description: "Lees het laatste vastgoednieuws, kooptips en marktinformatie van SOM Vastgoed in Limburg.",
@@ -27,6 +32,7 @@ export default async function NieuwsPage() {
 
   return (
     <div style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif", background: "#f7f7f5", minHeight: "100vh" }}>
+      <style dangerouslySetInnerHTML={{ __html: CARD_STYLE }} />
       <SiteNav activePage="nieuws" />
 
       {/* Hero */}
@@ -55,14 +61,10 @@ export default async function NieuwsPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "2rem" }}>
               {items.map((item) => (
                 <Link key={item.id} href={`/nieuws/${item.slug}`} style={{ textDecoration: "none" }}>
-                  <article style={{
+                  <article className="nieuws-card" style={{
                     background: "#fff", borderRadius: 12, overflow: "hidden",
                     boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                  }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px rgba(0,0,0,0.12)"; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ""; (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 16px rgba(0,0,0,0.06)"; }}
-                  >
+                  }}>
                     {item.afbeeldingUrl ? (
                       <div style={{ position: "relative", height: 200, background: "#eee" }}>
                         <Image src={item.afbeeldingUrl} alt={item.titel} fill style={{ objectFit: "cover" }} />
