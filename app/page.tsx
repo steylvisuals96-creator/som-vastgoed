@@ -1,8 +1,7 @@
 export const revalidate = 60;
 
 import SOMClient from "@/components/SOMClient";
-import { getRecentProperties, getTeamMembers, getSiteSettings, getProjects } from "@/sanity/queries";
-import { getCMSProperties, getCMSTestimonials } from "@/lib/cms";
+import { getCMSProperties, getCMSTestimonials, getCMSTeam } from "@/lib/cms";
 
 const FALLBACK_PROPERTIES = [
   { _id: "1", type: "Woning", title: "Uitzonderlijke woning", location: "Riemst", price: "€ 499.900", beds: 3, area: 184, status: "Te koop", imageUrl: "/som-listings/listing-1.jpg" },
@@ -23,27 +22,21 @@ const FALLBACK_TEAM = [
 ];
 
 export default async function Home() {
-  const hasSanity = !!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-
-  const [cmsProperties, sanityProperties, team, settings, projects, testimonials] = await Promise.all([
+  const [cmsProperties, cmsTeam, testimonials] = await Promise.all([
     getCMSProperties(),
-    hasSanity ? getRecentProperties(8).catch(() => []) : Promise.resolve([]),
-    hasSanity ? getTeamMembers().catch(() => FALLBACK_TEAM) : Promise.resolve(FALLBACK_TEAM),
-    hasSanity ? getSiteSettings().catch(() => null) : Promise.resolve(null),
-    hasSanity ? getProjects().catch(() => []) : Promise.resolve([]),
+    getCMSTeam(),
     getCMSTestimonials(),
   ]);
 
-  // CMS-panden eerst (meest recent toegevoegd), dan Sanity, dan fallback
-  const allProperties = [...cmsProperties, ...sanityProperties];
-  const properties = allProperties.length > 0 ? allProperties.slice(0, 8) : FALLBACK_PROPERTIES;
+  const properties = cmsProperties.length > 0 ? cmsProperties.slice(0, 8) : FALLBACK_PROPERTIES;
+  const team = cmsTeam.length > 0 ? cmsTeam : FALLBACK_TEAM;
 
   return (
     <SOMClient
       properties={properties}
       team={team}
-      settings={settings}
-      projects={projects}
+      settings={null}
+      projects={[]}
       testimonials={testimonials}
     />
   );

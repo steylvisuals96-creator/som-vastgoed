@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
-import type { Property } from "@/sanity/queries";
+import type { Property } from "@/lib/types";
 import SiteNav from "./SiteNav";
 import PortableText from "./PortableText";
 

@@ -1,4 +1,4 @@
-import type { Property } from "@/sanity/queries";
+import type { Property, TeamMember } from "@/lib/types";
 
 const CMS_BASE = process.env.NEXT_PUBLIC_CMS_URL || "https://som-vastgoed-cms.vercel.app";
 
@@ -173,6 +173,26 @@ export async function getCMSTestimonials(): Promise<CMSTestimonial[]> {
       type: t.type,
       tekst: t.tekst,
       beoordeling: t.beoordeling ?? "5",
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function getCMSTeam(): Promise<TeamMember[]> {
+  try {
+    const res = await fetch(
+      `${CMS_BASE}/api/team?limit=20&depth=1&where[actief][equals]=true&sort=volgorde`,
+      { next: { revalidate: 300 } }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (data.docs ?? []).map((m: any) => ({
+      _id: `cms-${m.id}`,
+      name: m.naam,
+      role: m.functie ?? "",
+      photoUrl: mediaUrl(m.foto?.url),
     }));
   } catch {
     return [];

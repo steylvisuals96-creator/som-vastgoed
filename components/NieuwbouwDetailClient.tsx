@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Project } from "@/sanity/queries";
+import type { Project } from "@/lib/types";
 import SiteNav from "./SiteNav";
 import SiteFooter from "./SiteFooter";
 import PortableText from "./PortableText";

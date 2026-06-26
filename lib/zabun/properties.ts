@@ -1,6 +1,6 @@
 import { zabunGet } from "./client";
 import type { ZabunProperty, ZabunPropertiesResponse } from "./types";
-import type { Property } from "@/sanity/queries";
+import type { Property } from "@/lib/types";
 
 // Status mapping: Zabun → display label
 const STATUS_MAP: Record<string, string> = {

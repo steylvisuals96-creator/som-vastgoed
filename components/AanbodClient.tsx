@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import type { Property } from "@/sanity/queries";
+import type { Property } from "@/lib/types";
 import { PropertyCard } from "./SOMClient";
 import SiteFooter from "./SiteFooter";
 import SiteNav from "./SiteNav";

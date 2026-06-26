@@ -1,6 +1,5 @@
 export const revalidate = 60;
 
-import { getProperties } from "@/sanity/queries";
 import { getCMSProperties } from "@/lib/cms";
 import AanbodClient from "@/components/AanbodClient";
 
@@ -19,16 +18,7 @@ export const metadata = {
 };
 
 export default async function AanbodPage() {
-  const [cmsProperties, sanityProperties] = await Promise.all([
-    getCMSProperties(),
-    process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
-      ? getProperties().catch(() => [])
-      : Promise.resolve([]),
-  ]);
-
-  // CMS-panden eerst, dan Sanity, dan fallback als alles leeg is
-  const allProperties = [...cmsProperties, ...sanityProperties];
-  const properties = allProperties.length > 0 ? allProperties : FALLBACK_PROPERTIES;
-
+  const cmsProperties = await getCMSProperties();
+  const properties = cmsProperties.length > 0 ? cmsProperties : FALLBACK_PROPERTIES;
   return <AanbodClient properties={properties} />;
 }

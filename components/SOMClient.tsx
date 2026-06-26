@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
-import type { Property, TeamMember, SiteSettings, Project, Office } from "@/sanity/queries";
+import type { Property, TeamMember, SiteSettings, Project, Office } from "@/lib/types";
 import type { CMSTestimonial } from "@/lib/cms";
 import SiteFooter from "./SiteFooter";
 import SiteNav from "./SiteNav";

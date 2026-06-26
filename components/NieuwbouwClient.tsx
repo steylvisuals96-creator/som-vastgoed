@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import type { Project } from "@/sanity/queries";
+import type { Project } from "@/lib/types";
 import SiteFooter from "./SiteFooter";
 import SiteNav from "./SiteNav";
 

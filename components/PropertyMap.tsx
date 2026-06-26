@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { Property } from "@/sanity/queries";
+import type { Property } from "@/lib/types";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type LeafletMarker = any;
 
