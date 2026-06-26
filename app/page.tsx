@@ -1,7 +1,7 @@
 export const revalidate = 60;
 
 import SOMClient from "@/components/SOMClient";
-import { getCMSProperties, getCMSTestimonials, getCMSTeam } from "@/lib/cms";
+import { getCMSProperties, getCMSTestimonials, getCMSTeam, getCMSInstellingen } from "@/lib/cms";
 
 const FALLBACK_PROPERTIES = [
   { _id: "1", type: "Woning", title: "Uitzonderlijke woning", location: "Riemst", price: "€ 499.900", beds: 3, area: 184, status: "Te koop", imageUrl: "/som-listings/listing-1.jpg" },
@@ -22,10 +22,11 @@ const FALLBACK_TEAM = [
 ];
 
 export default async function Home() {
-  const [cmsProperties, cmsTeam, testimonials] = await Promise.all([
+  const [cmsProperties, cmsTeam, testimonials, settings] = await Promise.all([
     getCMSProperties(),
     getCMSTeam(),
     getCMSTestimonials(),
+    getCMSInstellingen(),
   ]);
 
   const properties = cmsProperties.length > 0 ? cmsProperties.slice(0, 8) : FALLBACK_PROPERTIES;
@@ -35,7 +36,7 @@ export default async function Home() {
     <SOMClient
       properties={properties}
       team={team}
-      settings={null}
+      settings={settings}
       projects={[]}
       testimonials={testimonials}
     />

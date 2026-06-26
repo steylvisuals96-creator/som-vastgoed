@@ -1,4 +1,4 @@
-import type { Property, TeamMember } from "@/lib/types";
+import type { Property, TeamMember, SiteSettings } from "@/lib/types";
 
 const CMS_BASE = process.env.NEXT_PUBLIC_CMS_URL || "https://som-vastgoed-cms.vercel.app";
 
@@ -176,6 +176,57 @@ export async function getCMSTestimonials(): Promise<CMSTestimonial[]> {
     }));
   } catch {
     return [];
+  }
+}
+
+export async function getCMSInstellingen(): Promise<SiteSettings | null> {
+  try {
+    const res = await fetch(`${CMS_BASE}/api/globals/instellingen?depth=1`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const d = await res.json();
+    if (!d) return null;
+    return {
+      hero: {
+        tagline: d.hero_tagline || "Vastgoed in Hasselt & omgeving",
+        titleLine1: d.hero_titel || "Uw droomwoning",
+        titleLine2Italic: d.hero_titel_cursief || "gevonden.",
+        subtitle: d.hero_subtitel || "Gevestigd makelaarskantoor met vestigingen in Hasselt en Genk. Persoonlijke begeleiding van A tot Z.",
+        ctaPrimary: "Bekijk ons aanbod",
+        ctaSecondary: "Gratis waardebepaling",
+      },
+      stats: (d.statistieken ?? []).map((s: any) => ({ value: s.waarde, label: s.label })),
+      boldCta: {
+        topLabel: "Klaar om te starten?",
+        titleLine1: "Verkoop uw woning",
+        titleLine2: "met SOM Vastgoed",
+        titleLine3: "",
+        subtitle: "Persoonlijke begeleiding van A tot Z.",
+      },
+      usps: [],
+      about: {
+        title: d.over_titel || "Over",
+        titleItalic: d.over_titel_cursief || "SOM Vastgoed",
+        text1: d.over_tekst_1 || "",
+        text2: d.over_tekst_2 || "",
+        yearsLabel: "jaar ervaring",
+        cta: "Meer over ons",
+        imageUrl: d.over_foto?.url ? mediaUrl(d.over_foto.url) : undefined,
+      },
+      contact: {
+        phoneHasselt: d.telefoon_hasselt || "+32 11 36 34 32",
+        phoneGenk: d.telefoon_genk || "+32 89 69 15 15",
+        email: d.contact_email || "info@somvastgoed.be",
+        address: d.adres_hasselt || "Het Dorlik 16, 3500 Hasselt",
+        title: "Neem contact",
+        titleYellow: "op",
+        subtitle: "Wij staan voor u klaar.",
+      },
+    };
+  } catch {
+    return null;
   }
 }
 
