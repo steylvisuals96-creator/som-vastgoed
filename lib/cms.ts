@@ -1,4 +1,4 @@
-import type { Property, TeamMember, SiteSettings } from "@/lib/types";
+import type { Property, TeamMember, SiteSettings, Project } from "@/lib/types";
 
 const CMS_BASE = process.env.NEXT_PUBLIC_CMS_URL || "https://som-vastgoed-cms.vercel.app";
 
@@ -176,6 +176,66 @@ export async function getCMSTestimonials(): Promise<CMSTestimonial[]> {
     }));
   } catch {
     return [];
+  }
+}
+
+export async function getCMSNieuwbouw(): Promise<Project[]> {
+  try {
+    const res = await fetch(
+      `${CMS_BASE}/api/nieuwbouw?limit=50&depth=1&where[gepubliceerd][equals]=true&sort=-createdAt`,
+      { next: { revalidate: 300 } }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (data.docs ?? []).map((p: any) => ({
+      _id: `cms-${p.id}`,
+      name: p.naam,
+      developer: p.promotor,
+      location: p.locatie,
+      type: p.type,
+      units: p.aantal_eenheden,
+      priceFrom: p.prijs_vanaf,
+      status: p.status,
+      completionDate: p.oplevering,
+      imageUrl: mediaUrl(p.hoofdfoto?.url),
+      galleryUrls: (p.fotos ?? []).map((f: any) => mediaUrl(f.foto?.url)).filter(Boolean),
+      description: p.beschrijving ?? "",
+      slug: `cms-${p.id}`,
+      featured: p.uitgelicht ?? false,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function getCMSNieuwbouwItem(slug: string): Promise<Project | null> {
+  try {
+    const id = slug.startsWith("cms-") ? slug.slice(4) : slug;
+    const res = await fetch(`${CMS_BASE}/api/nieuwbouw/${id}?depth=1`, {
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const p = await res.json();
+    return {
+      _id: `cms-${p.id}`,
+      name: p.naam,
+      developer: p.promotor,
+      location: p.locatie,
+      type: p.type,
+      units: p.aantal_eenheden,
+      priceFrom: p.prijs_vanaf,
+      status: p.status,
+      completionDate: p.oplevering,
+      imageUrl: mediaUrl(p.hoofdfoto?.url),
+      galleryUrls: (p.fotos ?? []).map((f: any) => mediaUrl(f.foto?.url)).filter(Boolean),
+      description: p.beschrijving ?? "",
+      slug: `cms-${p.id}`,
+      featured: p.uitgelicht ?? false,
+    };
+  } catch {
+    return null;
   }
 }
 
