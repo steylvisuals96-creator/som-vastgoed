@@ -170,7 +170,7 @@ function MarqueeBanner() {
 const CREAM = "#EFE7D8";
 const SEPIA = "#2A241C";
 const SEPIA_SOFT = "#6E5A3E";
-const HERO_IMG = "/som-hero/gouden-uur.jpg";
+const HERO_IMG = "/som-hero/gouden-uur-villa.jpg";
 
 /** Micro-label in een hoek van het beeldvlak — case-study-cachet uit de richting.
  *  Volle dekking + zachte schaduw: 11px op een foto haalt anders geen AA-contrast. */
@@ -213,9 +213,9 @@ function Hero({ s, stats, featuredImg: _featuredImg }: { s: SiteSettings["hero"]
         {/* Warme gouden-uur grade + leesbaarheidsvignet */}
         <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, rgba(250,203,4,0.20) 0%, rgba(201,140,40,0.10) 38%, rgba(42,36,28,0.38) 100%)" }} />
         <div className="absolute inset-x-0 top-0 h-40" style={{ background: "linear-gradient(to bottom, rgba(17,17,17,0.55), transparent)" }} />
-        {/* Sepia-scrim onderaan, bewust licht: `overlay` keert wit om naar zwart op
-            donkere vlakken, dus de onderrand mag niet dichtslaan. */}
-        <div className="absolute inset-x-0 bottom-0" style={{ height: "46%", background: "linear-gradient(to top, rgba(30,24,16,0.50) 0%, rgba(30,24,16,0.22) 55%, transparent 100%)" }} />
+        {/* Lichte sepia-scrim onderaan — genoeg om de hoeklabels te dragen, niet
+            zoveel dat het gouden uur eronder verdwijnt. */}
+        <div className="absolute inset-x-0 bottom-0" style={{ height: "40%", background: "linear-gradient(to top, rgba(30,24,16,0.42) 0%, rgba(30,24,16,0.16) 60%, transparent 100%)" }} />
 
         {/* RISICO-zet: spierdun, manshoog, de zon schijnt er doorheen.
             Staat in de lichte hazeband — daar geeft `overlay` het meeste licht. */}
@@ -228,8 +228,12 @@ function Hero({ s, stats, featuredImg: _featuredImg }: { s: SiteSettings["hero"]
             style={{
               fontFamily: "var(--font-archivo), Archivo, sans-serif",
               fontWeight: 100,
-              color: "rgba(255,251,240,0.96)",
-              mixBlendMode: "overlay",
+              color: "rgba(255,246,225,0.92)",
+              // `screen` i.p.v. `overlay`: het beeld heeft een lichte lucht en een
+              // donker pand, en overlay keert wit om naar zwart op donkere vlakken.
+              // Screen licht altijd op — over het pand gloeit het wordmark, in de
+              // zon en de glasreflecties brandt het weg. Dat is de risico-zet.
+              mixBlendMode: "screen",
               lineHeight: 0.86,
               letterSpacing: "-0.02em",
               margin: 0,

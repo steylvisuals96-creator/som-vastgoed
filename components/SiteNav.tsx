@@ -51,7 +51,7 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
 
   // Close on route change / resize to desktop
   useEffect(() => {
-    const onResize = () => { if (window.innerWidth >= 768) setOpen(false); };
+    const onResize = () => { if (window.innerWidth >= 1024) setOpen(false); };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -80,15 +80,16 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
           />
         </a>
 
-        {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* Desktop links — pas vanaf lg: onder 1024px passen 7 links + CTA + logo niet
+            naast elkaar en schoof de rij over het logo heen. */}
+        <div className="hidden lg:flex items-center gap-6 xl:gap-8">
           {NAV_LINKS.map(({ label, href }) => {
             const isActive = activePage && href.includes(activePage);
             return (
               <a
                 key={label}
                 href={href}
-                className="text-sm font-light transition-colors"
+                className="text-sm font-normal whitespace-nowrap transition-colors"
                 style={{ color: isActive ? Y : "rgba(255,255,255,0.7)" }}
                 onMouseEnter={e => (e.currentTarget.style.color = W)}
                 onMouseLeave={e => (e.currentTarget.style.color = isActive ? Y : "rgba(255,255,255,0.7)")}
@@ -97,20 +98,20 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
               </a>
             );
           })}
-          <motion.a
+          <a
             href="/#contact"
-            className="text-sm font-semibold px-6 py-2.5 rounded-full"
-            style={{ backgroundColor: Y, color: B }}
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
+            className="text-sm font-semibold whitespace-nowrap px-6 py-2.5 transition-colors duration-200"
+            style={{ backgroundColor: Y, color: B, borderRadius: "2px" }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = W; }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = Y; }}
           >
             Contact
-          </motion.a>
+          </a>
         </div>
 
-        {/* Hamburger — mobile only */}
+        {/* Hamburger — onder lg */}
         <button
-          className="md:hidden flex flex-col justify-center items-center gap-1.5 w-10 h-10 cursor-pointer relative z-[60]"
+          className="lg:hidden flex flex-col justify-center items-center gap-1.5 w-10 h-10 cursor-pointer relative z-[60]"
           onClick={() => setOpen(o => !o)}
           aria-label={open ? "Menu sluiten" : "Menu openen"}
         >
@@ -159,7 +160,7 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.05 + i * 0.07, ease: EASE }}
-                    className="w-full text-center py-4 text-3xl font-light tracking-tight transition-colors"
+                    className="w-full text-center py-4 text-3xl font-normal tracking-tight transition-colors"
                     style={{
                       fontFamily: "var(--font-cormorant)",
                       color: isActive ? Y : "rgba(255,255,255,0.85)",
@@ -178,8 +179,8 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.4, ease: EASE }}
-                className="mt-6 w-full text-center py-4 rounded-full text-base font-semibold"
-                style={{ backgroundColor: Y, color: B }}
+                className="mt-6 w-full text-center py-4 text-base font-semibold"
+                style={{ backgroundColor: Y, color: B, borderRadius: "2px" }}
               >
                 Contact opnemen
               </motion.a>
@@ -194,7 +195,7 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
             >
               <div className="text-center">
                 <p className="text-xs font-semibold mb-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>Hasselt</p>
-                <a href="tel:+3211363432" className="text-sm font-light" style={{ color: "rgba(255,255,255,0.6)" }}>011 36 34 32</a>
+                <a href="tel:+3211363432" className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>011 36 34 32</a>
               </div>
               <div className="w-px" style={{ backgroundColor: "rgba(255,255,255,0.1)" }} />
               <div className="text-center">
