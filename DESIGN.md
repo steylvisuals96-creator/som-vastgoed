@@ -32,14 +32,48 @@ huisstijl in plaats van ertegen te vechten.
 ## Signatuurzet + risico
 
 Het wordmark **SOM VASTGOED** staat spierdun en manshoog over een gouden-uur
-foto, met `mix-blend-mode: overlay` zodat de zon er letterlijk doorheen schijnt.
+foto, met `mix-blend-mode: screen` zodat de zon er letterlijk doorheen schijnt.
 Dat is de risico-zet van de richting en mag niet afgezwakt worden.
+
+`screen` en niet `overlay`: overlay keert wit om naar zwart op donkere vlakken,
+en het pand op de hero-foto is donker metselwerk. Screen licht altijd op — het
+wordmark gloeit over het pand en brandt weg waar de zon staat. Wie de foto
+vervangt, controleert deze blend-mode opnieuw.
+
+## Intro — gordijn dat opent
+
+Crème vlak over het volle scherm met hetzelfde wordmark en een dunne
+voortgangslijn; splitst na ~1s horizontaal open en onthult de hero. Regels:
+
+- Speelt **één keer per sessie** (`sessionStorage: som_intro_seen`) en helemaal
+  niet bij `prefers-reduced-motion`.
+- Wacht op `document.fonts.ready` (max 1,2s) voor het opent — anders staat het
+  wordmark er even in de fallback-font en is juist het haarlijn-gewicht weg.
+- Zet `body overflow: hidden` en **geeft dat weer vrij** zodra het open is.
+- De hero begint pas te bewegen als het gordijn open is (`start`-prop), zodat de
+  reveal niet achter het gordijn opgebruikt wordt.
+
+## Paginaritme
+
+Banden wisselen tussen `#EFE7D8` en `#E6DCC8`, met twee sepia-blokken als
+contrapunt (statement + contact). Geen wit op de homepage.
+
+Secties dragen een **index in de kantlijn** (01–07) in hairline — dat is de
+case-study-structuur van de richting en vervangt de uppercase kicker.
 
 ## Dichtheid
 
-Laag. Veel lucht: het beeldvlak beslaat ~72svh, de crème-band eronder draagt de
+Laag. Veel lucht: het beeldvlak beslaat ~64svh, de crème-band eronder draagt de
 kop, één regel tekst en twee CTA's. Statistieken als dunne editorial-rij, geen
-kaarten.
+kaarten. Ook panden, kantoren en team staan zonder kaart, schaduw of radius —
+alleen beeld, een dunne bovenlijn en tekst.
+
+## Bekende valkuil — kop achter een masker
+
+Een kop die op `y: 104%` begint binnen zijn eigen `overflow: hidden` valt buiten
+het intersectie-rechthoek, waardoor `whileInView` nooit vuurt en de kop
+permanent onzichtbaar blijft. `MaskedHeading` zet de trigger daarom op de
+wrapper en stuurt de kop via variants.
 
 ## Vaste verboden (Sam)
 
