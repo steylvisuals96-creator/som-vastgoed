@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { Archivo, Cormorant_Garamond, DM_Sans } from "next/font/google";
 import { cookies } from "next/headers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
@@ -22,6 +22,14 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
+// Hairline display face voor het hero-wordmark (stand-in voor PP Neue Montreal Thin)
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["100", "200", "400", "500"],
+  variable: "--font-archivo",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "SOM Vastgoed — Uw thuis in Hasselt",
   description: "SOM Vastgoed — professioneel en persoonlijk vastgoed in Hasselt en omgeving. Koop, verkoop of verhuur uw woning met vertrouwen.",
@@ -38,7 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const isAdmin = jar.get("som_admin")?.value === "1";
 
   return (
-    <html lang="nl" className={`${cormorant.variable} ${dmSans.variable}`}>
+    <html lang="nl" className={`${cormorant.variable} ${dmSans.variable} ${archivo.variable}`}>
       <body style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}>
         {children}
         {isAdmin && <EditBar />}

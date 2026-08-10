@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useState } from "react";
 import type { Property, TeamMember, SiteSettings, Project, Office } from "@/lib/types";
 import type { CMSTestimonial } from "@/lib/cms";
@@ -164,76 +164,161 @@ function MarqueeBanner() {
 }
 
 // ── HERO ─────────────────────────────────────────────────────────────────────
-function Hero({ s, stats, featuredImg }: { s: SiteSettings["hero"] | typeof D.hero; stats: typeof D.stats; featuredImg?: string }) {
+// ── HERO — richting "Gouden Uur" (zie DESIGN.md) ──────────────────────────────
+// Gouden-uur beeldvlak met het wordmark spierdun en manshoog eroverheen, zo licht
+// dat de zon er doorheen schijnt. Daaronder een crème band met de kop en de CTA's.
+const CREAM = "#EFE7D8";
+const SEPIA = "#2A241C";
+const SEPIA_SOFT = "#6E5A3E";
+const HERO_IMG = "/som-hero/gouden-uur.jpg";
+
+/** Micro-label in een hoek van het beeldvlak — case-study-cachet uit de richting.
+ *  Volle dekking + zachte schaduw: 11px op een foto haalt anders geen AA-contrast. */
+function CornerLabel({ children, className, delay }: { children: React.ReactNode; className: string; delay: number }) {
+  const reduce = useReducedMotion();
   return (
-    <section className="relative overflow-hidden" style={{ minHeight: "100svh", backgroundColor: B }}>
-      {/* Right side editorial photo — desktop only */}
-      {featuredImg && (
-        <div className="hidden xl:block absolute right-0 top-0 bottom-0 overflow-hidden" style={{ width: "42%" }}>
-          <div className="absolute inset-0 z-10" style={{ background: "linear-gradient(to right, #111111 0%, rgba(17,17,17,0.5) 50%, rgba(17,17,17,0.2) 100%)" }} />
-          <motion.img
-            src={featuredImg}
-            alt=""
-            className="w-full h-full object-cover"
-            initial={{ scale: 1.08, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.5 }}
-            transition={{ duration: 2.5, ease: "easeOut" }}
+    <motion.span
+      initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }}
+      transition={{ duration: 1.1, delay, ease: "linear" }}
+      className={`absolute z-20 hidden sm:block ${className}`}
+      style={{
+        fontSize: "11px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase",
+        color: "#FFFBF2", textShadow: "0 1px 14px rgba(20,14,8,0.85), 0 0 3px rgba(20,14,8,0.5)",
+      }}>
+      {children}
+    </motion.span>
+  );
+}
+
+function Hero({ s, stats, featuredImg: _featuredImg }: { s: SiteSettings["hero"] | typeof D.hero; stats: typeof D.stats; featuredImg?: string }) {
+  const img = HERO_IMG;
+  // Bij prefers-reduced-motion staat alles meteen op de eindstaat; de hiërarchie
+  // van de hero zit in de typografie, niet in de beweging, dus er gaat niets verloren.
+  const reduce = useReducedMotion();
+  return (
+    <section className="relative" style={{ backgroundColor: CREAM }}>
+      {/* ── BEELDVLAK ─────────────────────────────────────────────────────── */}
+      <div className="relative overflow-hidden" style={{ height: "clamp(400px, 64svh, 700px)", backgroundColor: SEPIA, isolation: "isolate" }}>
+        <motion.div
+          className="absolute inset-0"
+          initial={reduce ? false : { scale: 1.14 }} animate={{ scale: 1 }}
+          transition={{ duration: 2.6, ease: [0.22, 0.61, 0.36, 1] }}>
+          <Image
+            src={img} alt="" fill priority sizes="100vw"
+            className="object-cover"
+            style={{ filter: "sepia(0.34) saturate(1.15) contrast(1.04) brightness(0.92)" }}
           />
+        </motion.div>
+
+        {/* Warme gouden-uur grade + leesbaarheidsvignet */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, rgba(250,203,4,0.20) 0%, rgba(201,140,40,0.10) 38%, rgba(42,36,28,0.38) 100%)" }} />
+        <div className="absolute inset-x-0 top-0 h-40" style={{ background: "linear-gradient(to bottom, rgba(17,17,17,0.55), transparent)" }} />
+        {/* Sepia-scrim onderaan, bewust licht: `overlay` keert wit om naar zwart op
+            donkere vlakken, dus de onderrand mag niet dichtslaan. */}
+        <div className="absolute inset-x-0 bottom-0" style={{ height: "46%", background: "linear-gradient(to top, rgba(30,24,16,0.50) 0%, rgba(30,24,16,0.22) 55%, transparent 100%)" }} />
+
+        {/* RISICO-zet: spierdun, manshoog, de zon schijnt er doorheen.
+            Staat in de lichte hazeband — daar geeft `overlay` het meeste licht. */}
+        <div className="absolute inset-0 flex items-center justify-center" style={{ paddingTop: "clamp(2rem,6vh,4.5rem)" }}>
+          <motion.h1
+            initial={reduce ? false : { clipPath: "inset(0 0 100% 0)" }}
+            animate={{ clipPath: "inset(0 0 0% 0)" }}
+            transition={{ duration: 1.5, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full text-center"
+            style={{
+              fontFamily: "var(--font-archivo), Archivo, sans-serif",
+              fontWeight: 100,
+              color: "rgba(255,251,240,0.96)",
+              mixBlendMode: "overlay",
+              lineHeight: 0.86,
+              letterSpacing: "-0.02em",
+              margin: 0,
+            }}>
+            <span className="hidden md:block" style={{ fontSize: "10.9vw", whiteSpace: "nowrap" }}>SOM VASTGOED</span>
+            <span className="block md:hidden" style={{ fontSize: "16.8vw" }}>SOM<br />VASTGOED</span>
+          </motion.h1>
         </div>
-      )}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/2 h-full" style={{ background: "radial-gradient(ellipse at 80% 30%, rgba(250,203,4,0.07) 0%, transparent 65%)" }} />
-        <div className="absolute bottom-0 left-0 w-px h-2/3" style={{ background: "linear-gradient(to top, transparent, rgba(250,203,4,0.15))" }} />
+
+        <CornerLabel className="top-28 right-6 lg:right-10" delay={0.9}>Hasselt — Genk</CornerLabel>
+        <CornerLabel className="bottom-6 left-6 lg:left-10" delay={1.1}>{s.tagline}</CornerLabel>
+        <CornerLabel className="bottom-6 right-6 lg:right-10" delay={1.3}>Immo met een plus</CornerLabel>
       </div>
 
-      <div className="relative flex flex-col justify-end" style={{ minHeight: "100svh", padding: "0 clamp(1.5rem,6vw,5rem) clamp(3rem,8vh,6rem)" }}>
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE }}
-          className="flex items-center gap-3 mb-8">
-          <div className="h-px w-10" style={{ backgroundColor: Y }} />
-          <span className="text-xs font-medium tracking-widest uppercase" style={{ color: Y }}>{s.tagline}</span>
-        </motion.div>
-
-        <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.1, ease: EASE }}
-          className="text-white mb-8"
-          style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(3.5rem,7vw,6.5rem)", fontWeight: 300, lineHeight: 1.0, letterSpacing: "-0.02em", maxWidth: "820px" }}>
-          {s.titleLine1}<br />
-          <em style={{ fontStyle: "italic", color: Y }}>{s.titleLine2Italic}</em>
-        </motion.h1>
-
-        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.25, ease: EASE }}
-          className="mb-10 text-base font-light leading-relaxed"
-          style={{ color: "rgba(255,255,255,0.55)", maxWidth: "480px" }}>
-          {s.subtitle}
-        </motion.p>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.35, ease: EASE }}
-          className="flex items-center gap-4 flex-wrap">
-          <motion.a href="#aanbod"
-            className="inline-flex items-center gap-2 text-sm font-semibold rounded-full px-8 py-4"
-            style={{ backgroundColor: Y, color: B }}
-            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-            {s.ctaPrimary}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
-          </motion.a>
-          <motion.a href="/schatting"
-            className="text-sm font-light rounded-full px-8 py-4 border text-white"
-            style={{ borderColor: "rgba(255,255,255,0.25)" }}
-            whileHover={{ borderColor: Y, color: Y }} whileTap={{ scale: 0.97 }}>
-            {s.ctaSecondary}
-          </motion.a>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.6 }}
-          className="flex gap-10 mt-16 pt-10 flex-wrap"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-          {stats.map(({ value, label }) => (
-            <div key={label}>
-              <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "2.2rem", fontWeight: 400, color: Y, lineHeight: 1 }}>{value}</p>
-              <p className="text-xs font-light mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>{label}</p>
+      {/* ── CRÈME BAND ────────────────────────────────────────────────────── */}
+      <div style={{ padding: "clamp(3rem,7vh,5.5rem) clamp(1.5rem,6vw,5rem) clamp(2.5rem,6vh,4.5rem)" }}>
+        <div className="grid gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+          <div>
+            <div style={{ overflow: "hidden" }}>
+              <motion.h2
+                initial={reduce ? false : { y: "104%" }} animate={{ y: 0 }}
+                transition={{ duration: 1.05, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  fontFamily: "var(--font-archivo), Archivo, sans-serif",
+                  fontSize: "clamp(2rem,4.4vw,3.75rem)",
+                  fontWeight: 400,
+                  letterSpacing: "-0.03em",
+                  lineHeight: 1.04,
+                  color: SEPIA,
+                  maxWidth: "16ch",
+                  margin: 0,
+                }}>
+                {s.titleLine1}{" "}
+                <span style={{ color: SEPIA_SOFT }}>{s.titleLine2Italic}</span>
+              </motion.h2>
             </div>
-          ))}
-        </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              transition={{ duration: 1.2, delay: 0.75 }}
+              className="mt-7 leading-relaxed"
+              style={{ color: SEPIA_SOFT, fontSize: "1rem", maxWidth: "44ch" }}>
+              {s.subtitle}
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              transition={{ duration: 0.9, delay: 0.95 }}
+              className="mt-10 flex flex-wrap items-stretch gap-3">
+              <a href="#aanbod"
+                className="inline-flex items-center px-8 py-4 text-sm font-medium transition-colors duration-200"
+                style={{ backgroundColor: Y, color: SEPIA, borderRadius: "2px" }}
+                onMouseEnter={e => { e.currentTarget.style.backgroundColor = SEPIA; e.currentTarget.style.color = Y; }}
+                onMouseLeave={e => { e.currentTarget.style.backgroundColor = Y; e.currentTarget.style.color = SEPIA; }}>
+                {s.ctaPrimary}
+              </a>
+              <a href="/schatting"
+                className="inline-flex items-center px-8 py-4 text-sm font-medium transition-colors duration-200"
+                style={{ borderRadius: "2px", border: `1px solid rgba(42,36,28,0.35)`, color: SEPIA }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = SEPIA; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(42,36,28,0.35)"; }}>
+                {s.ctaSecondary}
+              </a>
+            </motion.div>
+          </div>
+
+          {/* Statistieken als dunne editorial-rij, geen kaarten */}
+          <motion.dl
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            transition={{ duration: 1.4, delay: 1 }}
+            className="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:flex-col gap-x-10 gap-y-6 lg:gap-y-0"
+            style={{ borderTop: `1px solid rgba(110,90,62,0.22)`, paddingTop: "1.75rem" }}>
+            {stats.map(({ value, label }) => (
+              <div key={label} className="lg:py-3">
+                <dt className="sr-only">{label}</dt>
+                <dd style={{ margin: 0 }}>
+                  <span style={{
+                    fontFamily: "var(--font-archivo), Archivo, sans-serif",
+                    fontSize: "clamp(1.75rem,2.6vw,2.4rem)", fontWeight: 200,
+                    color: SEPIA, letterSpacing: "-0.02em", lineHeight: 1,
+                  }}>{value}</span>
+                  <span className="block mt-1.5" style={{ fontSize: "12px", color: SEPIA_SOFT, letterSpacing: "0.02em" }}>{label}</span>
+                </dd>
+              </div>
+            ))}
+          </motion.dl>
+        </div>
       </div>
+
     </section>
   );
 }
