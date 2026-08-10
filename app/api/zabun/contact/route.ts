@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(req: NextRequest) {
+  // Resend pas hier aanmaken: op module-niveau gooit de constructor tijdens de
+  // build zodra RESEND_API_KEY ontbreekt, wat elke preview-deploy liet falen.
+  // Zelfde patroon als app/api/schatting/route.ts.
+  if (!process.env.RESEND_API_KEY) {
+    return NextResponse.json({ error: "E-mailverzending is niet geconfigureerd" }, { status: 500 });
+  }
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
   let body: unknown;
   try {
     body = await req.json();
