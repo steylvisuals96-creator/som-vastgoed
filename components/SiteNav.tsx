@@ -68,14 +68,17 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
           paddingRight: "clamp(1.5rem,5vw,4rem)",
         }}
       >
-        {/* Logo */}
+        {/* Logo — transparante versie (wit + goud) van het SOM Vastgoed-merk.
+            De originele PNG had een bijna-witte achtergrond die door de vroegere
+            invert-filter een donkere box werd; deltas: bg weggesneden, zwarte
+            wordmark naar wit, gouden swirl + tagline behouden. */}
         <a href="/" onClick={() => setOpen(false)}>
           <Image
-            src="/som-logo.png"
+            src="/som-logo-white.png"
             alt="SOM Vastgoed"
             width={160}
             height={56}
-            style={{ height: "44px", width: "auto", filter: "invert(1) hue-rotate(180deg)" }}
+            style={{ height: "44px", width: "auto" }}
             priority
           />
         </a>
