@@ -351,7 +351,6 @@ function Hero({ s, stats, start }: { s: SiteSettings["hero"] | typeof D.hero; st
           </motion.h1>
         </div>
 
-        <CornerLabel className="top-28 right-6 lg:right-10" delay={0.9}>Hasselt — Genk</CornerLabel>
         <CornerLabel className="bottom-6 left-6 lg:left-10" delay={1.1}>{s.tagline}</CornerLabel>
         <CornerLabel className="bottom-6 right-6 lg:right-10" delay={1.3}>Immo met een plus</CornerLabel>
       </div>
