@@ -72,7 +72,7 @@ const CONTACT_ICONS: Record<string, React.ReactNode> = {
 // ── Default fallback values (gebruikt tot het CMS gevuld is) ──────────────────
 const D = {
   hero: {
-    tagline: "Vastgoed in Hasselt & omgeving",
+    tagline: "Wij begeleiden u van A tot Z met persoonlijk advies en expertise.",
     titleLine1: "Uw thuis vinden,",
     titleLine2Italic: "dat doen we samen.",
     subtitle: "Gevestigd makelaarskantoor met vestigingen in Hasselt en Genk. Persoonlijk begeleiding van A tot Z.",
