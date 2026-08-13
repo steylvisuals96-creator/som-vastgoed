@@ -14,7 +14,7 @@ const FALLBACK_PROPERTIES = [
 
 export const metadata = {
   title: "Aanbod — SOM Vastgoed",
-  description: "Volledig vastgoedaanbod van SOM Vastgoed in Hasselt, Genk en omgeving.",
+  description: "Volledig vastgoedaanbod van SOM Vastgoed in Limburg en omgeving.",
 };
 
 export default async function AanbodPage() {

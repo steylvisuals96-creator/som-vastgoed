@@ -117,7 +117,7 @@ export default function NieuwbouwClient({ projects }: { projects: Project[] }) {
         </motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.3 }}
           className="mt-4 text-sm font-light" style={{ color: "rgba(255,255,255,0.4)", maxWidth: "480px" }}>
-          Ontdek onze selectie van nieuwbouwprojecten in Hasselt, Genk en omgeving. Van appartement tot villa — wij begeleiden u van A tot Z.
+          Ontdek onze selectie van nieuwbouwprojecten in Limburg en omgeving. Van appartement tot villa — wij begeleiden u van A tot Z.
         </motion.p>
       </section>
 

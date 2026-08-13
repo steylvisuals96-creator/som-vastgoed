@@ -75,7 +75,7 @@ const D = {
     tagline: "Wij begeleiden u van A tot Z met persoonlijk advies en expertise.",
     titleLine1: "Uw thuis vinden,",
     titleLine2Italic: "dat doen we samen.",
-    subtitle: "Gevestigd makelaarskantoor met vestigingen in Hasselt en Genk. Persoonlijk begeleiding van A tot Z.",
+    subtitle: "Gevestigd makelaarskantoor actief in heel Limburg. Persoonlijke begeleiding van A tot Z.",
     ctaPrimary: "Bekijk ons aanbod",
     ctaSecondary: "Gratis waardebepaling",
   },
@@ -94,14 +94,14 @@ const D = {
   },
   usps: [
     { icon: "🏆", title: "Gevestigd kantoor", sub: "Al meer dan 15 jaar actief in Limburg" },
-    { icon: "📍", title: "3 vestigingen", sub: "Hasselt, Hasselt Nieuwbouw & Genk" },
+    { icon: "📍", title: "3 vestigingen", sub: "Actief in heel Limburg" },
     { icon: "🤝", title: "Persoonlijk", sub: "Eén makelaar van A tot Z" },
     { icon: "⚡", title: "Snel resultaat", sub: "Gemiddeld 45 dagen verkoop" },
   ],
   about: {
     title: "Uw vertrouwde partner",
     titleItalic: "in Limburgs vastgoed",
-    text1: "Met SOM Vastgoed kiest u voor een gevestigd professioneel kantoor met vestigingen in de provincie Limburg in Hasselt en Genk. Wij begeleiden u persoonlijk — van eerste bezichtiging tot sleuteloverdracht.",
+    text1: "Met SOM Vastgoed kiest u voor een gevestigd professioneel kantoor actief in heel de provincie Limburg. Wij begeleiden u persoonlijk — van eerste bezichtiging tot sleuteloverdracht.",
     text2: "Eerlijk advies, transparante communicatie en maximaal resultaat. Geen verrassingen — wel een makelaar die voor u gaat.",
     yearsLabel: "15+",
     cta: "Gratis waardebepaling",
@@ -563,7 +563,7 @@ function TaskSolution() {
     {
       k: "Kopen",
       t: "U zoekt een thuis, geen lijst met adressen.",
-      s: "Eén makelaar volgt uw dossier van eerste bezichtiging tot sleuteloverdracht, kent het aanbod in Hasselt en Genk van binnenuit, en zegt ook wanneer een pand níets voor u is.",
+      s: "Eén makelaar volgt uw dossier van eerste bezichtiging tot sleuteloverdracht, kent het aanbod in de regio van binnenuit, en zegt ook wanneer een pand níets voor u is.",
     },
   ];
   return (

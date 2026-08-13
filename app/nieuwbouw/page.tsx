@@ -5,7 +5,7 @@ import { getCMSNieuwbouw } from "@/lib/cms";
 
 export const metadata = {
   title: "Nieuwbouw & Projecten — SOM Vastgoed",
-  description: "Ontdek alle nieuwbouwprojecten van SOM Vastgoed in Hasselt, Genk en omgeving.",
+  description: "Ontdek alle nieuwbouwprojecten van SOM Vastgoed in Limburg en omgeving.",
 };
 
 export default async function NieuwbouwPage() {

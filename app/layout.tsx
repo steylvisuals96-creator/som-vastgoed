@@ -31,11 +31,11 @@ const archivo = Archivo({
 });
 
 export const metadata: Metadata = {
-  title: "SOM Vastgoed — Uw thuis in Hasselt",
-  description: "SOM Vastgoed — professioneel en persoonlijk vastgoed in Hasselt en omgeving. Koop, verkoop of verhuur uw woning met vertrouwen.",
+  title: "SOM Vastgoed — Uw vertrouwde makelaar in Limburg",
+  description: "SOM Vastgoed — professioneel en persoonlijk vastgoed in Limburg. Koop, verkoop of verhuur uw woning met vertrouwen.",
   openGraph: {
-    title: "SOM Vastgoed — Uw thuis in Hasselt",
-    description: "Professioneel en persoonlijk vastgoed in Hasselt, Sint-Truiden en Genk.",
+    title: "SOM Vastgoed — Uw vertrouwde makelaar in Limburg",
+    description: "Professioneel en persoonlijk vastgoed in heel Limburg.",
     type: "website",
     locale: "nl_BE",
   },
