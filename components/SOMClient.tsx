@@ -752,7 +752,7 @@ function Team({ members }: { members: TeamMember[] }) {
   return (
     <section id="team" style={{ backgroundColor: CREAM, padding: "clamp(4rem,9vh,7rem) clamp(1.5rem,6vw,5rem)" }}>
       <div className="flex items-end gap-6 mb-14">
-        <SectionIndex nr="05" />
+        <SectionIndex nr="06" />
         <MaskedHeading>Mensen die voor u<br />het verschil maken</MaskedHeading>
       </div>
 
@@ -779,6 +779,52 @@ function Team({ members }: { members: TeamMember[] }) {
   );
 }
 
+// ── OVER ONS ──────────────────────────────────────────────────────────────────
+function OverOns({ a }: { a: typeof D.about }) {
+  const reduce = useReducedMotion();
+  return (
+    <section id="over-ons" style={{ backgroundColor: CREAM_DEEP, padding: "clamp(4rem,9vh,7rem) clamp(1.5rem,6vw,5rem)" }}>
+      <div className="grid gap-x-16 gap-y-12 lg:grid-cols-[auto_1fr]" style={{ alignItems: "start" }}>
+        {/* Left: index + heading */}
+        <div className="flex flex-col gap-6">
+          <SectionIndex nr="05" />
+          <div>
+            <MaskedHeading>{a.title}</MaskedHeading>
+            <MaskedHeading delay={0.08}>
+              <em style={{ fontStyle: "italic" }}>{a.titleItalic}</em>
+            </MaskedHeading>
+          </div>
+        </div>
+
+        {/* Right: copy + accent + cta */}
+        <motion.div
+          className="flex flex-col gap-8 pt-2"
+          initial={reduce ? false : { opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.1 }}>
+          <p style={{ fontSize: "clamp(1rem,1.8vw,1.125rem)", lineHeight: 1.65, color: SEPIA, maxWidth: "52ch" }}>
+            {a.text1}
+          </p>
+          <p style={{ fontSize: "0.9375rem", lineHeight: 1.7, color: SEPIA_SOFT, maxWidth: "50ch" }}>
+            {a.text2}
+          </p>
+
+          {/* Years accent */}
+          <div style={{ borderTop: `1px solid ${LINE}`, paddingTop: "1.5rem", display: "flex", alignItems: "baseline", gap: "0.75rem" }}>
+            <span style={{ fontFamily: DISPLAY, fontSize: "clamp(2.5rem,5vw,4rem)", fontWeight: 100, letterSpacing: "-0.04em", lineHeight: 1, color: SEPIA }}>
+              {a.yearsLabel}
+            </span>
+            <span style={{ fontSize: "0.875rem", color: SEPIA_SOFT }}>jaar ervaring in Limburg</span>
+          </div>
+
+          <Button href="/schatting">{a.cta}</Button>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 // ── GETUIGENISSEN ─────────────────────────────────────────────────────────────
 function Getuigenissen({ items }: { items: CMSTestimonial[] }) {
   const reduce = useReducedMotion();
@@ -786,7 +832,7 @@ function Getuigenissen({ items }: { items: CMSTestimonial[] }) {
   return (
     <section style={{ backgroundColor: CREAM_DEEP, padding: "clamp(4rem,9vh,7rem) clamp(1.5rem,6vw,5rem)" }}>
       <div className="flex items-end gap-6 mb-14">
-        <SectionIndex nr="06" />
+        <SectionIndex nr="07" />
         <MaskedHeading>Wat klanten<br />over ons zeggen</MaskedHeading>
       </div>
 
@@ -863,7 +909,7 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
       <div className="grid gap-x-16 gap-y-14" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
         <div>
           <div className="flex items-end gap-6 mb-10">
-            <SectionIndex nr="07" />
+            <SectionIndex nr="08" />
             <MaskedHeading color={CREAM}>
               {s.title}<br /><span style={{ color: Y }}>{s.titleYellow}</span>
             </MaskedHeading>
@@ -956,6 +1002,7 @@ export default function SOMClient({ properties, team, settings, projects: _proje
   const boldCta = settings?.boldCta ?? D.boldCta;
   const usps = settings?.usps ?? D.usps;
   const contact = settings?.contact ?? D.contact;
+  const about = D.about;
   const offices = settings?.offices ?? [];
 
   // De hero begint pas te bewegen als het gordijn open is, zodat de reveal
@@ -973,6 +1020,7 @@ export default function SOMClient({ properties, team, settings, projects: _proje
       <Statement s={boldCta} />
       <UspStrip usps={usps} />
       <Offices offices={offices} />
+      <OverOns a={about} />
       <Team members={team} />
       <Getuigenissen items={testimonials} />
       <Contact s={contact} />
