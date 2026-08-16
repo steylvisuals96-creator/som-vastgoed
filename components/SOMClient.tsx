@@ -759,7 +759,7 @@ function Team({ members }: { members: TeamMember[] }) {
             transition={{ duration: 0.6, delay: i * 0.07 }}
             className="group">
             <div className="relative overflow-hidden" style={{ aspectRatio: "3/4", backgroundColor: CREAM_DEEP }}>
-              <Image src={m.photoUrl} alt={m.name} fill
+              <Image src={m.photoUrl} alt={m.name} fill unoptimized
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 sizes="(min-width: 1024px) 260px, 45vw"
                 style={{ filter: "sepia(0.22) contrast(1.02)" }} />
