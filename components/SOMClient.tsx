@@ -73,9 +73,9 @@ const CONTACT_ICONS: Record<string, React.ReactNode> = {
 const D = {
   hero: {
     tagline: "Wij begeleiden u van A tot Z met persoonlijk advies en expertise.",
-    titleLine1: "Uw thuis vinden,",
-    titleLine2Italic: "dat doen we samen.",
-    subtitle: "Gevestigd makelaarskantoor actief in heel Limburg. Persoonlijke begeleiding van A tot Z.",
+    titleLine1: "Vastgoed in Limburg,",
+    titleLine2Italic: "gemiddeld 45 dagen.",
+    subtitle: "Eén makelaar begeleidt u van eerste bezichtiging tot sleuteloverdracht — voor kopers én verkopers.",
     ctaPrimary: "Bekijk ons aanbod",
     ctaSecondary: "Gratis waardebepaling",
   },
@@ -422,35 +422,35 @@ export function PropertyCard({ p, i }: { p: Property; i: number }) {
     <motion.article key={p._id} layout
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}
       transition={{ duration: 0.5, delay: i * 0.06, ease: EASE }}
-      className="group bg-white overflow-hidden cursor-pointer relative"
-      style={{ borderRadius: "20px", boxShadow: "0 2px 20px rgba(0,0,0,0.06)" }}
-      whileHover={{ y: -6, boxShadow: "0 24px 60px rgba(0,0,0,0.13)" }}
+      className="group overflow-hidden cursor-pointer"
+      style={{ backgroundColor: CREAM, borderTop: `1px solid ${LINE}` }}
       onClick={() => window.location.href = href}>
-      <div className="absolute bottom-0 left-0 right-0 h-0.5 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-10"
-        style={{ backgroundColor: Y }} />
       <div className="relative overflow-hidden" style={{ aspectRatio: "16/10" }}>
-        <motion.div className="absolute inset-0" whileHover={{ scale: 1.07 }} transition={{ duration: 0.7 }}>
-          <Image src={p.imageUrl} alt={p.title} fill className="object-cover" sizes="(min-width: 1024px) 400px, 90vw" />
+        <motion.div className="absolute inset-0"
+          whileHover={{ scale: 1.04 }} transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}>
+          <Image src={p.imageUrl} alt={p.title} fill className="object-cover"
+            sizes="(min-width: 1024px) 400px, 90vw"
+            style={{ filter: "sepia(0.15) contrast(1.02)" }} />
         </motion.div>
-        <div className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
-          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.4), transparent)" }} />
-        <div className="absolute top-4 left-4 text-xs font-semibold px-3 py-1.5 rounded-full"
-          style={{ backgroundColor: Y, color: B }}>{p.status}</div>
-        <div className="absolute top-4 right-4 text-xs font-medium px-3 py-1.5 rounded-full backdrop-blur-sm"
-          style={{ backgroundColor: "rgba(17,17,17,0.65)", color: W }}>{p.type}</div>
+        <div className="absolute top-4 left-4 flex gap-2">
+          <span className="text-xs font-medium px-2.5 py-1"
+            style={{ backgroundColor: Y, color: SEPIA, letterSpacing: "0.06em" }}>{p.status}</span>
+          <span className="text-xs font-medium px-2.5 py-1"
+            style={{ backgroundColor: SEPIA, color: CREAM, letterSpacing: "0.06em" }}>{p.type}</span>
+        </div>
       </div>
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-2 gap-3">
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-3 mb-3">
           <div className="min-w-0">
-            <p className="truncate" style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.35rem", fontWeight: 500, color: B, lineHeight: 1.2 }}>{p.title}</p>
-            <p className="text-xs mt-1 flex items-center gap-1" style={{ color: "#888" }}>
+            <p className="truncate" style={{ fontFamily: DISPLAY, fontSize: "1.125rem", fontWeight: 500, color: SEPIA, lineHeight: 1.25 }}>{p.title}</p>
+            <p className="text-xs mt-1 flex items-center gap-1" style={{ color: SEPIA_SOFT }}>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
               {p.location}
             </p>
           </div>
-          <p className="shrink-0" style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.45rem", fontWeight: 600, color: B, letterSpacing: "-0.01em" }}>{p.price}</p>
+          <p className="shrink-0" style={{ fontFamily: DISPLAY, fontSize: "1.1875rem", fontWeight: 500, color: SEPIA, letterSpacing: "-0.01em" }}>{p.price}</p>
         </div>
-        <div className="flex items-center gap-5 mt-4 pt-4 text-xs" style={{ color: "#888", borderTop: "1px solid #f0f0f0" }}>
+        <div className="flex items-center gap-5 pt-4 text-xs" style={{ color: SEPIA_SOFT, borderTop: `1px solid ${LINE}` }}>
           <span className="flex items-center gap-1.5">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 22v-9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9" /><path d="M2 11l10-9 10 9" /><path d="M9 22V12h6v10" /></svg>
             {p.beds} slpk
@@ -459,12 +459,13 @@ export function PropertyCard({ p, i }: { p: Property; i: number }) {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /></svg>
             {p.area} m²
           </span>
-          <motion.a href={href} className="ml-auto text-xs font-semibold px-3 py-1.5 rounded-full transition-colors"
-            style={{ color: B, backgroundColor: "transparent", border: "1px solid #e8e8e8" }}
-            whileHover={{ backgroundColor: Y, borderColor: Y, color: B }}
+          <a href={href} className="ml-auto text-xs font-medium px-3 py-1.5 transition-colors"
+            style={{ color: SEPIA, border: `1px solid ${LINE}`, borderRadius: "2px" }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = Y; e.currentTarget.style.borderColor = Y; }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.borderColor = LINE; }}
             onClick={e => e.stopPropagation()}>
             Meer info
-          </motion.a>
+          </a>
         </div>
       </div>
     </motion.article>
@@ -885,7 +886,7 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
         </div>
 
         {sent ? (
-          <div className="flex flex-col justify-center gap-4 py-16 px-8"
+          <div aria-live="polite" className="flex flex-col justify-center gap-4 py-16 px-8"
             style={{ border: "1px solid rgba(239,231,216,0.22)", borderRadius: "2px" }}>
             <p style={{ fontFamily: DISPLAY, fontSize: "1.75rem", fontWeight: 400, letterSpacing: "-0.02em", color: CREAM }}>
               Bericht ontvangen.
@@ -900,15 +901,18 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
                 <div key={name} className="flex flex-col gap-2">
                   <label htmlFor={`c-${name}`} style={labelStyle}>{label}</label>
                   <input id={`c-${name}`} type={type} name={name} placeholder={ph} required={name !== "telefoon"}
-                    className="outline-none" style={fieldStyle}
-                    onFocus={e => (e.target.style.borderColor = Y)}
-                    onBlur={e => (e.target.style.borderColor = "rgba(239,231,216,0.22)")} />
+                    style={fieldStyle}
+                    onFocus={e => { e.target.style.borderColor = Y; e.target.style.boxShadow = `0 0 0 2px ${Y}40`; e.target.style.outline = "none"; }}
+                    onBlur={e => { e.target.style.borderColor = "rgba(239,231,216,0.22)"; e.target.style.boxShadow = "none"; }} />
                 </div>
               ))}
             </div>
             <div className="flex flex-col gap-2">
               <label htmlFor="c-interesse" style={labelStyle}>Interesse</label>
-              <select id="c-interesse" name="interesse" className="outline-none" style={{ ...fieldStyle, appearance: "none" }}>
+              <select id="c-interesse" name="interesse"
+                style={{ ...fieldStyle, appearance: "none" }}
+                onFocus={e => { e.currentTarget.style.borderColor = Y; e.currentTarget.style.boxShadow = `0 0 0 2px ${Y}40`; e.currentTarget.style.outline = "none"; }}
+                onBlur={e => { e.currentTarget.style.borderColor = "rgba(239,231,216,0.22)"; e.currentTarget.style.boxShadow = "none"; }}>
                 <option value="">Wat kunnen wij voor u doen?</option>
                 <option>Woning kopen</option>
                 <option>Woning verkopen</option>
@@ -919,9 +923,9 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
             <div className="flex flex-col gap-2">
               <label htmlFor="c-bericht" style={labelStyle}>Bericht</label>
               <textarea id="c-bericht" name="bericht" rows={4} placeholder="Vertel ons wat u zoekt..."
-                className="outline-none resize-none" style={fieldStyle}
-                onFocus={e => (e.target.style.borderColor = Y)}
-                onBlur={e => (e.target.style.borderColor = "rgba(239,231,216,0.22)")} />
+                className="resize-none" style={fieldStyle}
+                onFocus={e => { e.target.style.borderColor = Y; e.target.style.boxShadow = `0 0 0 2px ${Y}40`; e.target.style.outline = "none"; }}
+                onBlur={e => { e.target.style.borderColor = "rgba(239,231,216,0.22)"; e.target.style.boxShadow = "none"; }} />
             </div>
             {submitError && (
               <p role="alert" style={{ fontSize: "0.875rem", color: "#f5a623", padding: "0.75rem 1rem", border: "1px solid rgba(245,166,35,0.35)", borderRadius: "2px" }}>

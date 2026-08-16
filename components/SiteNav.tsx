@@ -96,6 +96,8 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
                 style={{ color: isActive ? Y : "rgba(255,255,255,0.7)" }}
                 onMouseEnter={e => (e.currentTarget.style.color = W)}
                 onMouseLeave={e => (e.currentTarget.style.color = isActive ? Y : "rgba(255,255,255,0.7)")}
+                onFocus={e => (e.currentTarget.style.color = W)}
+                onBlur={e => (e.currentTarget.style.color = isActive ? Y : "rgba(255,255,255,0.7)")}
               >
                 {label}
               </a>
@@ -144,6 +146,9 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
         {open && (
           <motion.div
             key="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigatiemenu"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
