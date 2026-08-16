@@ -209,7 +209,9 @@ function Button({ href, children, variant = "solid", onDark = false }: {
       onMouseLeave={e => {
         if (solid) { e.currentTarget.style.backgroundColor = Y; e.currentTarget.style.color = SEPIA; }
         else { e.currentTarget.style.borderColor = onDark ? "rgba(239,231,216,0.35)" : "rgba(42,36,28,0.35)"; }
-      }}>
+      }}
+      onFocus={e => { e.currentTarget.style.boxShadow = `0 0 0 2px ${Y}`; }}
+      onBlur={e => { e.currentTarget.style.boxShadow = "none"; }}>
       {children}
     </a>
   );
@@ -900,8 +902,8 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
     fontSize: "0.9375rem",
   };
   const labelStyle: React.CSSProperties = {
-    fontSize: "11px", fontWeight: 500, letterSpacing: "0.12em",
-    textTransform: "uppercase", color: "rgba(239,231,216,0.55)",
+    fontSize: "12px", fontWeight: 500, letterSpacing: "0.12em",
+    textTransform: "uppercase", color: "rgba(239,231,216,0.82)",
   };
 
   return (

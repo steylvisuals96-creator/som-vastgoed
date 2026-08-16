@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 
@@ -27,6 +27,7 @@ type Props = {
 
 export default function SiteNav({ activePage, transparentAtTop = false }: Props) {
   const [open, setOpen] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
 
   // Background: transparent → dark on scroll (only on homepage hero)
@@ -55,6 +56,31 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  // Focus trap: move focus into dialog on open, trap Tab inside, close on Escape
+  useEffect(() => {
+    if (!open) return;
+    const el = dialogRef.current;
+    if (!el) return;
+    const focusable = () => Array.from(
+      el.querySelectorAll<HTMLElement>('a[href],button:not([disabled])')
+    );
+    focusable()[0]?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setOpen(false); return; }
+      if (e.key !== "Tab") return;
+      const els = focusable();
+      const first = els[0];
+      const last = els[els.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last?.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first?.focus(); }
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
     <>
@@ -146,6 +172,7 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
         {open && (
           <motion.div
             key="mobile-menu"
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-label="Navigatiemenu"
