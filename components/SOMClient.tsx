@@ -147,17 +147,6 @@ function WordMark({ tone }: { tone: "sepia" | "light" }) {
   );
 }
 
-/** Sectie-index in de kantlijn — de case-study-structuur van de richting.
- *  Bewust géén kleine uppercase kicker boven elke titel. */
-function SectionIndex({ nr }: { nr: string }) {
-  return (
-    <span aria-hidden style={{
-      fontFamily: DISPLAY, fontWeight: 100, fontSize: "clamp(2.5rem,5vw,4.5rem)",
-      lineHeight: 1, color: SEPIA_SOFT, opacity: 0.4, letterSpacing: "-0.03em",
-    }}>{nr}</span>
-  );
-}
-
 /** Kop die achter een masker vandaan komt. Één beweging, hergebruikt. */
 function MaskedHeading({ children, delay = 0, color = SEPIA, size = "clamp(2rem,4.4vw,3.6rem)" }: {
   children: React.ReactNode; delay?: number; color?: string; size?: string;
@@ -343,14 +332,15 @@ function Hero({ s, stats, start }: { s: SiteSettings["hero"] | typeof D.hero; st
             `screen` i.p.v. `overlay`: overlay keert wit om naar zwart op het
             donkere metselwerk, screen laat het gloeien en brandt weg in de zon. */}
         <div className="absolute inset-0 flex items-center justify-center" style={{ paddingTop: "clamp(2rem,6vh,4.5rem)" }}>
-          <motion.h1
+          <motion.div
+            aria-hidden="true"
             initial={reduce ? false : { clipPath: "inset(0 0 100% 0)" }}
             animate={go ? { clipPath: "inset(0 0 0% 0)" } : { clipPath: "inset(0 0 100% 0)" }}
             transition={{ duration: 1.5, delay: 0.1, ease: EASE }}
             className="w-full"
             style={{ margin: 0, mixBlendMode: "screen" }}>
             <WordMark tone="light" />
-          </motion.h1>
+          </motion.div>
         </div>
 
         <CornerLabel className="bottom-6 left-6 lg:left-10" delay={1.1}>{s.tagline}</CornerLabel>
@@ -362,7 +352,7 @@ function Hero({ s, stats, start }: { s: SiteSettings["hero"] | typeof D.hero; st
         <div className="grid gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div>
             <div style={{ overflow: "hidden" }}>
-              <motion.p
+              <motion.h1
                 initial={reduce ? false : { y: "104%" }}
                 animate={go ? { y: 0 } : { y: "104%" }}
                 transition={{ duration: 1.05, delay: 0.15, ease: EASE }}
@@ -372,7 +362,7 @@ function Hero({ s, stats, start }: { s: SiteSettings["hero"] | typeof D.hero; st
                 }}>
                 {s.titleLine1}{" "}
                 <span style={{ color: SEPIA_SOFT }}>{s.titleLine2Italic}</span>
-              </motion.p>
+              </motion.h1>
             </div>
 
             <motion.p
@@ -525,10 +515,7 @@ function Aanbod({ properties }: { properties: Property[] }) {
   return (
     <section id="aanbod" style={{ backgroundColor: CREAM, padding: "clamp(4rem,9vh,7rem) clamp(1.5rem,6vw,5rem)" }}>
       <div className="flex flex-wrap items-end justify-between gap-8 mb-14">
-        <div className="flex items-end gap-6">
-          <SectionIndex nr="01" />
-          <MaskedHeading>Een greep uit ons<br />huidig aanbod</MaskedHeading>
-        </div>
+        <MaskedHeading>Een greep uit ons<br />huidig aanbod</MaskedHeading>
         <a href="/aanbod" className="text-sm font-medium pb-2 transition-colors duration-200"
           style={{ color: SEPIA_SOFT, borderBottom: `1px solid ${LINE}` }}
           onMouseEnter={e => { e.currentTarget.style.color = SEPIA; e.currentTarget.style.borderBottomColor = SEPIA; }}
@@ -572,8 +559,7 @@ function TaskSolution() {
   ];
   return (
     <section style={{ backgroundColor: CREAM_DEEP, padding: "clamp(4rem,10vh,8rem) clamp(1.5rem,6vw,5rem)" }}>
-      <div className="flex items-end gap-6 mb-16">
-        <SectionIndex nr="02" />
+      <div className="mb-16">
         <MaskedHeading>Persoonlijke begeleiding,<br />van A tot Z.</MaskedHeading>
       </div>
 
@@ -617,10 +603,7 @@ function SchattingTeaser() {
   return (
     <section style={{ backgroundColor: CREAM, padding: "clamp(4rem,9vh,7rem) clamp(1.5rem,6vw,5rem)" }}>
       <div className="flex flex-wrap items-end justify-between gap-8 mb-14">
-        <div className="flex items-end gap-6">
-          <SectionIndex nr="03" />
-          <MaskedHeading>Wat is uw woning<br />waard vandaag?</MaskedHeading>
-        </div>
+        <MaskedHeading>Wat is uw woning<br />waard vandaag?</MaskedHeading>
         <Button href="/schatting">Gratis waardebepaling</Button>
       </div>
 
@@ -703,8 +686,7 @@ function Offices({ offices }: { offices: Office[] }) {
   const reduce = useReducedMotion();
   return (
     <section id="kantoren" style={{ backgroundColor: CREAM_DEEP, padding: "clamp(4rem,9vh,7rem) clamp(1.5rem,6vw,5rem)" }}>
-      <div className="flex items-end gap-6 mb-14">
-        <SectionIndex nr="04" />
+      <div className="mb-14">
         <MaskedHeading>Dichtbij u<br />in Limburg</MaskedHeading>
       </div>
 
@@ -749,8 +731,7 @@ function Team({ members }: { members: TeamMember[] }) {
   const reduce = useReducedMotion();
   return (
     <section id="team" style={{ backgroundColor: CREAM, padding: "clamp(4rem,9vh,7rem) clamp(1.5rem,6vw,5rem)" }}>
-      <div className="flex items-end gap-6 mb-14">
-        <SectionIndex nr="06" />
+      <div className="mb-14">
         <MaskedHeading>Mensen die voor u<br />het verschil maken</MaskedHeading>
       </div>
 
@@ -783,15 +764,12 @@ function OverOns({ a }: { a: typeof D.about }) {
   return (
     <section id="over-ons" style={{ backgroundColor: CREAM_DEEP, padding: "clamp(4rem,9vh,7rem) clamp(1.5rem,6vw,5rem)" }}>
       <div className="grid gap-x-16 gap-y-12 lg:grid-cols-[auto_1fr]" style={{ alignItems: "start" }}>
-        {/* Left: index + heading */}
-        <div className="flex flex-col gap-6">
-          <SectionIndex nr="05" />
-          <div>
-            <MaskedHeading>{a.title}</MaskedHeading>
-            <MaskedHeading delay={0.08}>
-              <em style={{ fontStyle: "italic" }}>{a.titleItalic}</em>
-            </MaskedHeading>
-          </div>
+        {/* Left: heading */}
+        <div>
+          <MaskedHeading>{a.title}</MaskedHeading>
+          <MaskedHeading delay={0.08}>
+            <em style={{ fontStyle: "italic" }}>{a.titleItalic}</em>
+          </MaskedHeading>
         </div>
 
         {/* Right: copy + accent + cta */}
@@ -829,8 +807,7 @@ function Getuigenissen({ items }: { items: CMSTestimonial[] }) {
   if (!items.length) return null;
   return (
     <section style={{ backgroundColor: CREAM_DEEP, padding: "clamp(4rem,9vh,7rem) clamp(1.5rem,6vw,5rem)" }}>
-      <div className="flex items-end gap-6 mb-14">
-        <SectionIndex nr="07" />
+      <div className="mb-14">
         <MaskedHeading>Wat klanten<br />over ons zeggen</MaskedHeading>
       </div>
 
@@ -906,8 +883,7 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
     <section id="contact" style={{ backgroundColor: SEPIA, padding: "clamp(4rem,10vh,8rem) clamp(1.5rem,6vw,5rem)" }}>
       <div className="grid gap-x-16 gap-y-14" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
         <div>
-          <div className="flex items-end gap-6 mb-10">
-            <SectionIndex nr="08" />
+          <div className="mb-10">
             <MaskedHeading color={CREAM}>
               {s.title}<br /><span style={{ color: Y }}>{s.titleYellow}</span>
             </MaskedHeading>
@@ -958,8 +934,9 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
             </div>
             <div className="flex flex-col gap-2">
               <label htmlFor="c-interesse" style={labelStyle}>Interesse</label>
+              <div style={{ position: "relative" }}>
               <select id="c-interesse" name="interesse"
-                style={{ ...fieldStyle, appearance: "none" }}
+                style={{ ...fieldStyle, appearance: "none", paddingRight: "2.5rem", width: "100%" }}
                 onFocus={e => { e.currentTarget.style.borderColor = Y; e.currentTarget.style.boxShadow = `0 0 0 2px ${Y}40`; e.currentTarget.style.outline = "none"; }}
                 onBlur={e => { e.currentTarget.style.borderColor = "rgba(239,231,216,0.22)"; e.currentTarget.style.boxShadow = "none"; }}>
                 <option value="">Wat kunnen wij voor u doen?</option>
@@ -968,6 +945,11 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
                 <option>Woning huren</option>
                 <option>Gratis waardebepaling</option>
               </select>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                style={{ position: "absolute", right: "0.875rem", top: "50%", transform: "translateY(-50%)", color: CREAM, opacity: 0.55, pointerEvents: "none" }}>
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+              </div>
             </div>
             <div className="flex flex-col gap-2">
               <label htmlFor="c-bericht" style={labelStyle}>Bericht</label>
@@ -1008,19 +990,19 @@ export default function SOMClient({ properties, team, settings, projects: _proje
   const [revealed, setRevealed] = useState(false);
 
   return (
-    <div style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif", backgroundColor: CREAM }}>
+    <div style={{ fontFamily: DISPLAY, backgroundColor: CREAM }}>
       <IntroCurtain onDone={() => setRevealed(true)} />
       <SiteNav activePage="home" transparentAtTop />
       <Hero s={hero} stats={stats} start={revealed} />
       <Aanbod properties={properties} />
       <TaskSolution />
       <SchattingTeaser />
-      <Statement s={boldCta} />
       <UspStrip usps={usps} />
       <Offices offices={offices} />
       <OverOns a={about} />
       <Team members={team} />
       <Getuigenissen items={testimonials} />
+      <Statement s={boldCta} />
       <Contact s={contact} />
       <SiteFooter />
     </div>
