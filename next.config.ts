@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
       // FALLBACK_TEAM in SOMClient gebruikt teamfoto's van de huidige site;
       // zonder deze host crasht de pagina zodra het CMS geen team teruggeeft.
       { protocol: "https", hostname: "somvastgoed.be" },
+      // Teamfoto's redirecten via somvastgoed.be naar Google Storage
+      { protocol: "https", hostname: "storage.googleapis.com" },
     ],
   },
 };
