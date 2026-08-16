@@ -543,6 +543,11 @@ function Aanbod({ properties }: { properties: Property[] }) {
         <AnimatePresence mode="popLayout">
           {properties.map((p, i) => <PandKaart key={p._id} p={p} i={i} />)}
         </AnimatePresence>
+        {properties.length === 0 && (
+          <p style={{ color: SEPIA_SOFT, fontSize: "0.9375rem", gridColumn: "1/-1" }}>
+            Bekijk ons <a href="/aanbod" style={{ color: SEPIA, borderBottom: `1px solid ${LINE}` }}>volledig aanbod</a> voor de meest actuele panden.
+          </p>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-3 mt-16">
@@ -629,7 +634,7 @@ function SchattingTeaser() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: i * 0.14 }}
             style={{ borderTop: `1px solid ${LINE}`, paddingTop: "1.5rem" }}>
-            <p style={{ fontFamily: DISPLAY, fontWeight: 100, fontSize: "2.75rem", lineHeight: 1, color: SEPIA_SOFT, opacity: 0.55, margin: 0 }}>{nr}</p>
+            <p style={{ fontFamily: DISPLAY, fontWeight: 100, fontSize: "2.75rem", lineHeight: 1, color: SEPIA_SOFT, opacity: 0.75, margin: 0 }}>{nr}</p>
             <p className="mt-5" style={{ fontFamily: DISPLAY, fontSize: "1.125rem", fontWeight: 500, letterSpacing: "-0.01em", color: SEPIA }}>{title}</p>
             <p className="mt-2 leading-relaxed" style={{ fontSize: "0.9rem", color: SEPIA_SOFT }}>{sub}</p>
           </motion.div>
@@ -656,7 +661,7 @@ function Statement({ s }: { s: SiteSettings["boldCta"] | typeof D.boldCta }) {
             {s.subtitle}
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <Button href="#aanbod" onDark>Bekijk aanbod</Button>
+            <Button href="/aanbod" onDark>Bekijk aanbod</Button>
             <Button href="#contact" variant="outline" onDark>Neem contact op</Button>
           </div>
         </div>

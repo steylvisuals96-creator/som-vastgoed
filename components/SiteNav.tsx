@@ -208,7 +208,7 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
               <div className="w-px" style={{ backgroundColor: "rgba(255,255,255,0.1)" }} />
               <div className="text-center">
                 <p className="text-xs font-semibold mb-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>Genk</p>
-                <a href="tel:+3289691515" className="text-sm font-light" style={{ color: "rgba(255,255,255,0.6)" }}>089 69 15 15</a>
+                <a href="tel:+3289691515" className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>089 69 15 15</a>
               </div>
             </motion.div>
           </motion.div>
