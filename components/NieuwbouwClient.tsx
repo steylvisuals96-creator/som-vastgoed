@@ -6,91 +6,91 @@ import type { Project } from "@/lib/types";
 import SiteFooter from "./SiteFooter";
 import SiteNav from "./SiteNav";
 
-const Y = "#facb04";
-const B = "#111111";
-const W = "#ffffff";
-const G = "#f7f7f5";
-const M = "#888";
+const CREAM      = "#EFE7D8";
+const CREAM_DEEP = "#E6DCC8";
+const SEPIA      = "#2A241C";
+const SEPIA_SOFT = "#6E5A3E";
+const LINE       = "rgba(110,90,62,0.22)";
+const Y          = "#facb04";
+const DISPLAY    = "var(--font-archivo), Archivo, sans-serif";
 const EASE = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
-const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  "In verkoop": { bg: Y, text: B },
-  "Binnenkort": { bg: "rgba(255,255,255,0.15)", text: W },
-  "In ontwikkeling": { bg: "rgba(17,17,17,0.7)", text: W },
-  "Uitverkocht": { bg: "#e0e0e0", text: M },
+const STATUS: Record<string, { bg: string; text: string }> = {
+  "In verkoop":     { bg: Y,                       text: SEPIA },
+  "Binnenkort":     { bg: "rgba(239,231,216,0.15)", text: CREAM },
+  "In ontwikkeling":{ bg: "rgba(42,36,28,0.7)",    text: CREAM },
+  "Uitverkocht":    { bg: CREAM_DEEP,              text: SEPIA_SOFT },
 };
 
-// Nav handled by SiteNav
-
 function ProjectCard({ p, i }: { p: Project; i: number }) {
-  const status = STATUS_COLORS[p.status] ?? STATUS_COLORS["In verkoop"];
+  const status = STATUS[p.status] ?? STATUS["In verkoop"];
   const href = p.slug ? `/nieuwbouw/${p.slug}` : "#";
 
   return (
     <motion.a href={href}
       initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: i * 0.07, ease: EASE }}
-      className="group block bg-white overflow-hidden cursor-pointer"
-      style={{ borderRadius: "20px", boxShadow: "0 2px 20px rgba(0,0,0,0.07)" }}
-      whileHover={{ y: -6, boxShadow: "0 24px 60px rgba(0,0,0,0.14)" }}>
+      className="group block overflow-hidden"
+      style={{ backgroundColor: CREAM, border: `1px solid ${LINE}`, borderRadius: "2px", color: SEPIA }}>
 
-      {/* Image */}
       <div className="relative overflow-hidden" style={{ aspectRatio: "16/10" }}>
         {p.imageUrl ? (
-          <motion.div className="absolute inset-0" whileHover={{ scale: 1.05 }} transition={{ duration: 0.7 }}>
-            <Image src={p.imageUrl} alt={p.name} fill className="object-cover" sizes="(min-width: 1024px) 400px, 90vw" />
+          <motion.div className="absolute inset-0" whileHover={{ scale: 1.04 }} transition={{ duration: 0.7 }}>
+            <Image src={p.imageUrl} alt={p.name} fill className="object-cover"
+              sizes="(min-width: 1024px) 400px, 90vw"
+              style={{ filter: "sepia(0.1) saturate(1.05)" }} />
           </motion.div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: "#e8e8e8" }}>
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: CREAM_DEEP }}>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={LINE} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
             </svg>
           </div>
         )}
-        <div className="absolute top-4 left-4 text-xs font-semibold px-3 py-1.5 rounded-full"
-          style={{ backgroundColor: status.bg, color: status.text }}>{p.status}</div>
+        <span className="absolute left-0 bottom-0 px-3 py-1.5 text-xs font-semibold"
+          style={{ backgroundColor: status.bg, color: status.text }}>{p.status}</span>
         {p.type && (
-          <div className="absolute top-4 right-4 text-xs font-medium px-3 py-1.5 rounded-full backdrop-blur-sm"
-            style={{ backgroundColor: "rgba(17,17,17,0.65)", color: W }}>{p.type}</div>
+          <span className="absolute right-0 bottom-0 px-3 py-1.5 text-xs font-medium"
+            style={{ backgroundColor: "rgba(42,36,28,0.7)", color: CREAM }}>{p.type}</span>
         )}
       </div>
 
-      {/* Content */}
       <div className="p-6">
-        <h3 style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.5rem", fontWeight: 500, color: B, lineHeight: 1.2 }}>{p.name}</h3>
-        <p className="text-xs mt-1 flex items-center gap-1.5 mb-4" style={{ color: M }}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+        <h3 style={{ fontFamily: DISPLAY, fontSize: "1.4rem", fontWeight: 400, letterSpacing: "-0.02em", color: SEPIA, lineHeight: 1.2, marginBottom: "0.25rem" }}>
+          {p.name}
+        </h3>
+        <p className="text-xs mt-1 flex items-center gap-1.5 mb-4" style={{ fontFamily: DISPLAY, color: SEPIA_SOFT }}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           {p.location}
         </p>
 
-        <div className="flex gap-6 mb-4 pt-4" style={{ borderTop: "1px solid #f0f0f0" }}>
+        <div className="flex gap-6 pt-4 mb-4" style={{ borderTop: `1px solid ${LINE}` }}>
           {p.units && (
             <div>
-              <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.3rem", fontWeight: 400, color: B }}>{p.units}</p>
-              <p className="text-xs" style={{ color: M }}>units</p>
+              <p style={{ fontFamily: DISPLAY, fontSize: "1.25rem", fontWeight: 400, color: SEPIA }}>{p.units}</p>
+              <p className="text-xs" style={{ fontFamily: DISPLAY, color: SEPIA_SOFT }}>units</p>
             </div>
           )}
           {p.priceFrom && (
             <div>
-              <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.3rem", fontWeight: 400, color: B }}>{p.priceFrom}</p>
-              <p className="text-xs" style={{ color: M }}>vanaf</p>
+              <p style={{ fontFamily: DISPLAY, fontSize: "1.25rem", fontWeight: 400, color: SEPIA }}>{p.priceFrom}</p>
+              <p className="text-xs" style={{ fontFamily: DISPLAY, color: SEPIA_SOFT }}>vanaf</p>
             </div>
           )}
           {p.completionDate && (
             <div>
-              <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.3rem", fontWeight: 400, color: B }}>{p.completionDate}</p>
-              <p className="text-xs" style={{ color: M }}>oplevering</p>
+              <p style={{ fontFamily: DISPLAY, fontSize: "1.25rem", fontWeight: 400, color: SEPIA }}>{p.completionDate}</p>
+              <p className="text-xs" style={{ fontFamily: DISPLAY, color: SEPIA_SOFT }}>oplevering</p>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between">
-          {p.developer && <p className="text-xs font-light" style={{ color: M }}>{p.developer}</p>}
-          <motion.span className="ml-auto text-xs font-semibold flex items-center gap-1" style={{ color: B }}
-            whileHover={{ color: "#b89000" }}>
+        <div className="flex items-center justify-between pt-3" style={{ borderTop: `1px solid ${LINE}` }}>
+          {p.developer && <p className="text-xs" style={{ fontFamily: DISPLAY, color: SEPIA_SOFT }}>{p.developer}</p>}
+          <span className="ml-auto text-xs font-medium px-3 py-1.5 transition-colors group-hover:opacity-70"
+            style={{ fontFamily: DISPLAY, color: SEPIA, border: `1px solid ${LINE}`, borderRadius: "2px" }}>
             Meer info
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
-          </motion.span>
+          </span>
         </div>
       </div>
     </motion.a>
@@ -99,43 +99,40 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
 
 export default function NieuwbouwClient({ projects }: { projects: Project[] }) {
   return (
-    <div style={{ fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}>
+    <div style={{ fontFamily: DISPLAY, backgroundColor: CREAM }}>
       <SiteNav activePage="nieuwbouw" />
 
       {/* Header */}
-      <section style={{ backgroundColor: B, paddingTop: "clamp(8rem,15vh,11rem)", paddingBottom: "clamp(4rem,7vh,6rem)", paddingLeft: "clamp(1.5rem,6vw,5rem)", paddingRight: "clamp(1.5rem,6vw,5rem)" }}>
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE }}
-          className="flex items-center gap-3 mb-6">
-          <div className="h-px w-10" style={{ backgroundColor: Y }} />
-          <span className="text-xs font-medium tracking-widest uppercase" style={{ color: Y }}>SOM Vastgoed</span>
-        </motion.div>
-        <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.1, ease: EASE }}
-          className="text-white"
-          style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(3rem,6vw,5.5rem)", fontWeight: 300, lineHeight: 1.05, letterSpacing: "-0.02em" }}>
-          Nieuwbouw<br />
-          <em style={{ color: Y }}>& Projecten</em>
+      <section style={{
+        backgroundColor: SEPIA,
+        padding: "clamp(7rem,14vh,11rem) clamp(1.5rem,6vw,5rem) clamp(3.5rem,7vh,5.5rem)",
+      }}>
+        <motion.h1 initial={{ clipPath: "inset(0 0 100% 0)" }} animate={{ clipPath: "inset(0 0 0% 0)" }}
+          transition={{ duration: 1.2, ease: EASE }}
+          style={{ fontFamily: DISPLAY, fontSize: "clamp(2.5rem,5.5vw,4.75rem)", fontWeight: 400, lineHeight: 1.05, letterSpacing: "-0.03em", color: CREAM, margin: 0 }}>
+          Nieuwbouw<br /><em style={{ fontStyle: "italic", color: Y }}>&amp; Projecten</em>
         </motion.h1>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-4 text-sm font-light" style={{ color: "rgba(255,255,255,0.4)", maxWidth: "480px" }}>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.7 }}
+          className="mt-5 max-w-lg" style={{ fontFamily: DISPLAY, fontSize: "0.9375rem", color: "rgba(239,231,216,0.5)" }}>
           Ontdek onze selectie van nieuwbouwprojecten in Limburg en omgeving. Van appartement tot villa — wij begeleiden u van A tot Z.
         </motion.p>
       </section>
 
       {/* Grid */}
-      <section style={{ backgroundColor: G, padding: "clamp(4rem,8vh,6rem) clamp(1.5rem,6vw,5rem)" }}>
+      <section style={{ backgroundColor: CREAM, padding: "clamp(4rem,8vh,6rem) clamp(1.5rem,6vw,5rem)" }}>
         {projects.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-32">
-            <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "2.5rem", fontWeight: 300, color: M }}>
+            <p style={{ fontFamily: DISPLAY, fontSize: "clamp(1.5rem,3vw,2.25rem)", fontWeight: 400, letterSpacing: "-0.02em", color: SEPIA_SOFT }}>
               Binnenkort nieuwe projecten
             </p>
-            <p className="text-sm mt-3 mb-8" style={{ color: M }}>Schrijf u in voor onze nieuwsbrief en ontvang als eerste info over nieuwe projecten.</p>
-            <motion.a href="/#contact"
-              className="inline-flex items-center gap-2 text-sm font-semibold rounded-full px-8 py-4"
-              style={{ backgroundColor: B, color: W }}
-              whileHover={{ backgroundColor: Y, color: B }} whileTap={{ scale: 0.97 }}>
+            <p className="text-sm mt-3 mb-8" style={{ fontFamily: DISPLAY, color: SEPIA_SOFT }}>
+              Schrijf u in voor onze nieuwsbrief en ontvang als eerste info over nieuwe projecten.
+            </p>
+            <a href="/#contact"
+              className="inline-flex items-center gap-2 text-sm font-semibold px-8 py-4 transition-opacity hover:opacity-80"
+              style={{ fontFamily: DISPLAY, backgroundColor: SEPIA, color: CREAM, borderRadius: "2px" }}>
               Blijf op de hoogte
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
-            </motion.a>
+            </a>
           </motion.div>
         ) : (
           <div className="grid gap-8" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))", maxWidth: "1400px", margin: "0 auto" }}>
@@ -145,22 +142,18 @@ export default function NieuwbouwClient({ projects }: { projects: Project[] }) {
       </section>
 
       {/* CTA strip */}
-      <section style={{ backgroundColor: B, padding: "clamp(4rem,8vh,6rem) clamp(1.5rem,6vw,5rem)" }}>
+      <section style={{ backgroundColor: SEPIA, padding: "clamp(4rem,8vh,6rem) clamp(1.5rem,6vw,5rem)" }}>
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 flex-wrap" style={{ maxWidth: "1400px", margin: "0 auto" }}>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: Y }}>Interesse in nieuwbouw?</p>
-            <h2 className="text-white" style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 300 }}>
-              Wij begeleiden u van A tot Z.
+            <h2 style={{ fontFamily: DISPLAY, fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 400, letterSpacing: "-0.03em", color: CREAM, lineHeight: 1.1 }}>
+              Wij begeleiden u<br /><em style={{ fontStyle: "italic", color: Y }}>van A tot Z.</em>
             </h2>
           </div>
-          <div className="flex gap-4 flex-wrap">
-            <motion.a href="/#contact"
-              className="text-sm font-semibold rounded-full px-7 py-3.5 inline-flex items-center gap-2"
-              style={{ backgroundColor: Y, color: B }} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-              Neem contact op
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
-            </motion.a>
-          </div>
+          <a href="/schatting"
+            className="text-sm font-semibold px-7 py-3.5 inline-flex items-center gap-2 transition-opacity hover:opacity-80"
+            style={{ fontFamily: DISPLAY, backgroundColor: Y, color: SEPIA, borderRadius: "2px" }}>
+            Gratis waardebepaling
+          </a>
         </div>
       </section>
 
