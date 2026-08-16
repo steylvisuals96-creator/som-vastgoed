@@ -113,7 +113,7 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
             naast elkaar en schoof de rij over het logo heen. */}
         <div className="hidden lg:flex items-center gap-6 xl:gap-8">
           {NAV_LINKS.map(({ label, href }) => {
-            const isActive = activePage && href.includes(activePage);
+            const isActive = activePage && (activePage === "home" ? href === "/" : href.includes(activePage));
             return (
               <a
                 key={label}
@@ -135,8 +135,10 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
             style={{ backgroundColor: Y, color: B, borderRadius: "2px" }}
             onMouseEnter={e => { e.currentTarget.style.backgroundColor = W; }}
             onMouseLeave={e => { e.currentTarget.style.backgroundColor = Y; }}
+            onFocus={e => { e.currentTarget.style.boxShadow = `0 0 0 2px ${B}, 0 0 0 4px ${Y}`; }}
+            onBlur={e => { e.currentTarget.style.boxShadow = "none"; }}
           >
-            Gratis schatting
+            Gratis waardebepaling
           </a>
         </div>
 
@@ -186,7 +188,7 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
             {/* Links — vertically centered */}
             <div className="flex flex-col items-center justify-center flex-1 gap-2 px-8">
               {NAV_LINKS.map(({ label, href }, i) => {
-                const isActive = activePage && href.includes(activePage);
+                const isActive = activePage && (activePage === "home" ? href === "/" : href.includes(activePage));
                 return (
                   <motion.a
                     key={label}
@@ -207,9 +209,9 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
                 );
               })}
 
-              {/* Contact CTA */}
+              {/* CTA */}
               <motion.a
-                href="/#contact"
+                href="/schatting"
                 onClick={() => setOpen(false)}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -217,7 +219,7 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
                 className="mt-6 w-full text-center py-4 text-base font-semibold"
                 style={{ backgroundColor: Y, color: B, borderRadius: "2px" }}
               >
-                Contact opnemen
+                Gratis waardebepaling
               </motion.a>
             </div>
 

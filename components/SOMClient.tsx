@@ -417,16 +417,15 @@ function Hero({ s, stats, start }: { s: SiteSettings["hero"] | typeof D.hero; st
   );
 }
 
-// ── PROPERTY CARD (gebruikt door /aanbod — bewust ongewijzigd) ────────────────
+// ── PROPERTY CARD (gebruikt door /aanbod) ─────────────────────────────────────
 export function PropertyCard({ p, i }: { p: Property; i: number }) {
   const href = p.slug ? `/aanbod/${p.slug}` : "#";
   return (
-    <motion.article key={p._id} layout
+    <motion.a href={href} key={p._id} layout
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}
       transition={{ duration: 0.5, delay: i * 0.06, ease: EASE }}
-      className="group overflow-hidden cursor-pointer"
-      style={{ backgroundColor: CREAM, borderTop: `1px solid ${LINE}` }}
-      onClick={() => window.location.href = href}>
+      className="group overflow-hidden block"
+      style={{ backgroundColor: CREAM, borderTop: `1px solid ${LINE}`, color: SEPIA }}>
       <div className="relative overflow-hidden" style={{ aspectRatio: "16/10" }}>
         <motion.div className="absolute inset-0"
           whileHover={{ scale: 1.04 }} transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}>
@@ -461,16 +460,13 @@ export function PropertyCard({ p, i }: { p: Property; i: number }) {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /></svg>
             {p.area} m²
           </span>
-          <a href={href} className="ml-auto text-xs font-medium px-3 py-1.5 transition-colors"
-            style={{ color: SEPIA, border: `1px solid ${LINE}`, borderRadius: "2px" }}
-            onMouseEnter={e => { e.currentTarget.style.backgroundColor = Y; e.currentTarget.style.borderColor = Y; }}
-            onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.borderColor = LINE; }}
-            onClick={e => e.stopPropagation()}>
+          <span className="ml-auto text-xs font-medium px-3 py-1.5"
+            style={{ color: SEPIA, border: `1px solid ${LINE}`, borderRadius: "2px" }}>
             Meer info
-          </a>
+          </span>
         </div>
       </div>
-    </motion.article>
+    </motion.a>
   );
 }
 
@@ -481,8 +477,8 @@ function PandKaart({ p, i }: { p: Property; i: number }) {
   return (
     <motion.a
       href={href}
-      initial={reduce ? false : { opacity: 0 }}
-      whileInView={{ opacity: 1 }}
+      initial={reduce ? false : { opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.8, delay: i * 0.07 }}
       className="group block"
@@ -625,14 +621,14 @@ function SchattingTeaser() {
           <SectionIndex nr="03" />
           <MaskedHeading>Wat is uw woning<br />waard vandaag?</MaskedHeading>
         </div>
-        <Button href="/schatting">Start gratis schatting</Button>
+        <Button href="/schatting">Gratis waardebepaling</Button>
       </div>
 
       <div className="grid gap-x-12 gap-y-10" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
         {steps.map(({ nr, title, sub }, i) => (
           <motion.div key={nr}
-            initial={reduce ? false : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={reduce ? false : { opacity: 0, x: -12 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: i * 0.14 }}
             style={{ borderTop: `1px solid ${LINE}`, paddingTop: "1.5rem" }}>
@@ -663,8 +659,8 @@ function Statement({ s }: { s: SiteSettings["boldCta"] | typeof D.boldCta }) {
             {s.subtitle}
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <Button href="/aanbod" onDark>Bekijk aanbod</Button>
-            <Button href="#contact" variant="outline" onDark>Neem contact op</Button>
+            <Button href="/schatting" onDark>Gratis waardebepaling</Button>
+            <Button href="/aanbod" variant="outline" onDark>Bekijk aanbod</Button>
           </div>
         </div>
       </div>
@@ -680,8 +676,8 @@ function UspStrip({ usps }: { usps: typeof D.usps }) {
       <div className="grid gap-x-10 gap-y-10" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))" }}>
         {usps.map((item, i) => (
           <motion.div key={item.title}
-            initial={reduce ? false : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={reduce ? false : { opacity: 0, scale: 0.94 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: i * 0.09 }}
             style={{ borderTop: `1px solid ${LINE}`, paddingTop: "1.5rem" }}>
@@ -715,8 +711,8 @@ function Offices({ offices }: { offices: Office[] }) {
       <div className="grid gap-x-8 gap-y-12" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))" }}>
         {list.map((office, i) => (
           <motion.div key={office.name}
-            initial={reduce ? false : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={reduce ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: i * 0.1 }}>
             <div className="relative overflow-hidden" style={{ aspectRatio: "16/10", backgroundColor: "rgba(110,90,62,0.12)" }}>
@@ -761,8 +757,8 @@ function Team({ members }: { members: TeamMember[] }) {
       <div className="grid gap-x-6 gap-y-10" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))" }}>
         {members.map((m, i) => (
           <motion.div key={m._id}
-            initial={reduce ? false : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={reduce ? false : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: i * 0.07 }}
             className="group">
@@ -801,8 +797,8 @@ function OverOns({ a }: { a: typeof D.about }) {
         {/* Right: copy + accent + cta */}
         <motion.div
           className="flex flex-col gap-8 pt-2"
-          initial={reduce ? false : { opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={reduce ? false : { opacity: 0, x: 20 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.1 }}>
           <p style={{ fontSize: "clamp(1rem,1.8vw,1.125rem)", lineHeight: 1.65, color: SEPIA, maxWidth: "52ch" }}>
@@ -841,8 +837,8 @@ function Getuigenissen({ items }: { items: CMSTestimonial[] }) {
       <div className="grid gap-x-10 gap-y-12" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
         {items.map((t, i) => (
           <motion.figure key={t.id}
-            initial={reduce ? false : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={reduce ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: i * 0.09 }}
             style={{ borderTop: `1px solid ${LINE}`, paddingTop: "1.5rem", margin: 0 }}>
