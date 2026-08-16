@@ -385,8 +385,8 @@ function Hero({ s, stats, start }: { s: SiteSettings["hero"] | typeof D.hero; st
               initial={reduce ? false : { opacity: 0 }} animate={{ opacity: go ? 1 : 0 }}
               transition={{ duration: 0.9, delay: 0.95 }}
               className="mt-10 flex flex-wrap items-stretch gap-3">
-              <Button href="#aanbod">{s.ctaPrimary}</Button>
-              <Button href="/schatting" variant="outline">{s.ctaSecondary}</Button>
+              <Button href="/schatting">{s.ctaSecondary}</Button>
+              <Button href="#aanbod" variant="outline">{s.ctaPrimary}</Button>
             </motion.div>
           </div>
 
@@ -811,13 +811,15 @@ function Getuigenissen({ items }: { items: CMSTestimonial[] }) {
 function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     setLoading(true);
+    setSubmitError(false);
     try {
-      await fetch("https://som-vastgoed-cms.vercel.app/api/contact", {
+      const res = await fetch("https://som-vastgoed-cms.vercel.app/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -828,9 +830,13 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
           bericht: fd.get("bericht"),
         }),
       });
-    } catch {}
-    setSent(true);
-    setLoading(false);
+      if (!res.ok) throw new Error();
+      setSent(true);
+    } catch {
+      setSubmitError(true);
+    } finally {
+      setLoading(false);
+    }
   }
 
   const fieldStyle: React.CSSProperties = {
@@ -917,6 +923,11 @@ function Contact({ s }: { s: SiteSettings["contact"] | typeof D.contact }) {
                 onFocus={e => (e.target.style.borderColor = Y)}
                 onBlur={e => (e.target.style.borderColor = "rgba(239,231,216,0.22)")} />
             </div>
+            {submitError && (
+              <p role="alert" style={{ fontSize: "0.875rem", color: "#f5a623", padding: "0.75rem 1rem", border: "1px solid rgba(245,166,35,0.35)", borderRadius: "2px" }}>
+                Er liep iets mis. Bel ons op <a href={`tel:${D.contact.phoneHasselt.replace(/\s/g, "")}`} style={{ color: Y, textDecoration: "underline" }}>{D.contact.phoneHasselt}</a> of mail naar <a href={`mailto:${D.contact.email}`} style={{ color: Y, textDecoration: "underline" }}>{D.contact.email}</a>.
+              </p>
+            )}
             <button type="submit" disabled={loading}
               className="text-sm font-medium py-4 mt-1 transition-colors duration-200"
               style={{ backgroundColor: Y, color: SEPIA, borderRadius: "2px", opacity: loading ? 0.7 : 1 }}>

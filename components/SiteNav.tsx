@@ -102,13 +102,13 @@ export default function SiteNav({ activePage, transparentAtTop = false }: Props)
             );
           })}
           <a
-            href="/#contact"
+            href="/schatting"
             className="text-sm font-semibold whitespace-nowrap px-6 py-2.5 transition-colors duration-200"
             style={{ backgroundColor: Y, color: B, borderRadius: "2px" }}
             onMouseEnter={e => { e.currentTarget.style.backgroundColor = W; }}
             onMouseLeave={e => { e.currentTarget.style.backgroundColor = Y; }}
           >
-            Contact
+            Gratis schatting
           </a>
         </div>
 
