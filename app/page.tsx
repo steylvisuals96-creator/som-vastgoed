@@ -31,7 +31,16 @@ export default async function Home() {
   ]);
 
   const properties = cmsProperties.length > 0 ? cmsProperties.slice(0, 8) : FALLBACK_PROPERTIES;
-  const team = cmsTeam.length > 0 ? cmsTeam : FALLBACK_TEAM;
+
+  // Als CMS teamleden geen foto hebben, gebruik de fallback-foto op basis van naam
+  const fallbackByName = Object.fromEntries(FALLBACK_TEAM.map(m => [m.name.toLowerCase(), m.photoUrl]));
+  const mergedTeam = cmsTeam.length > 0
+    ? cmsTeam.map(m => ({
+        ...m,
+        photoUrl: m.photoUrl || fallbackByName[m.name.toLowerCase()] || "",
+      }))
+    : FALLBACK_TEAM;
+  const team = mergedTeam;
 
   return (
     <SOMClient
